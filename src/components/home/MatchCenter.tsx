@@ -190,6 +190,7 @@ export function MatchCenter() {
     <Section id="inicio">
       <Container>
         <div className="grid items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
+       
           {/* Izquierda — contexto editorial */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -197,6 +198,9 @@ export function MatchCenter() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="order-2 flex flex-col justify-center gap-6 lg:order-1 lg:col-span-5"
           >
+             <div>
+         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYg6CCGdqhT6Um6y_EziVESVRFUQ5erJMCT2dktZvTKQc--ig7eVwydeo&s=10" alt="" />
+        </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-danger/40 bg-danger/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-danger">
                 <LivePulse />
@@ -207,6 +211,7 @@ export function MatchCenter() {
                 Tucumán Cup 2026 · {match.round}
               </span>
             </div>
+
 
             <dl className="overflow-hidden rounded-2xl border border-border/40 bg-surface-1/30">
               {facts(match).map((fact, index) => (
