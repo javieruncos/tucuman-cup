@@ -152,8 +152,65 @@
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Estadio de noche — capas atmosféricas globales */
+body {
+  background-color: #0b0b0c;
+  background-image: linear-gradient(180deg, #0e0e11 0%, #0a0a0c 46%, #060607 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      85% 65% at 50% -12%,
+      rgba(245, 197, 66, 0.08),
+      transparent 62%
+    ),
+    radial-gradient(
+      45% 34% at 76% 6%,
+      rgba(245, 197, 66, 0.05),
+      transparent 58%
+    ),
+    radial-gradient(
+      45% 34% at 24% 6%,
+      rgba(245, 197, 66, 0.05),
+      transparent 58%
+    ),
+    radial-gradient(
+      70% 46% at 50% 22%,
+      rgba(245, 197, 66, 0.04),
+      transparent 62%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.016) 0 1px,
+      transparent 1px 96px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.016) 0 1px,
+      transparent 1px 96px
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      transparent 42%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+@utility text-glow-gold {
+  text-shadow:
+    0 0 32px rgba(245, 197, 66, 0.35),
+    0 0 64px rgba(245, 197, 66, 0.18);
 }

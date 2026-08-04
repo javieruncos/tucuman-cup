@@ -358,3 +358,21 @@ Tucumán Cup debe construirse como un frontend profesional listo para producció
 El backend será desarrollado manualmente posteriormente.
 
 El objetivo es aprender y controlar la arquitectura completa del sistema.
+
+# Filosofía de Diseño
+
+Cada pantalla debe sentirse como un producto listo para producción.
+
+No crear interfaces genéricas.
+
+Antes de implementar una pantalla, pensar:
+
+- ¿Genera impacto visual?
+- ¿Se siente profesional?
+- ¿Tiene una buena jerarquía visual?
+- ¿Es coherente con el resto del sistema?
+- ¿Podría formar parte de una plataforma utilizada por miles de usuarios?
+
+Si la respuesta es no, mejorar el diseño antes de continuar.
+
+La prioridad es la calidad del diseño sobre la velocidad de implementación.

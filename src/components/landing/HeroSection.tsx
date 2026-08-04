@@ -1,21 +1,31 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, BarChart3, CalendarDays, MapPin, PlayCircle, Trophy, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  CalendarDays,
+  MapPin,
+  PlayCircle,
+  Trophy,
+  Users,
+} from "lucide-react";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Eyebrow, Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 
 const container: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-  },
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 };
 
 const item: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
 };
 
 type TeamBadgeProps = {
@@ -34,7 +44,7 @@ function TeamBadge({ shortName, name, color, align }: TeamBadgeProps) {
       )}
     >
       <span
-        className="flex size-12 items-center justify-center rounded-full border-2 font-heading text-sm font-bold"
+        className="flex size-12 items-center justify-center rounded-full border-2 font-heading text-sm font-bold transition-transform duration-200 hover:scale-110"
         style={{ backgroundColor: `${color}1f`, borderColor: `${color}66`, color }}
       >
         {shortName}
@@ -48,72 +58,60 @@ function TeamBadge({ shortName, name, color, align }: TeamBadgeProps) {
 
 export function HeroSection() {
   return (
-    <section id="inicio" className="relative overflow-hidden">
+    <section id="inicio" className="relative overflow-hidden pt-28 sm:pt-36 lg:pt-44">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[560px] w-[980px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-72 w-72 translate-x-1/3 translate-y-1/3 rounded-full bg-success/5 blur-3xl" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "repeating-conic-gradient(#fff 0% 0.0002%, transparent 0.0002% 0.02%, transparent 100%)",
+          }}
+        />
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 sm:py-28 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
+      <Container className="relative grid items-center gap-12 py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
         <motion.div
           variants={container}
           initial="hidden"
           animate="show"
-          className="flex max-w-xl flex-col gap-6"
+          className="flex max-w-xl flex-col items-start gap-6"
         >
-          <motion.span
-            variants={item}
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary-300"
-          >
-            <Trophy className="size-3.5" aria-hidden="true" />
-            Temporada 2026
-          </motion.span>
-
-          <motion.h1
-            variants={item}
-            className="font-heading text-4xl font-bold uppercase leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-          >
-            Gestioná tu torneo de fútbol{" "}
-            <span className="text-primary">de forma profesional.</span>
-          </motion.h1>
-
-          <motion.p
-            variants={item}
-            className="text-base leading-relaxed text-muted-foreground sm:text-lg"
-          >
-            La plataforma todo-en-uno para organizar torneos amateur: fixture
-            automático, equipos, resultados y estadísticas en tiempo real, desde
-            un solo lugar.
-          </motion.p>
-
-          <motion.div variants={item} className="flex flex-wrap gap-3">
-            <a
-              href="#cta"
-              className={buttonVariants({
-                size: "lg",
-                className: "h-11 gap-2 bg-primary px-6 text-primary-foreground hover:bg-primary-600",
-              })}
-            >
-              Comenzá gratis
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
-            <a
-              href="#como-funciona"
-              className={buttonVariants({
-                variant: "outline",
-                size: "lg",
-                className: "h-11 gap-2 px-6 text-foreground",
-              })}
-            >
-              <PlayCircle className="size-4 text-primary" aria-hidden="true" />
-              Ver cómo funciona
-            </a>
+          <motion.div variants={item}>
+            <Eyebrow>
+              <Trophy className="size-3.5 text-primary" aria-hidden="true" />
+              Temporada 2026
+            </Eyebrow>
           </motion.div>
 
-          <motion.div
-            variants={item}
-            className="mt-2 flex items-center gap-3"
-          >
+          <motion.div variants={item}>
+            <Typography variant="h1" as="h1">
+              Gestioná tu torneo de fútbol{" "}
+              <span className="text-primary">de forma profesional.</span>
+            </Typography>
+          </motion.div>
+
+          <motion.div variants={item}>
+            <Typography variant="lead">
+              La plataforma todo-en-uno para organizar torneos amateur: fixture
+              automático, equipos, resultados y estadísticas en tiempo real,
+              desde un solo lugar.
+            </Typography>
+          </motion.div>
+
+          <motion.div variants={item} className="flex flex-wrap items-center gap-3 pt-1">
+            <Button variant="gold" size="xl" render={<a href="#cta" />}>
+              Comenzá gratis
+              <ArrowRight className="size-4.5" aria-hidden="true" />
+            </Button>
+            <Button variant="outline" size="xl" render={<a href="#como-funciona" />}>
+              <PlayCircle className="size-4.5 text-primary" aria-hidden="true" />
+              Ver cómo funciona
+            </Button>
+          </motion.div>
+
+          <motion.div variants={item} className="mt-2 flex items-center gap-3">
             <div className="flex -space-x-2" aria-hidden="true">
               {["SM", "AN", "US", "CO"].map((initials, index) => (
                 <span
@@ -131,14 +129,14 @@ export function HeroSection() {
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">320 equipos</span> ya
-              compiten en Tucumán
+              <span className="font-semibold text-foreground">320 equipos</span>{" "}
+              ya compiten en Tucumán
             </p>
           </motion.div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          initial={{ opacity: 0, scale: 0.94, y: 24 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
           className="relative mx-auto w-full max-w-lg"
@@ -148,9 +146,9 @@ export function HeroSection() {
             aria-hidden="true"
           />
 
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-surface-1 shadow-lg shadow-black/40">
+          <Card className="relative overflow-hidden rounded-2xl bg-surface-1 ring-border shadow-lg shadow-black/40">
             <div
-              className="h-2 bg-gradient-to-r from-primary/60 via-primary to-primary/60"
+              className="h-2 bg-gradient-to-r from-primary-600 via-primary to-primary-600"
               aria-hidden="true"
             />
             <div className="flex flex-col gap-5 p-5 sm:p-6">
@@ -159,13 +157,13 @@ export function HeroSection() {
                   <Trophy className="size-4 text-primary" aria-hidden="true" />
                   Tucumán Cup 2026
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-success">
+                <Badge variant="live">
                   <span className="relative flex size-1.5" aria-hidden="true">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
                     <span className="relative inline-flex size-1.5 rounded-full bg-success" />
                   </span>
                   En vivo
-                </span>
+                </Badge>
               </div>
 
               <div className="flex items-center justify-between gap-4">
@@ -176,9 +174,13 @@ export function HeroSection() {
                   align="left"
                 />
                 <div className="flex flex-col items-center gap-1">
-                  <span className="font-heading text-4xl font-bold tabular-nums tracking-tight text-foreground sm:text-5xl">
+                  <Typography
+                    variant="h2"
+                    as="span"
+                    className="text-4xl tabular-nums tracking-tight sm:text-5xl"
+                  >
                     2 : 1
-                  </span>
+                  </Typography>
                   <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                     12’ 2T
                   </span>
@@ -197,12 +199,15 @@ export function HeroSection() {
                   Cancha Central
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <CalendarDays className="size-3.5 text-primary" aria-hidden="true" />
+                  <CalendarDays
+                    className="size-3.5 text-primary"
+                    aria-hidden="true"
+                  />
                   Sáb 09 Ago · 16:00
                 </span>
               </div>
             </div>
-          </div>
+          </Card>
 
           <motion.div
             className="absolute -left-4 top-8 hidden items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 shadow-md shadow-black/30 sm:flex"
@@ -222,7 +227,7 @@ export function HeroSection() {
             <span className="text-xs font-medium text-foreground">Tabla en vivo</span>
           </motion.div>
         </motion.div>
-      </div>
+      </Container>
     </section>
   );
 }

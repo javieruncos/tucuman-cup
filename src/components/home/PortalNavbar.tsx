@@ -10,12 +10,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "Torneos", href: "#torneos" },
-  { label: "Equipos", href: "#caracteristicas" },
-  { label: "Estadísticas", href: "#estadisticas" },
+  { label: "Inicio", href: "#inicio" },
+  { label: "Partidos", href: "#partidos" },
+  { label: "Tabla", href: "#tabla" },
+  { label: "Goleadores", href: "#goleadores" },
+  { label: "Equipos", href: "#equipos" },
+  { label: "Noticias", href: "#noticias" },
 ];
 
-export function LandingNavbar() {
+export function PortalNavbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,6 +38,10 @@ export function LandingNavbar() {
           : "border-b border-transparent bg-transparent"
       )}
     >
+      <div
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+        aria-hidden="true"
+      />
       <Container
         clean
         className={cn(
@@ -42,31 +49,33 @@ export function LandingNavbar() {
           scrolled ? "h-14" : "h-16"
         )}
       >
-        <a href="#inicio" aria-label="Tucumán Cup - Inicio">
+        <a href="#inicio" aria-label="Tucumán Cup - Inicio" className="shrink-0">
           <Logo />
         </a>
 
         <nav
-          className="hidden items-center gap-1 md:flex"
+          className="hidden items-center gap-0.5 md:flex"
           aria-label="Navegación principal"
         >
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-md px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="sm" render={<a href="#cta" />}>
+        <div className="hidden shrink-0 items-center md:flex">
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<a href="#ingresar" />}
+          >
             Ingresar
-          </Button>
-          <Button variant="gold" size="sm" render={<a href="#cta" />}>
-            Acceder
           </Button>
         </div>
 
@@ -108,12 +117,14 @@ export function LandingNavbar() {
                   {link.label}
                 </a>
               ))}
-              <div className="mt-2 flex flex-col gap-2">
-                <Button variant="ghost" size="lg" onClick={() => setOpen(false)}>
+              <div className="mt-2">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => setOpen(false)}
+                >
                   Ingresar
-                </Button>
-                <Button variant="gold" size="lg" onClick={() => setOpen(false)}>
-                  Acceder
                 </Button>
               </div>
             </div>
