@@ -1,38 +1,33 @@
 import { ArrowRight } from "lucide-react";
 
-import { NewsCard } from "@/components/news/NewsCard";
+import { TeamCard } from "@/components/teams/TeamCard";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { news } from "@/lib/mock/portal";
+import { portalTeams } from "@/lib/mock/portal";
 
-export function NewsFeed() {
-  const [featured, ...secondary] = news;
-
+export function TeamsSection() {
   return (
-    <Section id="noticias">
+    <Section id="equipos">
       <Container>
         <SectionHeader
-          eyebrow="Editorial"
-          title="Noticias destacadas"
+          eyebrow="Tournament"
+          title="Equipos participantes"
           align="left"
           action={
             <a
-              href="#noticias"
+              href="#equipos"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-gold"
             >
-              Ver todas
+              Ver todos
               <ArrowRight className="size-4" aria-hidden="true" />
             </a>
           }
         />
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-          <NewsCard article={featured} variant="feature" />
-          <div className="flex flex-col gap-4">
-            {secondary.map((item) => (
-              <NewsCard key={item.id} article={item} variant="compact" />
-            ))}
-          </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {portalTeams.map((team) => (
+            <TeamCard key={team.id} team={team} />
+          ))}
         </div>
       </Container>
     </Section>

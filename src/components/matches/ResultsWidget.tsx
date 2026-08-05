@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 
+import { TeamCrest } from "@/components/shared/TeamCrest";
 import { recentResults } from "@/lib/mock/portal";
 import { cn } from "@/lib/utils";
 
@@ -20,8 +21,11 @@ export function ResultsWidget() {
       </div>
       <ul>
         {recentResults.map((match) => {
-          const homeWon = (match.homeScore ?? 0) > (match.awayScore ?? 0);
-          const awayWon = (match.awayScore ?? 0) > (match.homeScore ?? 0);
+          const homeScore = match.homeScore ?? 0;
+          const awayScore = match.awayScore ?? 0;
+          const homeWon = homeScore > awayScore;
+          const awayWon = awayScore > homeScore;
+          const isDraw = homeScore === awayScore;
           return (
             <li
               key={match.id}
@@ -33,26 +37,31 @@ export function ResultsWidget() {
               <span className="w-16 shrink-0 text-[11px] font-medium text-muted-foreground">
                 {match.date}
               </span>
-              <div className="flex min-w-0 flex-1 items-center justify-end gap-2 text-xs">
+              <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
                 <span
                   className={cn(
-                    "truncate",
-                    homeWon
-                      ? "font-semibold text-foreground"
-                      : "text-muted-foreground"
+                    "truncate text-xs",
+                    homeWon ? "font-semibold text-foreground" : "text-muted-foreground"
                   )}
                 >
                   {match.home.shortName}
                 </span>
-                <span className="rounded-[4px] bg-surface-2 px-1.5 py-0.5 font-heading text-xs font-bold tabular-nums text-foreground">
-                  {match.homeScore}–{match.awayScore}
-                </span>
+                <TeamCrest team={match.home} size="md" />
                 <span
                   className={cn(
-                    "truncate",
-                    awayWon
-                      ? "font-semibold text-foreground"
-                      : "text-muted-foreground"
+                    "shrink-0 rounded-full px-2.5 py-1 font-heading text-xs font-bold tabular-nums",
+                    isDraw
+                      ? "bg-surface-2 text-muted-foreground"
+                      : "bg-primary text-primary-foreground"
+                  )}
+                >
+                  {homeScore}–{awayScore}
+                </span>
+                <TeamCrest team={match.away} size="md" />
+                <span
+                  className={cn(
+                    "truncate text-xs",
+                    awayWon ? "font-semibold text-foreground" : "text-muted-foreground"
                   )}
                 >
                   {match.away.shortName}

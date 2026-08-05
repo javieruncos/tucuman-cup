@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Oswald } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
@@ -17,6 +17,13 @@ export const metadata: Metadata = {
   title: "Tucumán Cup — Gestión profesional de torneos de fútbol",
   description:
     "Plataforma moderna para organizar torneos de fútbol amateur: fixture automático, equipos, estadísticas y resultados en un solo lugar.",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#0a0a0c",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

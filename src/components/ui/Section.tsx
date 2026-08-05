@@ -14,7 +14,7 @@ export function Section({
   return (
     <section
       className={cn(
-        "relative py-12 sm:py-16 overflow-hidden",
+        "relative py-10 sm:py-12 overflow-hidden",
         variant === "alternate" && "bg-surface-1",
         className
       )}

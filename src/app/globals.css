@@ -5,8 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #0b0b0c;
-  --foreground: #ffffff;
+  color-scheme: dark;
+
+  --background: #0a0a0c;
+  --foreground: #f7f8f8;
 
   --surface-1: #111214;
   --surface-2: #18191c;
@@ -15,44 +17,53 @@
   --primary: #f5c542;
   --primary-300: #fde68a;
   --primary-600: #eab308;
-  --primary-foreground: #0b0b0c;
+  --primary-foreground: #0a0a0c;
+
+  /* Premium gold */
+  --gold: #f5c542;
+  --gold-muted: rgba(245, 197, 66, 0.12);
+  --elevated: #202024;
+  --live: #ff4d4d;
 
   --football-green: #22c55e;
-  --success: #10b981;
+  --success: #22c55e;
+  --success-foreground: #0a0a0c;
   --warning: #f59e0b;
   --danger: #ef4444;
   --info: #3b82f6;
 
-  --card: #111214;
-  --card-foreground: #ffffff;
-  --popover: #18191c;
-  --popover-foreground: #ffffff;
-  --secondary: #18191c;
-  --secondary-foreground: #ffffff;
-  --muted: #111214;
-  --muted-foreground: #a1a1aa;
+  --card: #17171a;
+  --card-foreground: #f7f8f8;
+  --popover: #17171a;
+  --popover-foreground: #f7f8f8;
+  --secondary: #f7f8f8;
+  --secondary-foreground: #0a0a0c;
+  --muted: #232326;
+  --muted-foreground: #9a9aa3;
   --text-muted: #71717a;
-  --accent: #202226;
-  --accent-foreground: #ffffff;
+  --accent: #232326;
+  --accent-foreground: #f7f8f8;
   --destructive: #ef4444;
 
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #f5c542;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(245, 197, 66, 0.55);
 
-  --radius: 0.75rem;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-  --radius-3xl: 40px;
-  --radius-4xl: 48px;
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 .dark {
-  --background: #0b0b0c;
-  --foreground: #ffffff;
+  color-scheme: dark;
+
+  --background: #0a0a0c;
+  --foreground: #f7f8f8;
 
   --surface-1: #111214;
   --surface-2: #18191c;
@@ -61,39 +72,45 @@
   --primary: #f5c542;
   --primary-300: #fde68a;
   --primary-600: #eab308;
-  --primary-foreground: #0b0b0c;
+  --primary-foreground: #0a0a0c;
+
+  --gold: #f5c542;
+  --gold-muted: rgba(245, 197, 66, 0.12);
+  --elevated: #202024;
+  --live: #ff4d4d;
 
   --football-green: #22c55e;
-  --success: #10b981;
+  --success: #22c55e;
+  --success-foreground: #0a0a0c;
   --warning: #f59e0b;
   --danger: #ef4444;
   --info: #3b82f6;
 
-  --card: #111214;
-  --card-foreground: #ffffff;
-  --popover: #18191c;
-  --popover-foreground: #ffffff;
-  --secondary: #18191c;
-  --secondary-foreground: #ffffff;
-  --muted: #111214;
-  --muted-foreground: #a1a1aa;
+  --card: #17171a;
+  --card-foreground: #f7f8f8;
+  --popover: #17171a;
+  --popover-foreground: #f7f8f8;
+  --secondary: #f7f8f8;
+  --secondary-foreground: #0a0a0c;
+  --muted: #232326;
+  --muted-foreground: #9a9aa3;
   --text-muted: #71717a;
-  --accent: #202226;
-  --accent-foreground: #ffffff;
+  --accent: #232326;
+  --accent-foreground: #f7f8f8;
   --destructive: #ef4444;
 
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #f5c542;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(245, 197, 66, 0.55);
 
-  --radius: 0.75rem;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-  --radius-3xl: 40px;
-  --radius-4xl: 48px;
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @theme inline {
@@ -109,8 +126,14 @@
   --color-primary-600: var(--primary-600);
   --color-primary-foreground: var(--primary-foreground);
 
+  --color-gold: var(--gold);
+  --color-gold-muted: var(--gold-muted);
+  --color-elevated: var(--elevated);
+  --color-live: var(--live);
+
   --color-football-green: var(--football-green);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-info: var(--info);
@@ -134,6 +157,7 @@
 
   --font-sans: var(--font-inter);
   --font-heading: var(--font-oswald);
+  --font-display: var(--font-oswald);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --radius-sm: var(--radius-sm);
@@ -156,61 +180,72 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+  ::selection {
+    background: rgba(245, 197, 66, 0.3);
   }
 }
 
-/* Estadio de noche — capas atmosféricas globales */
-body {
-  background-color: #0b0b0c;
-  background-image: linear-gradient(180deg, #0e0e11 0%, #0a0a0c 46%, #060607 100%);
+@layer utilities {
+  .font-display {
+    font-family: var(--font-oswald);
+  }
+  .text-gold {
+    color: var(--gold);
+  }
+  .bg-gold {
+    background-color: var(--gold);
+  }
+  /* Atmósfera de estadio de noche */
+  .stadium-glow {
+    background:
+      radial-gradient(60% 55% at 50% -10%, rgba(245, 197, 66, 0.1), transparent 70%),
+      radial-gradient(40% 40% at 100% 0%, rgba(59, 130, 246, 0.08), transparent 70%);
+  }
+  .field-lines {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(
-      85% 65% at 50% -12%,
-      rgba(245, 197, 66, 0.08),
-      transparent 62%
-    ),
-    radial-gradient(
-      45% 34% at 76% 6%,
-      rgba(245, 197, 66, 0.05),
-      transparent 58%
-    ),
-    radial-gradient(
-      45% 34% at 24% 6%,
-      rgba(245, 197, 66, 0.05),
-      transparent 58%
-    ),
-    radial-gradient(
-      70% 46% at 50% 22%,
-      rgba(245, 197, 66, 0.04),
-      transparent 62%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.016) 0 1px,
-      transparent 1px 96px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.016) 0 1px,
-      transparent 1px 96px
-    ),
-    radial-gradient(
-      ellipse at 50% 50%,
-      transparent 42%,
-      rgba(0, 0, 0, 0.55) 100%
-    );
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.82); }
+}
+.animate-live-pulse {
+  animation: live-pulse 1.4s ease-in-out infinite;
 }
 
-@utility text-glow-gold {
-  text-shadow:
-    0 0 32px rgba(245, 197, 66, 0.35),
-    0 0 64px rgba(245, 197, 66, 0.18);
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker-scroll 40s linear infinite;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+@keyframes score-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-score-pop {
+  animation: score-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

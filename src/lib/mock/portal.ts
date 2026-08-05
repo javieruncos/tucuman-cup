@@ -5,6 +5,7 @@ export type Team = {
   name: string;
   shortName: string;
   city: string;
+  founded: number;
   color: string;
   form?: Array<"W" | "D" | "L">;
 };
@@ -59,6 +60,7 @@ export type TopScorer = {
   id: string;
   name: string;
   team: Team;
+  position?: string;
   goals: number;
   assists: number;
 };
@@ -69,16 +71,18 @@ export type NewsItem = {
   excerpt: string;
   category: string;
   date: string;
+  author?: string;
+  readTime?: string;
   team?: Team;
 };
 
 export const portalTeams: Team[] = [
-  { id: "t1", name: "San Martín", shortName: "SM", city: "San Miguel de Tucumán", color: "#f5c542", form: ["W", "W", "D", "W", "W"] },
-  { id: "t2", name: "Atlético Norte", shortName: "AN", city: "San Miguel de Tucumán", color: "#ef4444", form: ["W", "D", "W", "W", "L"] },
-  { id: "t3", name: "Unión Sur", shortName: "US", city: "Tafí Viejo", color: "#3b82f6", form: ["D", "L", "W", "D", "L"] },
-  { id: "t4", name: "Central Oeste", shortName: "CO", city: "Concepción", color: "#22c55e", form: ["L", "D", "L", "D", "D"] },
-  { id: "t5", name: "River Yerba Buena", shortName: "RY", city: "Yerba Buena", color: "#a855f7", form: ["W", "W", "L", "W", "D"] },
-  { id: "t6", name: "Racing Monteros", shortName: "RM", city: "Monteros", color: "#f59e0b", form: ["L", "W", "W", "L", "L"] },
+  { id: "t1", name: "San Martín", shortName: "SM", city: "San Miguel de Tucumán", founded: 1909, color: "#f5c542", form: ["W", "W", "D", "W", "W"] },
+  { id: "t2", name: "Atlético Norte", shortName: "AN", city: "San Miguel de Tucumán", founded: 1915, color: "#ef4444", form: ["W", "D", "W", "W", "L"] },
+  { id: "t3", name: "Unión Sur", shortName: "US", city: "Tafí Viejo", founded: 1923, color: "#3b82f6", form: ["D", "L", "W", "D", "L"] },
+  { id: "t4", name: "Central Oeste", shortName: "CO", city: "Concepción", founded: 1918, color: "#22c55e", form: ["L", "D", "L", "D", "D"] },
+  { id: "t5", name: "River Yerba Buena", shortName: "RY", city: "Yerba Buena", founded: 1946, color: "#a855f7", form: ["W", "W", "L", "W", "D"] },
+  { id: "t6", name: "Racing Monteros", shortName: "RM", city: "Monteros", founded: 1937, color: "#f59e0b", form: ["L", "W", "W", "L", "L"] },
 ];
 
 export const featuredMatch: Match = {
@@ -221,11 +225,11 @@ export const standings: StandingRow[] = [
 ];
 
 export const topScorers: TopScorer[] = [
-  { id: "sc1", name: "L. Aguirre", team: portalTeams[0], goals: 11, assists: 4 },
-  { id: "sc2", name: "M. Peralta", team: portalTeams[1], goals: 9, assists: 6 },
-  { id: "sc3", name: "F. Roldán", team: portalTeams[4], goals: 8, assists: 2 },
-  { id: "sc4", name: "J. Herrera", team: portalTeams[0], goals: 7, assists: 5 },
-  { id: "sc5", name: "S. Bravo", team: portalTeams[5], goals: 6, assists: 3 },
+  { id: "sc1", name: "L. Aguirre", team: portalTeams[0], position: "Delantero", goals: 11, assists: 4 },
+  { id: "sc2", name: "M. Peralta", team: portalTeams[1], position: "Extremo", goals: 9, assists: 6 },
+  { id: "sc3", name: "F. Roldán", team: portalTeams[4], position: "Delantero", goals: 8, assists: 2 },
+  { id: "sc4", name: "J. Herrera", team: portalTeams[0], position: "Mediocampista", goals: 7, assists: 5 },
+  { id: "sc5", name: "S. Bravo", team: portalTeams[5], position: "Delantero", goals: 6, assists: 3 },
 ];
 
 export const news: NewsItem[] = [
@@ -235,6 +239,8 @@ export const news: NewsItem[] = [
     excerpt: "Con goles de Aguirre y Herrera, el puntero estira su ventaja en la Fecha 12.",
     category: "Resultados",
     date: "Hace 25 min",
+    author: "Camila Reyes",
+    readTime: "4 min",
     team: portalTeams[0],
   },
   {
@@ -243,6 +249,8 @@ export const news: NewsItem[] = [
     excerpt: "Un gol de Bravo en tiempo de descuento define un partido caliente en Cancha Central.",
     category: "Resumen",
     date: "Hace 2 h",
+    author: "Martín Ferreyra",
+    readTime: "3 min",
     team: portalTeams[5],
   },
   {
@@ -251,6 +259,8 @@ export const news: NewsItem[] = [
     excerpt: "El empate mantiene la mitad baja de la tabla al rojo vivo de cara a las últimas fechas.",
     category: "Crónica",
     date: "Ayer",
+    author: "Lucía Domínguez",
+    readTime: "5 min",
     team: portalTeams[2],
   },
 ];
@@ -263,3 +273,19 @@ export const matchStatusMeta: Record<
   scheduled: { label: "Próximo", variant: "default" },
   finished: { label: "Finalizado", variant: "outline" },
 };
+
+export type Sponsor = {
+  id: string;
+  name: string;
+  logo?: string;
+  url?: string;
+};
+
+export const sponsors: Sponsor[] = [
+  { id: "sp1", name: "AeroNorte" },
+  { id: "sp2", name: "Banco del Tucumán" },
+  { id: "sp3", name: "Ingenio La Trinidad" },
+  { id: "sp4", name: "Cerro Azul" },
+  { id: "sp5", name: "Norte Sports" },
+  { id: "sp6", name: "Grupo Andino" },
+];

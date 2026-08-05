@@ -1,0 +1,56 @@
+import { TeamCrest } from "@/components/shared/TeamCrest";
+import { standings, type Team } from "@/lib/mock/portal";
+
+export function TeamCard({ team }: { team: Team }) {
+  const standing = standings.find((row) => row.team.id === team.id);
+
+  return (
+    <a
+      href="#equipos"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-colors hover:border-gold/40"
+    >
+      <div
+        className="pointer-events-none absolute -right-6 -top-6 size-28 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40"
+        style={{ background: team.color }}
+        aria-hidden="true"
+      />
+      <div className="relative flex items-center gap-3">
+        <TeamCrest team={team} size={52} />
+        <div className="min-w-0">
+          <p className="font-display truncate text-lg font-semibold uppercase leading-tight tracking-wide">
+            {team.name}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Est. {team.founded} · {team.city}
+          </p>
+        </div>
+      </div>
+      <div className="relative mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-center">
+        <div>
+          <p className="tabular font-display text-xl font-bold">
+            {standing?.points ?? 0}
+          </p>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Pts
+          </p>
+        </div>
+        <div>
+          <p className="tabular font-display text-xl font-bold">
+            {standing?.won ?? 0}
+          </p>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Ganados
+          </p>
+        </div>
+        <div>
+          <p className="tabular font-display text-xl font-bold text-gold">
+            {standing?.gf ?? 0}
+          </p>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Goles
+          </p>
+        </div>
+      </div>
+    </a>
+  );
+}
