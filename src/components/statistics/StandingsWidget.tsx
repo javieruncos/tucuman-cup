@@ -28,7 +28,11 @@ function FormTiles({ form }: { form?: Array<"W" | "D" | "L"> }) {
   );
 }
 
-export function StandingsWidget() {
+export function StandingsWidget({
+  getTeamHref = (id: string) => `/teams/${id}`,
+}: {
+  getTeamHref?: (id: string) => string;
+}) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="overflow-x-auto">
@@ -77,7 +81,7 @@ export function StandingsWidget() {
                   </td>
                   <td className="px-2 py-3">
                     <a
-                      href="#estadisticas"
+                      href={getTeamHref(row.team.id)}
                       className="flex items-center gap-2.5 hover:text-gold"
                     >
                       <TeamCrest team={row.team} size={26} />

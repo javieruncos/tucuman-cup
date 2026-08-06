@@ -175,8 +175,10 @@
   }
   html {
     @apply font-sans;
-    scroll-behavior: smooth;
     scroll-padding-top: 5rem;
+  }
+  html[data-scroll-behavior="smooth"] {
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

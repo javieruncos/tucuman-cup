@@ -26,7 +26,7 @@ export function StatsSection() {
                 </a>
               }
             />
-            <StandingsWidget />
+            <StandingsWidget getTeamHref={() => "#estadisticas"} />
           </div>
           <div>
             <SectionHeader

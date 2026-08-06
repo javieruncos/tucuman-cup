@@ -215,6 +215,12 @@ export const upcomingMatches: Match[] = [
   },
 ];
 
+export const matches: Match[] = [
+  featuredMatch,
+  ...recentResults,
+  ...upcomingMatches,
+];
+
 export const standings: StandingRow[] = [
   { id: "s1", position: 1, team: portalTeams[0], played: 12, won: 9, drawn: 2, lost: 1, gf: 28, ga: 12, gd: 16, points: 29 },
   { id: "s2", position: 2, team: portalTeams[1], played: 12, won: 8, drawn: 3, lost: 1, gf: 24, ga: 11, gd: 13, points: 27 },

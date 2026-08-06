@@ -1,3 +1,4 @@
+import { Footer } from "@/components/ui/Footer";
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { TickerBar } from "@/components/home/TickerBar";
 import { MatchCenter } from "@/components/home/MatchCenter";
@@ -11,7 +12,7 @@ export default function Home() {
   return (
     <>
       <PortalNavbar />
-      <main className="flex-1 pt-16">
+      <main className="flex-1">
         <TickerBar />
         <MatchCenter />
         <UpcomingMatches />
@@ -20,6 +21,7 @@ export default function Home() {
         <TeamsSection />
         <SponsorsSection />
       </main>
+      <Footer />
     </>
   );
 }

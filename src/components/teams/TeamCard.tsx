@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { standings, type Team } from "@/lib/mock/portal";
 
@@ -5,8 +7,8 @@ export function TeamCard({ team }: { team: Team }) {
   const standing = standings.find((row) => row.team.id === team.id);
 
   return (
-    <a
-      href="#equipos"
+    <Link
+      href={`/teams/${team.id}`}
       className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-colors hover:border-gold/40"
     >
       <div
@@ -51,6 +53,6 @@ export function TeamCard({ team }: { team: Team }) {
           </p>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
