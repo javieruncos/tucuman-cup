@@ -44,7 +44,7 @@ export function Footer() {
     <footer className="mt-24 border-t border-border bg-card/40">
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-6">
-          <div className="lg:col-span-2">
+          <div className="flex flex-col items-center text-center md:col-span-2 lg:col-span-2 sm:items-start sm:text-left">
             <div className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 place-items-center rounded-md bg-gold text-primary-foreground">
                 <span className="font-display text-lg font-bold">TC</span>
@@ -59,11 +59,11 @@ export function Footer() {
             </p>
           </div>
           {groups.map((group) => (
-            <div key={group.title}>
+            <div key={group.title} className="text-center sm:text-left">
               <h4 className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 {group.title}
               </h4>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-4 space-y-3 sm:space-y-2.5">
                 {group.links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -78,12 +78,12 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 sm:flex-row sm:items-center">
-          <p className="text-xs text-muted-foreground">
+        <div className="mt-12 flex flex-col items-center gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-center text-xs text-muted-foreground sm:text-left">
             © 2026 Tucumán Cup. Un concepto de producto demo. No afiliado a
             ninguna liga real.
           </p>
-          <div className="flex gap-5 text-xs text-muted-foreground">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground sm:justify-start">
             <Link href="/info" className="hover:text-foreground">
               Privacidad
             </Link>

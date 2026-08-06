@@ -11,7 +11,7 @@ export function StatsSection() {
     <Section id="estadisticas">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
-          <div>
+          <div className="min-w-0">
             <SectionHeader
               eyebrow="Tabla"
               title="Posiciones"
@@ -28,7 +28,7 @@ export function StatsSection() {
             />
             <StandingsWidget getTeamHref={() => "#estadisticas"} />
           </div>
-          <div>
+          <div className="min-w-0">
             <SectionHeader
               eyebrow="Bota de oro"
               title="Goleadores"

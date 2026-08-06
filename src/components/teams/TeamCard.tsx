@@ -16,9 +16,9 @@ export function TeamCard({ team }: { team: Team }) {
         style={{ background: team.color }}
         aria-hidden="true"
       />
-      <div className="relative flex items-center gap-3">
+      <div className="relative mb-auto flex flex-col items-center gap-3 lg:flex-row">
         <TeamCrest team={team} size={52} />
-        <div className="min-w-0">
+        <div className="min-w-0 text-center lg:text-left">
           <p className="font-display truncate text-lg font-semibold uppercase leading-tight tracking-wide">
             {team.name}
           </p>

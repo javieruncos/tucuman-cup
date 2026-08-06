@@ -73,7 +73,10 @@ export function NewsCard({
       )}
     >
       <div
-        className="relative grid h-24 w-full shrink-0 place-items-center overflow-hidden rounded-md sm:h-20 sm:w-28"
+        className={cn(
+          "relative grid h-24 shrink-0 place-items-center overflow-hidden rounded-md sm:h-20 sm:w-28",
+          variant === "compact" ? "w-24" : "w-full"
+        )}
         style={{
           background: team
             ? `linear-gradient(135deg, ${team.color}55, var(--elevated))`

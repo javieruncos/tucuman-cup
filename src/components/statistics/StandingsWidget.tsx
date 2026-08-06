@@ -35,8 +35,8 @@ export function StandingsWidget({
 }) {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] border-collapse text-sm">
+      <div className="overflow-x-auto overscroll-x-contain">
+        <table className="w-full min-w-[540px] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
               <th className="px-4 py-3 text-left font-medium">#</th>

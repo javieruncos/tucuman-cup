@@ -29,7 +29,7 @@ export function NewsFeed() {
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <NewsCard article={featured} variant="feature" />
           <div className="flex flex-col gap-4">
-            {secondary.map((item) => (
+            {secondary.slice(0, 4).map((item) => (
               <NewsCard key={item.id} article={item} variant="compact" />
             ))}
           </div>

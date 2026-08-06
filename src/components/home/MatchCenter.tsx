@@ -219,7 +219,7 @@ export function MatchCenter() {
                     className="flex items-center gap-3 bg-card px-4 py-3"
                   >
                     <fact.icon className="size-4 shrink-0 text-gold" aria-hidden="true" />
-                    <dt className="w-20 text-xs uppercase tracking-wide text-muted-foreground">
+                    <dt className="w-16 text-xs uppercase tracking-wide text-muted-foreground sm:w-20">
                       {fact.label}
                     </dt>
                     <dd className="ml-auto text-right text-sm font-medium">
@@ -275,7 +275,8 @@ export function MatchCenter() {
 
               <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-8 sm:gap-8 sm:px-8 sm:py-10">
                 <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamCrest team={home} size={112} className="lg:hidden" />
+                  <TeamCrest team={home} size={64} className="sm:hidden" />
+                  <TeamCrest team={home} size={112} className="hidden sm:inline-flex lg:hidden" />
                   <TeamCrest team={home} size={128} className="hidden lg:inline-flex" />
                   <div>
                     <p className="font-display text-base font-semibold uppercase leading-tight tracking-wide sm:text-xl">
@@ -289,13 +290,13 @@ export function MatchCenter() {
 
                 <div className="flex flex-col items-center gap-3">
                   <div className="flex items-center gap-2.5 sm:gap-4">
-                    <span className="animate-score-pop font-display text-6xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
+                    <span className="animate-score-pop font-display text-5xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
                       {match.homeScore}
                     </span>
                     <span className="font-display text-3xl font-light text-muted-foreground sm:text-4xl">
                       :
                     </span>
-                    <span className="animate-score-pop font-display text-6xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
+                    <span className="animate-score-pop font-display text-5xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
                       {match.awayScore}
                     </span>
                   </div>
@@ -309,7 +310,8 @@ export function MatchCenter() {
                 </div>
 
                 <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamCrest team={away} size={112} className="lg:hidden" />
+                  <TeamCrest team={away} size={64} className="sm:hidden" />
+                  <TeamCrest team={away} size={112} className="hidden sm:inline-flex lg:hidden" />
                   <TeamCrest team={away} size={128} className="hidden lg:inline-flex" />
                   <div>
                     <p className="font-display text-base font-semibold uppercase leading-tight tracking-wide sm:text-xl">

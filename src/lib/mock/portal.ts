@@ -243,7 +243,7 @@ export const news: NewsItem[] = [
     id: "n1",
     title: "San Martín 2 Atlético Norte 1: el líder no se detiene",
     excerpt: "Con goles de Aguirre y Herrera, el puntero estira su ventaja en la Fecha 12.",
-    category: "Resultados",
+    category: "Partidos",
     date: "Hace 25 min",
     author: "Camila Reyes",
     readTime: "4 min",
@@ -253,7 +253,7 @@ export const news: NewsItem[] = [
     id: "n2",
     title: "Racing Monteros da la sorpresa y frena la racha de River YB",
     excerpt: "Un gol de Bravo en tiempo de descuento define un partido caliente en Cancha Central.",
-    category: "Resumen",
+    category: "Partidos",
     date: "Hace 2 h",
     author: "Martín Ferreyra",
     readTime: "3 min",
@@ -263,11 +263,70 @@ export const news: NewsItem[] = [
     id: "n3",
     title: "Unión Sur y Central Oeste reparten puntos en un clásico parejo",
     excerpt: "El empate mantiene la mitad baja de la tabla al rojo vivo de cara a las últimas fechas.",
-    category: "Crónica",
+    category: "Partidos",
     date: "Ayer",
     author: "Lucía Domínguez",
     readTime: "5 min",
     team: portalTeams[2],
+  },
+  {
+    id: "n4",
+    title: "El mercado de invierno: los refuerzos que buscan inclinar los play-offs",
+    excerpt: "Delegados de los seis clubes anticipan movimientos de última hora antes del cierre del pase.",
+    category: "Transferencias",
+    date: "Hace 5 h",
+    author: "Martín Ferreyra",
+    readTime: "6 min",
+  },
+  {
+    id: "n5",
+    title: "DT del líder: \"La base está, nos falta dar el último paso\"",
+    excerpt: "El técnico de San Martín repasa la Fecha 12 y proyecta el tramo final de la temporada.",
+    category: "Entrevistas",
+    date: "Hace 8 h",
+    author: "Camila Reyes",
+    readTime: "7 min",
+    team: portalTeams[0],
+  },
+  {
+    id: "n6",
+    title: "Detrás de escena: así prepara el puntero las definiciones",
+    excerpt: "Un viaje a la concentración de San Martín para ver cómo construye su camino a la final.",
+    category: "Equipos",
+    date: "Ayer",
+    author: "Lucía Domínguez",
+    readTime: "5 min",
+    team: portalTeams[0],
+  },
+  {
+    id: "n7",
+    title: "L. Aguirre, la máquina de goles que define la temporada",
+    excerpt: "El goleador del torneo ya lleva once tantos y sueña con el récord absoluto de la Tucumán Cup.",
+    category: "Jugadores",
+    date: "Hace 1 día",
+    author: "Camila Reyes",
+    readTime: "4 min",
+    team: portalTeams[0],
+  },
+  {
+    id: "n8",
+    title: "Racing Monteros tiene ofertas por Bravo de cara a la próxima edición",
+    excerpt: "El interés de clubes de la región pone en vilo la continuidad de su goleador.",
+    category: "Transferencias",
+    date: "Hace 1 día",
+    author: "Martín Ferreyra",
+    readTime: "3 min",
+    team: portalTeams[5],
+  },
+  {
+    id: "n9",
+    title: "Racing Monteros sorprende: \"Nuestro objetivo es la semifinal\"",
+    excerpt: "Tras frenar la racha de River YB, el plantel sueña con un cierre de temporada histórico.",
+    category: "Entrevistas",
+    date: "Hace 2 días",
+    author: "Lucía Domínguez",
+    readTime: "5 min",
+    team: portalTeams[5],
   },
 ];
 
@@ -295,3 +354,17 @@ export const sponsors: Sponsor[] = [
   { id: "sp5", name: "Norte Sports" },
   { id: "sp6", name: "Grupo Andino" },
 ];
+
+export type TournamentInfo = {
+  teamsCount: number;
+  matchesPlayed: number;
+  goalsScored: number;
+  avgGoals: number;
+};
+
+export const tournamentInfo: TournamentInfo = {
+  teamsCount: 6,
+  matchesPlayed: 36,
+  goalsScored: 117,
+  avgGoals: 3.25,
+};
