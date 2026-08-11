@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useTeam } from "@/hooks/useTeam";
 import { use } from "react";
+import { TeamDetailSkeleton } from "@/components/teams/TeamDetailSkeleton";
 
 const formTile: Record<"W" | "D" | "L", string> = {
   W: "bg-success text-success-foreground",
@@ -55,113 +56,110 @@ export default function TeamDetailPage({
   const { id } = use(params);
   const { data: team, isLoading, error } = useTeam(id);
 
-  if (isLoading) {
-    return <div>Cargando equipo...</div>;
-  }
-
-  if (error || !team) {
-    return <div>Equipo no encontrado</div>;
-  }
-
 
   return (
     <>
       <PortalNavbar />
-      <main className="flex-1">
-        <section className="relative overflow-hidden border-b border-border bg-card/40">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-25"
-            style={{
-              background: `radial-gradient(120% 90% at 15% 0%, ${team.color}55 0%, transparent 60%)`,
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="stadium-glow pointer-events-none absolute inset-0"
-            aria-hidden="true"
-          />
-          <Container className="relative py-10 sm:py-14">
-            <Link
-              href="/teams"
-              className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="size-4" />
-              Equipos
-            </Link>
-            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-              <TeamCrest team={team} size={88} />
-              <div className="min-w-0">
-                <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-                  {team.city}
-                </p>
-                <h1 className="font-display mt-2 text-4xl font-bold uppercase tracking-tight text-foreground md:text-6xl">
-                  {team.name}
-                </h1>
-                <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                  <span className="inline-flex items-center gap-2">
-                    <Trophy className="size-4 text-primary" aria-hidden="true" />
-                    Est. {team.founded} · {team.city}
-                  </span>
-                  {/* {standing && (
+      {isLoading ? (
+        <TeamDetailSkeleton />
+      ) : error || !team ? (
+        <div>Equipo no encontrado</div>
+      ) : (
+        <main className="flex-1">
+          <section className="relative overflow-hidden border-b border-border bg-card/40">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-25"
+              style={{
+                background: `radial-gradient(120% 90% at 15% 0%, ${team.color}55 0%, transparent 60%)`,
+              }}
+              aria-hidden="true"
+            />
+            <div
+              className="stadium-glow pointer-events-none absolute inset-0"
+              aria-hidden="true"
+            />
+            <Container className="relative py-10 sm:py-14">
+              <Link
+                href="/teams"
+                className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeft className="size-4" />
+                Equipos
+              </Link>
+              <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
+                <TeamCrest team={team} size={88} />
+                <div className="min-w-0">
+                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
+                    {team.city}
+                  </p>
+                  <h1 className="font-display mt-2 text-4xl font-bold uppercase tracking-tight text-foreground md:text-6xl">
+                    {team.name}
+                  </h1>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <Trophy className="size-4 text-primary" aria-hidden="true" />
+                      Est. {team.founded} · {team.city}
+                    </span>
+                    {/* {standing && (
                     <span className="font-semibold text-foreground">
                       #{standing.position} en la tabla
                     </span>
                   )} */}
+                    <FormTiles form={team.form} />
+                  </div>
+                </div>
+              </div>
+            </Container>
+          </section>
+
+          <Container className="py-10">
+            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-4">
+              <div className="bg-card p-5">
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Fundación
+                </p>
+                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
+                  {team.founded}
+                </p>
+              </div>
+              <div className="bg-card p-5">
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Ciudad
+                </p>
+                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
+                  {team.city}
+                </p>
+              </div>
+              <div className="bg-card p-5">
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Posición
+                </p>
+                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
+                  {/* {standing ? `#${standing.position}` : "—"} */}
+                </p>
+              </div>
+              <div className="bg-card p-5">
+                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  Forma
+                </p>
+                <div className="mt-3">
                   <FormTiles form={team.form} />
                 </div>
               </div>
             </div>
-          </Container>
-        </section>
 
-        <Container className="py-10">
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-4">
-            <div className="bg-card p-5">
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                Fundación
-              </p>
-              <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                {team.founded}
-              </p>
-            </div>
-            <div className="bg-card p-5">
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                Ciudad
-              </p>
-              <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                {team.city}
-              </p>
-            </div>
-            <div className="bg-card p-5">
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                Posición
-              </p>
-              <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                {/* {standing ? `#${standing.position}` : "—"} */}
-              </p>
-            </div>
-            <div className="bg-card p-5">
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                Forma
-              </p>
-              <div className="mt-3">
-                <FormTiles form={team.form} />
-              </div>
-            </div>
-          </div>
-
-          <section className="mt-12">
-            <SectionHeader align="left" eyebrow="Números" title="Estadísticas" />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
-              <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Puntos
-                </p>
-                <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                  {/* {standing?.points ?? 0} */}
-                </p>
-              </div>
-              {/* {stats.map((s) => (
+            <section className="mt-12">
+              <SectionHeader align="left" eyebrow="Números" title="Estadísticas" />
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    Puntos
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {/* {standing?.points ?? 0} */}
+                  </p>
+                </div>
+                {/* {stats.map((s) => (
                 <div
                   key={s.label}
                   className="rounded-xl border border-border bg-card p-5 text-center"
@@ -174,25 +172,25 @@ export default function TeamDetailPage({
                   </p>
                 </div>
               ))} */}
-            </div>
-          </section>
+              </div>
+            </section>
 
-          <section className="mt-12">
-            <SectionHeader
-              align="left"
-              eyebrow="Calendario"
-              title="Próximos partidos"
-              action={
-                <Link
-                  href="/fixtures"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
-                >
-                  Ver fixture
-                  <ArrowRight className="size-3.5" aria-hidden="true" />
-                </Link>
-              }
-            />
-            {/* {upcoming.length > 0 ? (
+            <section className="mt-12">
+              <SectionHeader
+                align="left"
+                eyebrow="Calendario"
+                title="Próximos partidos"
+                action={
+                  <Link
+                    href="/fixtures"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
+                  >
+                    Ver fixture
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </Link>
+                }
+              />
+              {/* {upcoming.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {upcoming.map((m) => (
                   <MatchCard key={m.id} match={m} href={`/match/${m.id}`} />
@@ -208,24 +206,24 @@ export default function TeamDetailPage({
                 </p>
               </div>
             )} */}
-          </section>
+            </section>
 
-          <section className="mt-12">
-            <SectionHeader
-              align="left"
-              eyebrow="Historial"
-              title="Resultados recientes"
-              action={
-                <Link
-                  href="/fixtures"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
-                >
-                  Ver resultados
-                  <ArrowRight className="size-3.5" aria-hidden="true" />
-                </Link>
-              }
-            />
-            {/* {recent.length > 0 ? (
+            <section className="mt-12">
+              <SectionHeader
+                align="left"
+                eyebrow="Historial"
+                title="Resultados recientes"
+                action={
+                  <Link
+                    href="/fixtures"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
+                  >
+                    Ver resultados
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </Link>
+                }
+              />
+              {/* {recent.length > 0 ? (
               <ul className="overflow-hidden rounded-xl border border-border bg-card">
                 {recent.map((m) => {
                   const homeScore = m.homeScore ?? 0;
@@ -292,9 +290,10 @@ export default function TeamDetailPage({
                 </p>
               </div>
             )} */}
-          </section>
-        </Container>
-      </main>
+            </section>
+          </Container>
+        </main>
+      )}
       <Footer />
     </>
   );
