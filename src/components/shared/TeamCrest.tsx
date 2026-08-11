@@ -1,4 +1,4 @@
-import type { Team } from "@/lib/mock/portal";
+import type { Team } from "@/types/teams";
 import { cn } from "@/lib/utils";
 
 interface TeamCrestProps {
@@ -25,14 +25,14 @@ export function TeamCrest({ team, size = "lg", className }: TeamCrestProps) {
     >
       <svg width={px} height={px} viewBox="0 0 48 48" fill="none">
         <defs>
-          <linearGradient id={`crest-${team.id}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`crest-${team._id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={team.color} stopOpacity="0.95" />
             <stop offset="100%" stopColor={team.color} stopOpacity="0.55" />
           </linearGradient>
         </defs>
         <path
           d="M24 2 6 8v16c0 11 8 18 18 22 10-4 18-11 18-22V8L24 2Z"
-          fill={`url(#crest-${team.id})`}
+          fill={`url(#crest-${team._id})`}
           stroke="rgba(255,255,255,0.28)"
           strokeWidth="1.2"
         />

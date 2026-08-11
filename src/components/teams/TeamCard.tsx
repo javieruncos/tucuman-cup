@@ -1,14 +1,15 @@
 import Link from "next/link";
 
 import { TeamCrest } from "@/components/shared/TeamCrest";
-import { standings, type Team } from "@/lib/mock/portal";
+import type { Team } from "@/types/teams";
+import { standings } from "@/lib/mock/portal";
 
 export function TeamCard({ team }: { team: Team }) {
-  const standing = standings.find((row) => row.team.id === team.id);
+  const standing = standings.find((row) => row.team.id === team._id);
 
   return (
     <Link
-      href={`/teams/${team.id}`}
+      href={`/teams/${team._id}`}
       className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-colors hover:border-gold/40"
     >
       <div
