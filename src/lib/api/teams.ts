@@ -13,3 +13,16 @@ export const fetchTeams = async (): Promise<Team[]> => {
         throw error;
     }
 }
+
+
+export const fetchTeamId = async (id: string) => {
+  const response = await fetch(`/api/teams/${id}`);
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error fetching team");
+  }
+
+  return data.data;
+};

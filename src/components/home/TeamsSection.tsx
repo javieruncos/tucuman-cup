@@ -4,7 +4,7 @@ import { TeamCard } from "@/components/teams/TeamCard";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { portalTeams } from "@/lib/mock/portal";
+import { TeamsList } from "../teams/TeamsList";
 
 export function TeamsSection() {
   return (
@@ -25,9 +25,7 @@ export function TeamsSection() {
           }
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {portalTeams.map((team) => (
-            <TeamCard key={team.id} team={team} />
-          ))}
+          <TeamsList></TeamsList>
         </div>
       </Container>
     </Section>

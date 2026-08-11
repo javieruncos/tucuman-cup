@@ -20,3 +20,13 @@ export const createTeam = async (team: TeamType) => {
         return null;
     }
 }
+
+export const getTeamById = async (id:string)=>{
+   try {
+     const response = await Team.findById(id)
+     return response
+   } catch (error) {
+     console.log("Error al obtener equipo")
+     throw  error
+   }
+}

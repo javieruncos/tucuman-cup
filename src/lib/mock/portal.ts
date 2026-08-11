@@ -1,6 +1,7 @@
 export type MatchStatus = "live" | "scheduled" | "finished";
 
 export type Team = {
+  _id: string;
   id: string;
   name: string;
   shortName: string;
@@ -8,6 +9,8 @@ export type Team = {
   founded: number;
   color: string;
   form?: Array<"W" | "D" | "L">;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type MatchStats = {
@@ -77,12 +80,12 @@ export type NewsItem = {
 };
 
 export const portalTeams: Team[] = [
-  { id: "t1", name: "San Martín", shortName: "SM", city: "San Miguel de Tucumán", founded: 1909, color: "#f5c542", form: ["W", "W", "D", "W", "W"] },
-  { id: "t2", name: "Atlético Norte", shortName: "AN", city: "San Miguel de Tucumán", founded: 1915, color: "#ef4444", form: ["W", "D", "W", "W", "L"] },
-  { id: "t3", name: "Unión Sur", shortName: "US", city: "Tafí Viejo", founded: 1923, color: "#3b82f6", form: ["D", "L", "W", "D", "L"] },
-  { id: "t4", name: "Central Oeste", shortName: "CO", city: "Concepción", founded: 1918, color: "#22c55e", form: ["L", "D", "L", "D", "D"] },
-  { id: "t5", name: "River Yerba Buena", shortName: "RY", city: "Yerba Buena", founded: 1946, color: "#a855f7", form: ["W", "W", "L", "W", "D"] },
-  { id: "t6", name: "Racing Monteros", shortName: "RM", city: "Monteros", founded: 1937, color: "#f59e0b", form: ["L", "W", "W", "L", "L"] },
+  { _id: "t1", id: "t1", name: "San Martín", shortName: "SM", city: "San Miguel de Tucumán", founded: 1909, color: "#f5c542", form: ["W", "W", "D", "W", "W"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
+  { _id: "t2", id: "t2", name: "Atlético Norte", shortName: "AN", city: "San Miguel de Tucumán", founded: 1915, color: "#ef4444", form: ["W", "D", "W", "W", "L"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
+  { _id: "t3", id: "t3", name: "Unión Sur", shortName: "US", city: "Tafí Viejo", founded: 1923, color: "#3b82f6", form: ["D", "L", "W", "D", "L"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
+  { _id: "t4", id: "t4", name: "Central Oeste", shortName: "CO", city: "Concepción", founded: 1918, color: "#22c55e", form: ["L", "D", "L", "D", "D"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
+  { _id: "t5", id: "t5", name: "River Yerba Buena", shortName: "RY", city: "Yerba Buena", founded: 1946, color: "#a855f7", form: ["W", "W", "L", "W", "D"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
+  { _id: "t6", id: "t6", name: "Racing Monteros", shortName: "RM", city: "Monteros", founded: 1937, color: "#f59e0b", form: ["L", "W", "W", "L", "L"], createdAt: "2026-07-01T12:00:00.000Z", updatedAt: "2026-08-10T12:00:00.000Z" },
 ];
 
 export const featuredMatch: Match = {

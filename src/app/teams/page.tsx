@@ -4,6 +4,7 @@ import { TeamCard } from "@/components/teams/TeamCard";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { portalTeams } from "@/lib/mock/portal";
+import { TeamsList } from "../../components/teams/TeamsList";
 
 export default function TeamsPage() {
   return (
@@ -17,9 +18,7 @@ export default function TeamsPage() {
         />
         <Container className="py-10">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {portalTeams.map((team) => (
-              <TeamCard key={team.id} team={team} />
-            ))}
+            <TeamsList></TeamsList>
           </div>
         </Container>
       </main>
