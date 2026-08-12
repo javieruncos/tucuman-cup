@@ -1,4 +1,6 @@
+"use client";
 import { TeamCrest } from "@/components/shared/TeamCrest";
+import { useStandings } from "@/hooks/useStandings";
 import { standings } from "@/lib/mock/portal";
 import { cn } from "@/lib/utils";
 
@@ -28,11 +30,12 @@ function FormTiles({ form }: { form?: Array<"W" | "D" | "L"> }) {
   );
 }
 
-export function StandingsWidget({
-  getTeamHref = (id: string) => `/teams/${id}`,
-}: {
-  getTeamHref?: (id: string) => string;
-}) {
+export function StandingsWidget() {
+
+  const {data: standings, isLoading, error} = useStandings()
+  
+  if(isLoading) return <div>Loading...</div>
+  if(error) return <div>Error</div>
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="overflow-x-auto overscroll-x-contain">
@@ -60,7 +63,7 @@ export function StandingsWidget({
               const relegates = index >= standings.length - 2;
               return (
                 <tr
-                  key={row.id}
+                  key={row._id}
                   className="group border-b border-border/60 transition-colors last:border-0 hover:bg-elevated"
                 >
                   <td className="relative px-4 py-3">
@@ -81,7 +84,7 @@ export function StandingsWidget({
                   </td>
                   <td className="px-2 py-3">
                     <a
-                      href={getTeamHref(row.team.id)}
+                      href={`/teams/${row.team._id}`}
                       className="flex items-center gap-2.5 hover:text-gold"
                     >
                       <TeamCrest team={row.team} size={26} />
@@ -101,32 +104,28 @@ export function StandingsWidget({
                     {row.lost}
                   </td>
                   <td className="tabular px-3 py-3 text-center text-muted-foreground">
-                    {row.gf}
+                    {row.goalsFor}
                   </td>
                   <td className="tabular px-3 py-3 text-center text-muted-foreground">
-                    {row.ga}
+                    {row.goalsAgainst}
                   </td>
                   <td
                     className={cn(
                       "tabular px-3 py-3 text-center font-medium",
-                      row.gd > 0
+                      row.goalDifference > 0
                         ? "text-success"
-                        : row.gd < 0
+                        : row.goalDifference < 0
                           ? "text-destructive"
                           : "text-muted-foreground"
                     )}
                   >
-                    {row.gd > 0 ? "+" : ""}
-                    {row.gd}
+                    {row.goalDifference > 0 ? "+" : ""}
+                    {row.goalDifference}
                   </td>
                   <td className="tabular font-display px-3 py-3 text-center text-base font-bold text-gold">
                     {row.points}
                   </td>
-                  <td className="hidden px-4 py-3 md:table-cell">
-                    <div className="flex justify-end">
-                      <FormTiles form={row.team.form} />
-                    </div>
-                  </td>
+                 
                 </tr>
               );
             })}

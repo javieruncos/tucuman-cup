@@ -26,7 +26,7 @@ export function StatsSection() {
                 </a>
               }
             />
-            <StandingsWidget getTeamHref={() => "#estadisticas"} />
+            <StandingsWidget  />
           </div>
           <div className="min-w-0">
             <SectionHeader

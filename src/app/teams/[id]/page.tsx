@@ -1,24 +1,18 @@
 "use client";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Trophy } from "lucide-react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
-import { MatchCard } from "@/components/matches/MatchCard";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
 import { Footer } from "@/components/ui/Footer";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import {
-  portalTeams,
-  standings,
-  upcomingMatches,
-  recentResults,
-} from "@/lib/mock/portal";
+import { useStandingByTeam } from "@/hooks/useStandingByTeam";
 import { cn } from "@/lib/utils";
 import { useTeam } from "@/hooks/useTeam";
 import { use } from "react";
 import { TeamDetailSkeleton } from "@/components/teams/TeamDetailSkeleton";
+import { Stats } from "fs";
 
 const formTile: Record<"W" | "D" | "L", string> = {
   W: "bg-success text-success-foreground",
@@ -55,6 +49,11 @@ export default function TeamDetailPage({
 }) {
   const { id } = use(params);
   const { data: team, isLoading, error } = useTeam(id);
+  const {
+    data: standing,
+    isLoading: standingLoading,
+    error: standingError,
+  } = useStandingByTeam(id);
 
 
   return (
@@ -100,11 +99,11 @@ export default function TeamDetailPage({
                       <Trophy className="size-4 text-primary" aria-hidden="true" />
                       Est. {team.founded} · {team.city}
                     </span>
-                    {/* {standing && (
+                    {standing && (
                     <span className="font-semibold text-foreground">
                       #{standing.position} en la tabla
                     </span>
-                  )} */}
+                  )}
                     <FormTiles form={team.form} />
                   </div>
                 </div>
@@ -135,7 +134,7 @@ export default function TeamDetailPage({
                   Posición
                 </p>
                 <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                  {/* {standing ? `#${standing.position}` : "—"} */}
+                  {standing ? `#${standing.position}` : "—"}
                 </p>
               </div>
               <div className="bg-card p-5">
@@ -143,7 +142,7 @@ export default function TeamDetailPage({
                   Forma
                 </p>
                 <div className="mt-3">
-                  <FormTiles form={team.form} />
+                  {/* <FormTiles form={team.form} /> */}
                 </div>
               </div>
             </div>
@@ -156,10 +155,66 @@ export default function TeamDetailPage({
                     Puntos
                   </p>
                   <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                    {/* {standing?.points ?? 0} */}
+                    {standing?.points ?? 0}
                   </p>
                 </div>
-                {/* {stats.map((s) => (
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    PJ
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.played ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    PG
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.won ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    PP
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.lost ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    PE
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.drawn ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    GF
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.goalsFor ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    GC
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.goalsAgainst ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    DIF
+                  </p>
+                  <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
+                    {standing?.goalDifference ?? 0}
+                  </p>
+                </div>
+                {/* {Stats.map((s) => (
                 <div
                   key={s.label}
                   className="rounded-xl border border-border bg-card p-5 text-center"
