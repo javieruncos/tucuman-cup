@@ -1,224 +1,378 @@
 # AGENTS.md
 
-## Proyecto
+# Tucumán Cup - Reglas de Desarrollo Frontend
 
-**Tucumán Cup** es una aplicación web para la gestión de torneos deportivos.
+## Objetivo del Proyecto
 
-La prioridad del proyecto es:
+Este proyecto actualmente está enfocado únicamente en el desarrollo del frontend.
 
-* Código limpio.
-* Escalabilidad.
-* Buenas prácticas.
-* Alto rendimiento.
-* Excelente experiencia de usuario.
-* Código fácil de mantener.
+El objetivo es construir una interfaz profesional para la gestión de torneos de fútbol utilizando datos simulados (mock data).
+
+La implementación del backend será desarrollada manualmente posteriormente.
 
 ---
 
-# Stack
+# Responsabilidades del Agente
 
-Siempre utilizar:
+El agente debe encargarse únicamente de:
 
-* Next.js 16 (App Router)
-* React 19
-* TypeScript
-* Tailwind CSS v4
-* pnpm
-* ESLint
+* Crear interfaces de usuario.
+* Construir componentes React reutilizables.
+* Crear layouts.
+* Implementar diseño responsive.
+* Crear animaciones e interacciones visuales.
+* Construir formularios visuales.
+* Crear tablas, cards y elementos UI.
+* Crear estados visuales:
 
-No instalar nuevas dependencias sin explicar por qué son necesarias.
-
----
-
-# Filosofía
-
-Antes de escribir código:
-
-* Analizar el contexto.
-* Reutilizar componentes existentes.
-* Evitar duplicación.
-* Priorizar simplicidad.
-
-No generar código innecesariamente complejo.
+  * Loading.
+  * Empty states.
+  * Error states.
+  * Success states.
+* Crear datos estáticos para representar información.
 
 ---
 
-# Arquitectura
+# Restricciones Importantes
 
-Mantener una arquitectura modular.
+El agente NO debe crear:
 
-Separar correctamente:
-
-* UI
-* lógica
-* servicios
-* tipos
-* utilidades
-
-Evitar componentes gigantes.
-
-Preferir componentes pequeños y reutilizables.
-
----
-
-# TypeScript
-
-Siempre utilizar tipado estricto.
-
-No usar:
-
-* any
-* @ts-ignore
-
-Crear tipos e interfaces reutilizables.
+* APIs.
+* Route Handlers.
+* Backend.
+* Conexión con bases de datos.
+* Modelos Mongoose.
+* Schemas de base de datos.
+* Autenticación.
+* JWT.
+* Cookies de sesión.
+* Middleware de autorización.
+* Server Actions.
+* Lógica de negocio.
+* Integraciones externas.
 
 ---
 
-# React
+# Uso de Datos
 
-Preferir:
+Toda la información debe ser simulada.
 
-* Server Components cuando sea posible.
-* Client Components únicamente cuando sean necesarios.
+Los datos deben vivir en:
 
-No agregar `"use client"` si el componente puede ser un Server Component.
+```
+src/lib/mock/
+```
+
+Ejemplo:
+
+```
+src/lib/mock/
+
+├── tournaments.ts
+├── teams.ts
+├── players.ts
+├── matches.ts
+└── statistics.ts
+```
+
+Ejemplo permitido:
+
+```ts
+export const tournaments = [
+  {
+    id: "1",
+    name: "Tucumán Cup 2026",
+    category: "Senior",
+    teams: 24,
+    status: "Activo"
+  }
+]
+```
+
+No crear:
+
+```ts
+fetch("/api/tournaments")
+```
 
 ---
 
-# Next.js
+# Stack Obligatorio
 
-Utilizar siempre las características modernas:
+El desarrollo debe utilizar:
 
-* App Router
-* Route Handlers
-* Metadata API
-* Image
-* Link
+* Next.js 16.
+* React 19.
+* TypeScript.
+* Tailwind CSS 4.
+* shadcn/ui.
+* Framer Motion.
 
-Evitar APIs obsoletas.
+---
+
+# Arquitectura del Frontend
+
+Seguir la estructura definida en:
+
+```
+docs/15-folder-structure.md
+```
+
+Reglas:
+
+* Components → solamente interfaz.
+* Hooks → lógica reutilizable de React.
+* Lib → utilidades y configuración frontend.
+* Mock → datos simulados.
+* Types → tipos TypeScript.
 
 ---
 
 # Componentes
 
-Cada componente debe tener una única responsabilidad.
+Antes de crear un componente nuevo:
 
-Cuando un componente crezca demasiado, dividirlo.
+1. Revisar si ya existe.
+2. Reutilizar componentes existentes.
+3. Mantener componentes pequeños.
 
-Los componentes deben ser reutilizables.
+Ejemplo correcto:
 
----
+```
+components/
 
-# Estilos
+├── ui/
+│   ├── Button.tsx
+│   ├── Card.tsx
+│   └── Table.tsx
+│
+├── teams/
+│   └── TeamCard.tsx
+```
 
-Usar exclusivamente Tailwind CSS.
+Evitar:
 
-No escribir CSS tradicional salvo que sea estrictamente necesario.
-
-Mantener clases ordenadas.
-
-Evitar estilos repetidos.
-
----
-
-# Accesibilidad
-
-Siempre incluir:
-
-* etiquetas semánticas
-* aria-label cuando corresponda
-* navegación mediante teclado
-* contraste adecuado
-
----
-
-# Performance
-
-Optimizar renderizados.
-
-Evitar renders innecesarios.
-
-No optimizar prematuramente.
-
-Explicar cuando una optimización sea realmente útil.
+```
+DashboardTeamButton.tsx
+AnotherCard.tsx
+CustomButton2.tsx
+```
 
 ---
 
-# Código
+# Componentes Server y Client
 
-Escribir código legible.
+Usar Server Components por defecto.
 
-Priorizar claridad sobre cantidad.
+Crear Client Components solamente cuando sea necesario:
 
-Agregar comentarios únicamente cuando aporten contexto.
-
-No comentar código evidente.
-
----
-
-# Refactorización
-
-Cuando exista una mejor solución:
-
-* explicarla
-* indicar ventajas
-* luego implementarla
-
-No realizar cambios grandes sin explicarlos.
+* useState.
+* useEffect.
+* Eventos del usuario.
+* Formularios interactivos.
+* Animaciones que requieran cliente.
 
 ---
 
-# Aprendizaje
+# Diseño Visual
 
-Este proyecto también tiene un objetivo educativo.
+Seguir obligatoriamente:
 
-Siempre que propongas cambios importantes:
+```
+docs/02-design-system.md
+docs/07-design-tokens.md
+```
 
-1. Explica el problema.
-2. Explica la solución.
-3. Explica por qué es una buena práctica.
-4. Implementa el cambio.
+La interfaz debe transmitir:
 
-No asumas que el desarrollador conoce todos los conceptos.
+* Fútbol profesional.
+* Competición.
+* Modernidad.
+* Tecnología.
+* Estilo SaaS premium.
 
----
+Características visuales:
 
-# Respuestas
+* Tema oscuro.
+* Tonos negros.
+* Acentos dorados/amarillos.
+* Diseño limpio.
+* Espaciado consistente.
+* Animaciones suaves.
 
-Cuando modifiques código:
+Evitar:
 
-* Explica qué cambiaste.
-* Explica por qué.
-* Indica posibles mejoras futuras.
-
-Si existen varias soluciones, muestra primero la recomendada y menciona las alternativas.
-
----
-
-# Dependencias
-
-Antes de instalar una librería:
-
-* explicar por qué se necesita
-* indicar ventajas
-* indicar desventajas
-* proponer una alternativa si existe
+* Colores aleatorios.
+* Diseños genéricos.
+* Componentes sin coherencia visual.
 
 ---
 
-# Calidad
+# Desarrollo de Pantallas
 
-Antes de finalizar cualquier tarea verifica:
+Implementar únicamente la parte visual.
 
-* TypeScript sin errores
-* ESLint sin errores
-* Código consistente
-* Sin duplicación innecesaria
-* Sin archivos sin usar
+Orden recomendado:
+
+## 1. Landing Page
+
+Debe incluir:
+
+* Hero principal.
+* Información del torneo.
+* Características.
+* Estadísticas.
+* Call to action.
 
 ---
 
-# Objetivo final
+## 2. Autenticación Visual
 
-Construir una aplicación profesional que pueda utilizarse como proyecto principal de portfolio y que siga estándares de calidad propios de un entorno de producción.
+Crear:
 
+* Login.
+* Registro.
+* Recuperación de contraseña visual.
+
+Sin implementar autenticación real.
+
+---
+
+## 3. Dashboard
+
+Crear:
+
+* Sidebar.
+* Navbar.
+* Cards estadísticas.
+* Próximos partidos.
+* Tabla de posiciones.
+* Actividad reciente.
+
+Usar datos mock.
+
+---
+
+## 4. Torneos
+
+Crear:
+
+* Lista de torneos.
+* Cards.
+* Detalle del torneo.
+* Tabs.
+* Formularios visuales.
+
+---
+
+## 5. Equipos
+
+Crear:
+
+* Lista de equipos.
+* Perfil del equipo.
+* Jugadores.
+* Estadísticas visuales.
+
+---
+
+## 6. Jugadores
+
+Crear:
+
+* Cards.
+* Perfil.
+* Estadísticas.
+* Filtros visuales.
+
+---
+
+## 7. Partidos
+
+Crear:
+
+* Fixture.
+* Resultado.
+* Eventos.
+* Vista del partido.
+
+---
+
+## 8. Estadísticas
+
+Crear:
+
+* Tablas.
+* Rankings.
+* Gráficos visuales.
+
+---
+
+# Formularios
+
+Los formularios deben ser únicamente visuales.
+
+Permitido:
+
+* Inputs.
+* Selects.
+* Botones.
+* Mensajes de validación simulados.
+
+No permitido:
+
+* Enviar información a APIs.
+* Guardar datos.
+* Conectar con backend.
+
+---
+
+# Calidad del Código
+
+Siempre:
+
+* Usar TypeScript.
+* Crear componentes reutilizables.
+* Usar nombres descriptivos.
+* Evitar código duplicado.
+* Mantener archivos organizados.
+* Respetar la documentación del proyecto.
+
+---
+
+# Antes de Crear Código
+
+El agente debe:
+
+1. Leer la documentación dentro de `/docs`.
+2. Respetar la arquitectura definida.
+3. Crear solamente lo solicitado.
+4. No agregar funcionalidades fuera del alcance.
+
+---
+
+# Regla Principal
+
+Tucumán Cup debe construirse como un frontend profesional listo para producción.
+
+El backend será desarrollado manualmente posteriormente.
+
+El objetivo es aprender y controlar la arquitectura completa del sistema.
+
+# Filosofía de Diseño
+
+Cada pantalla debe sentirse como un producto listo para producción.
+
+No crear interfaces genéricas.
+
+Antes de implementar una pantalla, pensar:
+
+- ¿Genera impacto visual?
+- ¿Se siente profesional?
+- ¿Tiene una buena jerarquía visual?
+- ¿Es coherente con el resto del sistema?
+- ¿Podría formar parte de una plataforma utilizada por miles de usuarios?
+
+Si la respuesta es no, mejorar el diseño antes de continuar.
+
+La prioridad es la calidad del diseño sobre la velocidad de implementación.
