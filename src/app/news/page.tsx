@@ -1,3 +1,5 @@
+"use client";
+
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { MatchCard } from "@/components/matches/MatchCard";
 import { ResultsWidget } from "@/components/matches/ResultsWidget";
@@ -8,7 +10,8 @@ import { Footer } from "@/components/ui/Footer";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Tabs } from "@/components/ui/tabs";
-import { news, upcomingMatches, type NewsItem } from "@/lib/mock/portal";
+import { useMatches } from "@/hooks/useMatches";
+import { news, type NewsItem } from "@/lib/mock/portal";
 
 const categories = [
   "Todos",
@@ -34,6 +37,8 @@ export default function NewsPage() {
   const trending = news.filter((a) =>
     ["n5", "n4", "n7", "n6"].includes(a.id)
   );
+  const { data: matches = [], isLoading, error } = useMatches();
+  const upcoming = matches.filter((match) => match.status === "scheduled");
 
   return (
     <>
@@ -101,9 +106,19 @@ export default function NewsPage() {
               <ResultsWidget />
               <TopScorersWidget />
               <div className="flex flex-col gap-4">
-                {upcomingMatches.map((m) => (
-                  <MatchCard key={m.id} match={m} href={`/match/${m.id}`} />
-                ))}
+                {isLoading ? (
+                  <div>Cargando agenda...</div>
+                ) : error ? (
+                  <div>No se pudo cargar la agenda</div>
+                ) : (
+                  upcoming.map((match) => (
+                    <MatchCard
+                      key={match._id}
+                      match={match}
+                      href={`/matches/${match._id}`}
+                    />
+                  ))
+                )}
               </div>
             </div>
           </section>
