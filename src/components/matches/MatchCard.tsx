@@ -1,29 +1,29 @@
 import { TeamCrest } from "@/components/shared/TeamCrest";
-import { matchStatusMeta, type Match } from "@/lib/mock/portal";
+import type { MatchResponseType } from "@/types/matches";
 import { cn } from "@/lib/utils";
 
-function StatusBadge({ match }: { match: Match }) {
-  if (match.status === "live") {
+function StatusBadge({ status }: { status: MatchResponseType["status"] }) {
+  if (status === "live") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2.5 py-1 text-xs font-semibold text-live">
         <span
           className="size-1.5 rounded-full bg-live animate-live-pulse"
           aria-hidden="true"
         />
-        {matchStatusMeta.live.label} {match.minute}
+       En vivo
       </span>
     );
   }
-  if (match.status === "finished") {
+  if (status === "finished") {
     return (
       <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-        {matchStatusMeta.finished.label}
+       finalizado
       </span>
     );
   }
   return (
     <span className="inline-flex items-center rounded-full border border-border px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-      {matchStatusMeta.scheduled.label}
+      Proximo
     </span>
   );
 }
@@ -33,7 +33,7 @@ export function MatchCard({
   href = "#",
   className,
 }: {
-  match: Match;
+  match: MatchResponseType;
   href?: string;
   className?: string;
 }) {
@@ -49,16 +49,16 @@ export function MatchCard({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="truncate text-xs font-medium text-muted-foreground">
-          {match.round}
+          {match.date}
         </span>
-        <StatusBadge match={match} />
+        <StatusBadge status={match.status} />
       </div>
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          <TeamCrest team={match.home} size={32} />
+          <TeamCrest team={match.homeTeam} size={32} />
           <span className="truncate text-sm font-medium text-foreground">
-            {match.home.name}
+            {match.homeTeam.name}
           </span>
         </div>
         <span className="tabular font-display shrink-0 px-2 text-lg font-semibold text-foreground">
@@ -68,9 +68,9 @@ export function MatchCard({
 
       <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          <TeamCrest team={match.away} size={32} />
+          <TeamCrest team={match.awayTeam} size={32} />
           <span className="truncate text-sm font-medium text-foreground">
-            {match.away.name}
+            {match.awayTeam.name}
           </span>
         </div>
         <span className="tabular font-display shrink-0 px-2 text-lg font-semibold text-foreground">
@@ -79,7 +79,6 @@ export function MatchCard({
       </div>
 
       <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
-        <span className="truncate">{match.venue}</span>
         <span className="shrink-0">
           {match.status === "scheduled"
             ? `${match.date} · ${match.time}`

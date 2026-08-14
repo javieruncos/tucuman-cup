@@ -1,12 +1,15 @@
+"use client";
+
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { MatchCard } from "@/components/matches/MatchCard";
 import { Container } from "@/components/ui/Container";
 import { Footer } from "@/components/ui/Footer";
 import { PageHero } from "@/components/ui/PageHero";
 import { Tabs } from "@/components/ui/tabs";
-import { matches, type Match } from "@/lib/mock/portal";
+import { useMatches } from "@/hooks/useMatches";
+import type { MatchResponseType } from "@/types/matches";
 
-function Grid({ list }: { list: Match[] }) {
+function Grid({ list }: { list: MatchResponseType[] }) {
   if (list.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
@@ -21,17 +24,23 @@ function Grid({ list }: { list: Match[] }) {
   }
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {list.map((m) => (
-        <MatchCard key={m.id} match={m} href={`/match/${m.id}`} />
+      {list.map((match) => (
+        <MatchCard
+          key={match._id}
+          match={match}
+          href={`/matches/${match._id}`}
+        />
       ))}
     </div>
   );
 }
 
 export default function FixturesPage() {
-  const live = matches.filter((m) => m.status === "live");
-  const upcoming = matches.filter((m) => m.status === "scheduled");
-  const results = matches.filter((m) => m.status === "finished");
+  const { data: matches = [], isLoading, error } = useMatches();
+
+  const live = matches.filter((match) => match.status === "live");
+  const upcoming = matches.filter((match) => match.status === "scheduled");
+  const results = matches.filter((match) => match.status === "finished");
 
   return (
     <>
@@ -43,18 +52,32 @@ export default function FixturesPage() {
           description="Todos los partidos de la Tucumán Cup — en vivo ahora, los próximos y el historial completo de resultados de la temporada."
         />
         <Container className="py-10">
-          <Tabs
-            tabs={[
-              { id: "all", label: "Todos", content: <Grid list={matches} /> },
-              {
-                id: "live",
-                label: `En vivo (${live.length})`,
-                content: <Grid list={live} />,
-              },
-              { id: "upcoming", label: "Próximos", content: <Grid list={upcoming} /> },
-              { id: "results", label: "Resultados", content: <Grid list={results} /> },
-            ]}
-          />
+          {isLoading ? (
+            <div>Cargando partidos...</div>
+          ) : error ? (
+            <div>Error al cargar los partidos</div>
+          ) : (
+            <Tabs
+              tabs={[
+                { id: "all", label: "Todos", content: <Grid list={matches} /> },
+                {
+                  id: "live",
+                  label: `En vivo (${live.length})`,
+                  content: <Grid list={live} />,
+                },
+                {
+                  id: "upcoming",
+                  label: "Próximos",
+                  content: <Grid list={upcoming} />,
+                },
+                {
+                  id: "results",
+                  label: "Resultados",
+                  content: <Grid list={results} />,
+                },
+              ]}
+            />
+          )}
         </Container>
       </main>
       <Footer />

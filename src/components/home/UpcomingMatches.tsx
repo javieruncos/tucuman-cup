@@ -1,12 +1,28 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 
 import { MatchCard } from "@/components/matches/MatchCard";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { upcomingMatches } from "@/lib/mock/portal";
+import { useMatches } from "@/hooks/useMatches";
 
 export function UpcomingMatches() {
+  const { data: matches = [], isLoading, error } = useMatches();
+
+  if (isLoading) {
+    return <div>Cargando partidos...</div>;
+  }
+
+  if (error) {
+    return <div>Error al cargar los partidos</div>;
+  }
+
+  const upcomingMatches = matches.filter(
+    (match) => match.status === "scheduled"
+  );
+
   return (
     <Section id="partidos">
       <Container>
@@ -16,7 +32,7 @@ export function UpcomingMatches() {
           align="left"
           action={
             <a
-              href="#partidos"
+              href="/fixtures"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-gold"
             >
               Ver fixture completo
@@ -25,8 +41,8 @@ export function UpcomingMatches() {
           }
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {upcomingMatches.map((match) => (
-            <MatchCard key={match.id} match={match} href="#partidos" />
+          {upcomingMatches.slice(0, 4).map((match) => (
+            <MatchCard key={match._id} match={match} href={`/matches/${match._id}`} />
           ))}
         </div>
       </Container>
