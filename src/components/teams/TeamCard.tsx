@@ -1,12 +1,16 @@
 import Link from "next/link";
 
 import { TeamCrest } from "@/components/shared/TeamCrest";
+import type { Standing } from "@/types/standings";
 import type { Team } from "@/types/teams";
-import { standings } from "@/lib/mock/portal";
 
-export function TeamCard({ team }: { team: Team }) {
-  const standing = standings.find((row) => row.team.id === team._id);
-
+export function TeamCard({
+  team,
+  standing,
+}: {
+  team: Team;
+  standing?: Standing;
+}) {
   return (
     <Link
       href={`/teams/${team._id}`}
@@ -47,7 +51,7 @@ export function TeamCard({ team }: { team: Team }) {
         </div>
         <div>
           <p className="tabular font-display text-xl font-bold text-gold">
-            {standing?.gf ?? 0}
+            {standing?.goalsFor ?? 0}
           </p>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
             Goles

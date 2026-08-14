@@ -1,25 +1,18 @@
 import { Footer } from "@/components/ui/Footer";
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { TeamCrest } from "@/components/shared/TeamCrest";
+import { GoalsByClub } from "@/components/statistics/GoalsByClub";
+import { StatsSummaryCards } from "@/components/statistics/StatsSummaryCards";
 import { TopScorersWidget } from "@/components/statistics/TopScorersWidget";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { standings, topScorers, tournamentInfo } from "@/lib/mock/portal";
+import { topScorers } from "@/lib/mock/portal";
 
 export default function StatsPage() {
   const assistLeaders = [...topScorers]
     .sort((a, b) => b.assists - a.assists)
     .slice(0, 6);
-  const goalsByTeam = [...standings].sort((a, b) => b.gf - a.gf);
-  const maxGf = goalsByTeam[0].gf;
-
-  const statCards: Array<[string, number]> = [
-    ["Goles", tournamentInfo.goalsScored],
-    ["Partidos", tournamentInfo.matchesPlayed],
-    ["Goles por partido", tournamentInfo.avgGoals],
-    ["Clubes", tournamentInfo.teamsCount],
-  ];
 
   return (
     <>
@@ -31,21 +24,7 @@ export default function StatsPage() {
           description="La radiografía estadística de la Tucumán Cup — goleadores, creadores y los clubes que iluminan el marcador."
         />
         <Container className="py-10">
-          <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {statCards.map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded-xl border border-border bg-card px-5 py-4"
-              >
-                <p className="tabular font-display text-3xl font-bold text-gold">
-                  {value}
-                </p>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
+          <StatsSummaryCards />
 
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
@@ -85,29 +64,7 @@ export default function StatsPage() {
               title="Goles por club"
               align="left"
             />
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="flex flex-col gap-3">
-                {goalsByTeam.map((row) => (
-                  <div key={row.id} className="flex items-center gap-3">
-                    <div className="flex w-32 shrink-0 items-center gap-2 sm:w-44">
-                      <TeamCrest team={row.team} size={24} />
-                      <span className="truncate text-sm font-medium">
-                        {row.team.name}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <div
-                        className="h-6 rounded bg-gradient-to-r from-gold/70 to-gold transition-all"
-                        style={{ width: `${(row.gf / maxGf) * 100}%` }}
-                      />
-                    </div>
-                    <span className="tabular font-display w-8 text-right text-sm font-bold">
-                      {row.gf}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <GoalsByClub />
           </div>
         </Container>
       </main>
