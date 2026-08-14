@@ -3,7 +3,18 @@ import type { MatchType } from "@/types/matches";
 
 export const createMatch = async (match: MatchType) => {
   try {
+    const existingMatch = await Match.findOne({
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      date: match.date,
+    });
+
+    if (existingMatch) {
+      throw new Error("El partido ya existe");
+    }
+
     const response = await Match.create(match);
+
     return response;
   } catch (error) {
     console.log("Error al crear partido", error);

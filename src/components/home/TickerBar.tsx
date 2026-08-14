@@ -5,7 +5,7 @@ import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 import { Radio } from "lucide-react";
 
 import { Container } from "@/components/ui/Container";
-import { recentResults } from "@/lib/mock/portal";
+import { useMatches } from "@/hooks/useMatches";
 
 function TickerItem({
   homeShort,
@@ -47,6 +47,7 @@ function TickerItem({
 export function TickerBar() {
   const x = useMotionValue(0);
   const paused = useRef(false);
+  const { data: matches = [], isLoading, error } = useMatches();
 
   useAnimationFrame((_, delta) => {
     if (paused.current) return;
@@ -54,7 +55,18 @@ export function TickerBar() {
     if (x.get() < -50) x.set(0);
   });
 
-  const items = [...recentResults, ...recentResults];
+  if (isLoading || error) return null;
+
+  const results = matches
+    .filter((match) => match.status === "finished")
+    .sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+    .slice(0, 5);
+
+  if (results.length === 0) return null;
+
+  const items = [...results, ...results];
 
   return (
     <aside
@@ -87,13 +99,13 @@ export function TickerBar() {
           >
             {items.map((match, index) => (
               <TickerItem
-                key={`${match.id}-${index}`}
-                homeShort={match.home.shortName}
-                homeScore={match.homeScore ?? 0}
-                awayShort={match.away.shortName}
-                awayScore={match.awayScore ?? 0}
-                homeColor={match.home.color}
-                awayColor={match.away.color}
+                key={`${match._id}-${index}`}
+                homeShort={match.homeTeam.shortName}
+                homeScore={match.homeScore}
+                awayShort={match.awayTeam.shortName}
+                awayScore={match.awayScore}
+                homeColor={match.homeTeam.color}
+                awayColor={match.awayTeam.color}
               />
             ))}
           </motion.ul>
