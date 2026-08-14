@@ -8,6 +8,7 @@ export interface INews extends Document {
   author?: string;
   readTime?: string;
   team?: mongoose.Types.ObjectId | null;
+  content: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +25,10 @@ const NewsSchema = new Schema<INews>(
       type: String,
       required: true,
       trim: true,
+    },
+    content: {
+      type: String,
+      required: true,
     },
 
     category: {
