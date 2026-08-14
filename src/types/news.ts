@@ -9,6 +9,7 @@ export type NewsResponseType = {
   author?: string;
   readTime?: string;
   team: Team | null;
+  content: string;
   createdAt: string;
   updatedAt: string;
 };

@@ -28,6 +28,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log("BODY:", body);
 
     const news = await createNews({
       title: body.title,
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       author: body.author,
       readTime: body.readTime,
       team: body.team ?? null,
+      content: body.content,
     });
 
     return NextResponse.json(
