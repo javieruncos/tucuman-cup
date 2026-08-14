@@ -99,24 +99,6 @@ function EventsTimeline() {
 }
 
 
-// const facts = (match: MatchResponseType) => [
-//   {
-//     label: "Fecha",
-//     value: match.date,
-//     icon: CalendarDays,
-//   },
-//   {
-//     label: "Hora",
-//     value: `${match.time} hs`,
-//     icon: Clock,
-//   },
-//   {
-//     label: "Ciudad",
-//     value: match.homeTeam.city,
-//     icon: MapPin,
-//   },
-// ];
-
 const facts = (match: MatchResponseType) => [
   {
     label: "Fecha",

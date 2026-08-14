@@ -3,13 +3,39 @@ import { Clock } from "lucide-react";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import type { NewsItem } from "@/lib/mock/portal";
 import { cn } from "@/lib/utils";
+import type { NewsResponseType } from "@/types/news";
+
+function formatNewsDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.round(diffMs / 60000);
+  const diffH = Math.round(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 1) return "Ahora";
+  if (diffMin < 60) return `Hace ${diffMin} min`;
+  if (diffH < 24) return `Hace ${diffH} h`;
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfYesterday = new Date(startOfToday);
+  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+
+  if (date >= startOfYesterday && date < startOfToday) return "Ayer";
+  if (date >= startOfToday) return "Hoy";
+  if (diffDays < 7) return diffDays === 1 ? "Hace 1 día" : `Hace ${diffDays} días`;
+
+  return date.toLocaleDateString("es-AR");
+}
 
 export function NewsCard({
   article,
   variant = "default",
   href = "#noticias",
 }: {
-  article: NewsItem;
+  article: NewsResponseType | NewsItem;
   variant?: "default" | "feature" | "compact";
   href?: string;
 }) {
@@ -52,7 +78,7 @@ export function NewsCard({
               <span className="font-medium text-foreground">{article.author}</span>
             )}
             {article.author && <span>·</span>}
-            <span>{article.date}</span>
+            <span>{formatNewsDate(article.date)}</span>
             {article.readTime && (
               <span className="inline-flex items-center gap-1">
                 <Clock className="size-3" aria-hidden="true" /> {article.readTime}
@@ -92,7 +118,7 @@ export function NewsCard({
       <div className="min-w-0">
         <div className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-wide">
           <span className="font-semibold text-gold">{article.category}</span>
-          <span className="text-muted-foreground">· {article.date}</span>
+          <span className="text-muted-foreground">· {formatNewsDate(article.date)}</span>
         </div>
         <h3 className="font-medium leading-snug text-balance transition-colors group-hover:text-gold">
           {article.title}
