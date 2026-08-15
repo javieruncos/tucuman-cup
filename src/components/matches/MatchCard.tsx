@@ -10,19 +10,19 @@ function StatusBadge({ status }: { status: MatchResponseType["status"] }) {
           className="size-1.5 rounded-full bg-live animate-live-pulse"
           aria-hidden="true"
         />
-       En vivo
+        En vivo
       </span>
     );
   }
   if (status === "finished") {
     return (
-      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-       finalizado
+      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-success">
+        Finalizado
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full border border-border px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+    <span className="inline-flex items-center rounded-full border border-warning px-2.5 py-1 text-xs font-semibold text-warning-foreground">
       Proximo
     </span>
   );
@@ -49,7 +49,7 @@ export function MatchCard({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="truncate text-xs font-medium text-muted-foreground">
-          {match.date}
+          {new Date(match.date).toLocaleDateString("es-AR")}
         </span>
         <StatusBadge status={match.status} />
       </div>
@@ -78,13 +78,11 @@ export function MatchCard({
         </span>
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
-        <span className="shrink-0">
-          {match.status === "scheduled"
-            ? `${match.date} · ${match.time}`
-            : match.date}
-        </span>
-      </div>
+      {match.status === "scheduled" && (
+        <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+          <span className="shrink-0">{match.time} hs</span>
+        </div>
+      )}
     </a>
   );
 }
