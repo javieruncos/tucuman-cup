@@ -1,4 +1,5 @@
 import { Footer } from "@/components/ui/Footer";
+import { PageHero } from "@/components/ui/PageHero";
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { TickerBar } from "@/components/home/TickerBar";
 import { MatchCenter } from "@/components/home/MatchCenter";
@@ -13,6 +14,16 @@ export default function Home() {
     <>
       <PortalNavbar />
       <main className="flex-1">
+        <PageHero
+          image="/images/stadium-hero.jpg"
+          eyebrow="Tucumán Cup · Temporada 2026"
+          title={
+            <>
+              La competición de fútbol de <span className="text-gold">Tucumán</span>
+            </>
+          }
+          description="Fútbol, partidos y clasificación de la temporada: toda la competición en un solo lugar."
+        />
         <TickerBar />
         <MatchCenter />
         <UpcomingMatches />

@@ -1,45 +1,55 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useAnimationFrame,
+  useReducedMotion,
+} from "framer-motion";
 import { Radio } from "lucide-react";
 
+import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
 import { useMatches } from "@/hooks/useMatches";
+import type { MatchResponseType } from "@/types/matches";
 
-function TickerItem({
-  homeShort,
-  homeScore,
-  awayShort,
-  awayScore,
-  homeColor,
-  awayColor,
-}: {
-  homeShort: string;
-  homeScore: number;
-  awayShort: string;
-  awayScore: number;
-  homeColor: string;
-  awayColor: string;
-}) {
+function TickerItem({ match }: { match: MatchResponseType }) {
   return (
-    <li className="flex shrink-0 items-center gap-2.5 px-6 text-xs font-medium">
+    <li
+      aria-label={`${match.homeTeam.name} ${match.homeScore} a ${match.awayScore} ${match.awayTeam.name}`}
+      className="flex shrink-0 items-center gap-4 border-l border-border/40 px-7 sm:gap-5 sm:px-9"
+    >
+      <span className="-ml-px hidden h-[68px] w-px bg-border/40 sm:block" aria-hidden="true" />
+      <TeamCrest team={match.homeTeam} size={72} />
       <span
-        className="font-semibold tabular-nums"
-        style={{ color: homeColor }}
+        className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
+        style={{ color: match.homeTeam.color }}
       >
-        {homeShort}
+        {match.homeTeam.shortName}
       </span>
-      <span className="rounded-[4px] bg-surface-2 px-1.5 py-0.5 font-heading font-bold tabular-nums text-foreground">
-        {homeScore}–{awayScore}
+      <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
+        {match.homeScore}
+      </span>
+      <span className="font-display text-2xl font-light text-muted-foreground" aria-hidden="true">
+        –
+      </span>
+      <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
+        {match.awayScore}
       </span>
       <span
-        className="font-semibold tabular-nums"
-        style={{ color: awayColor }}
+        className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
+        style={{ color: match.awayTeam.color }}
       >
-        {awayShort}
+        {match.awayTeam.shortName}
       </span>
-      <span className="ml-3 size-1 rounded-full bg-border" aria-hidden="true" />
+      <TeamCrest team={match.awayTeam} size={72} />
+      <span className="ml-2 whitespace-nowrap text-base text-muted-foreground">
+        {new Date(match.date).toLocaleDateString("es-AR", {
+          day: "numeric",
+          month: "short",
+        })}
+      </span>
     </li>
   );
 }
@@ -47,21 +57,27 @@ function TickerItem({
 export function TickerBar() {
   const x = useMotionValue(0);
   const paused = useRef(false);
+  const reduceMotion = useReducedMotion();
+  const trackRef = useRef<HTMLUListElement>(null);
   const { data: matches = [], isLoading, error } = useMatches();
 
   useAnimationFrame((_, delta) => {
-    if (paused.current) return;
-    x.set((x.get() - 0.035 * delta) % 0);
-    if (x.get() < -50) x.set(0);
+    if (paused.current || reduceMotion) return;
+    const track = trackRef.current;
+    if (!track || track.scrollWidth <= 0) return;
+
+    const half = track.scrollWidth / 2;
+    let next = (x.get() - 0.045 * delta) % half;
+
+    if (next <= -half) next = 0;
+    x.set(next);
   });
 
   if (isLoading || error) return null;
 
   const results = matches
     .filter((match) => match.status === "finished")
-    .sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
 
   if (results.length === 0) return null;
@@ -75,8 +91,8 @@ export function TickerBar() {
     >
       <Container clean className="flex max-w-7xl items-stretch px-4 sm:px-6 lg:px-8">
         <div className="z-10 flex shrink-0 items-center gap-2 border-r border-border/60 bg-surface-1/60 pr-4">
-          <Radio className="size-3.5 text-danger" aria-hidden="true" />
-          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <Radio className="size-3.5 text-gold" aria-hidden="true" />
+          <span className="font-display text-xs font-semibold uppercase tracking-wide text-foreground">
             Resultados
           </span>
         </div>
@@ -90,7 +106,8 @@ export function TickerBar() {
           }}
         >
           <motion.ul
-            className="flex w-max py-2"
+            ref={trackRef}
+            className="flex w-max items-center py-3.5"
             style={{ x }}
             onMouseEnter={() => (paused.current = true)}
             onMouseLeave={() => (paused.current = false)}
@@ -98,15 +115,7 @@ export function TickerBar() {
             onBlur={() => (paused.current = false)}
           >
             {items.map((match, index) => (
-              <TickerItem
-                key={`${match._id}-${index}`}
-                homeShort={match.homeTeam.shortName}
-                homeScore={match.homeScore}
-                awayShort={match.awayTeam.shortName}
-                awayScore={match.awayScore}
-                homeColor={match.homeTeam.color}
-                awayColor={match.awayTeam.color}
-              />
+              <TickerItem key={`${match._id}-${index}`} match={match} />
             ))}
           </motion.ul>
         </div>

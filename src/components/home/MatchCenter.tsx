@@ -148,7 +148,10 @@ export function MatchCenter() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_80px_160px_-80px_rgba(0,0,0,0.9)]"
         >
-          <div className="stadium-glow field-lines absolute inset-0" aria-hidden />
+          <div className="absolute inset-0" aria-hidden="true">
+            <div className="absolute inset-0 bg-cover bg-center bg-[url('/images/stadium-hero.jpg')]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/25" />
+          </div>
           <div className="relative grid lg:grid-cols-[minmax(0,340px)_1fr]">
             {/* Columna editorial */}
             <div className="flex flex-col gap-6 border-b border-border/50 bg-elevated/30 p-6 sm:p-8 lg:border-b-0 lg:border-r lg:bg-elevated/40">
