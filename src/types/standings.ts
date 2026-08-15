@@ -12,6 +12,6 @@ export type Standing = {
   goalsAgainst: number;
   goalDifference: number;
   points: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };

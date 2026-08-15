@@ -1,7 +1,6 @@
 "use client";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { useStandings } from "@/hooks/useStandings";
-import { standings } from "@/lib/mock/portal";
 import { cn } from "@/lib/utils";
 
 const formTile: Record<"W" | "D" | "L", string> = {
