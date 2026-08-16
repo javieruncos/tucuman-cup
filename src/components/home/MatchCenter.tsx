@@ -1,27 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  CalendarDays,
-  Clock,
-  Goal,
-  MapPin,
-  Square,
-} from "lucide-react";
+import { ArrowRight, CalendarDays, Clock, MapPin } from "lucide-react";
 
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { TeamCrest } from "@/components/shared/TeamCrest";
-import {
-  featuredMatch,
-  type Match,
-  type MatchStats,
-} from "@/lib/mock/portal";
-import { cn } from "@/lib/utils";
 import { useMatches } from "@/hooks/useMatches";
 import { useMatchStats } from "@/hooks/useMatchStats";
-import { MatchResponseType } from "@/types/matches";
+import type { MatchResponseType } from "@/types/matches";
 
 function LivePulse() {
   return (
@@ -32,9 +20,28 @@ function LivePulse() {
   );
 }
 
-
-
-
+function MatchState({ status }: { status: MatchResponseType["status"] }) {
+  if (status === "live") {
+    return (
+      <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-danger">
+        <LivePulse />
+        En vivo
+      </span>
+    );
+  }
+  if (status === "finished") {
+    return (
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        Finalizado
+      </span>
+    );
+  }
+  return (
+    <span className="text-xs font-bold uppercase tracking-widest text-gold">
+      Próximo
+    </span>
+  );
+}
 
 function StatSplit({
   label,
@@ -44,30 +51,26 @@ function StatSplit({
   index,
 }: {
   label: string;
-  stats: MatchStats[keyof MatchStats];
+  stats: [number, number];
   homeColor: string;
   awayColor: string;
   index: number;
 }) {
   const [home, away] = stats;
   const total = home + away;
-  const homePct = Math.round((home / total) * 100);
+  const homePct = total === 0 ? 50 : Math.round((home / total) * 100);
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 pt-4 first:pt-0">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold tabular-nums text-foreground">
-          {home}
-        </span>
+        <span className="font-semibold tabular-nums text-foreground">{home}</span>
         <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           {label}
         </span>
-        <span className="font-semibold tabular-nums text-foreground">
-          {away}
-        </span>
+        <span className="font-semibold tabular-nums text-foreground">{away}</span>
       </div>
       <div className="flex h-1 gap-1 overflow-hidden">
-        <div className="flex flex-1 justify-end overflow-hidden rounded-full bg-surface-3">
+        <div className="flex flex-1 justify-end overflow-hidden rounded-full bg-surface-3/60">
           <motion.div
             className="h-full rounded-full"
             style={{ background: homeColor }}
@@ -76,7 +79,7 @@ function StatSplit({
             transition={{ duration: 0.8, delay: 0.4 + index * 0.12, ease: "easeOut" }}
           />
         </div>
-        <div className="flex flex-1 overflow-hidden rounded-full bg-surface-3">
+        <div className="flex flex-1 overflow-hidden rounded-full bg-surface-3/60">
           <motion.div
             className="h-full rounded-full opacity-70"
             style={{ background: awayColor }}
@@ -90,37 +93,11 @@ function StatSplit({
   );
 }
 
-function EventsTimeline() {
-  return (
-    <p className="py-4 text-center text-xs text-muted-foreground">
-      No hay eventos disponibles.
-    </p>
-  );
-}
-
-
-const facts = (match: MatchResponseType) => [
-  {
-    label: "Fecha",
-    value: new Date(match.date).toLocaleDateString("es-AR"),
-    icon: CalendarDays,
-  },
-  {
-    label: "Hora",
-    value: `${match.time} hs`,
-    icon: Clock,
-  },
-  {
-    label: "Ciudad",
-    value: match.homeTeam.city,
-    icon: MapPin,
-  },
-];
 export function MatchCenter() {
   const { data: matches, isLoading, isError } = useMatches();
   const match =
-  matches?.find((match) => match.status === "live") ??
-  matches?.find((match) => match.status === "scheduled");
+    matches?.find((item) => item.status === "live") ??
+    matches?.find((item) => item.status === "scheduled");
   const {
     data: stats,
     isLoading: isStatsLoading,
@@ -139,6 +116,9 @@ export function MatchCenter() {
     return null;
   }
 
+  const played = match.status === "live" || match.status === "finished";
+  const showStats = match.status !== "scheduled";
+
   return (
     <Section id="inicio" className="py-6 sm:py-8">
       <Container>
@@ -146,195 +126,155 @@ export function MatchCenter() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_80px_160px_-80px_rgba(0,0,0,0.9)]"
+          className="relative overflow-hidden rounded-2xl border border-border/60"
         >
           <div className="absolute inset-0" aria-hidden="true">
-            <div className="absolute inset-0 bg-cover bg-center bg-[url('/images/stadium-hero.jpg')]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/25" />
+            <div className="absolute inset-0 bg-cover bg-center bg-[url('/images/tribunas.jfif')]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/40" />
           </div>
-          <div className="relative grid lg:grid-cols-[minmax(0,340px)_1fr]">
-            {/* Columna editorial */}
-            <div className="flex flex-col gap-6 border-b border-border/50 bg-elevated/30 p-6 sm:p-8 lg:border-b-0 lg:border-r lg:bg-elevated/40">
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-gold px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
-                  Match Center
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-danger/40 bg-danger/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-danger">
-                  <LivePulse />
-                  En vivo
-                </span>
-              </div>
 
+          <div className="relative flex flex-col px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+            {/* Cabecera editorial */}
+            <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-white/10 pb-6">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Tucumán Cup 2026 · {match.date}
+                <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Tucumán Cup 2026
                 </p>
-                <h2 className="font-display mt-1 text-3xl font-semibold uppercase leading-tight tracking-wide text-balance">
-                  {match.homeTeam.name} <span className="text-gold">vs</span>{" "}
-                  {match.awayTeam.name}
+                <h2 className="font-display mt-2 text-3xl font-semibold uppercase leading-tight tracking-wide text-balance sm:text-4xl lg:text-5xl">
+                  Partido destacado
                 </h2>
-                <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">
-                  {match.homeTeam.name} y {match.awayTeam.name} se cruzan en {match.homeTeam.city} en un
-                  partido decisivo.
-                </p>
               </div>
-
-              <dl className="grid gap-px overflow-hidden rounded-lg border border-border bg-border">
-                {facts(match).map((fact) => (
-                  <div
-                    key={fact.label}
-                    className="flex items-center gap-3 bg-card px-4 py-3"
-                  >
-                    <fact.icon className="size-4 shrink-0 text-gold" aria-hidden="true" />
-                    <dt className="w-16 text-xs uppercase tracking-wide text-muted-foreground sm:w-20">
-                      {fact.label}
-                    </dt>
-                    <dd className="ml-auto text-right text-sm font-medium">
-                      {fact.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
-
-
-              <a
-                href="#partidos"
-                className="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-opacity hover:opacity-90"
-              >
-                Abrir centro de partido <ArrowRight className="size-4" aria-hidden="true" />
-              </a>
+              <MatchState status={match.status} />
             </div>
 
-            {/* Scoreboard */}
-            <div className="relative flex flex-col">
-              <div className="flex items-center justify-between px-6 pt-6 text-[11px] font-semibold uppercase tracking-widest sm:px-8 sm:pt-8">
-                <span className="inline-flex items-center gap-2 text-danger">
-                  <LivePulse />
-                  Transmisión en vivo
-                </span>
-                <span className="text-muted-foreground uppercase">
-                  {match.status === "live" ? "En vivo" : match.status}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-8 sm:gap-8 sm:px-8 sm:py-10">
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamCrest team={match.homeTeam} size={64} className="sm:hidden" />
-                  <TeamCrest team={match.homeTeam} size={112} className="hidden sm:inline-flex lg:hidden" />
-                  <TeamCrest team={match.homeTeam} size={128} className="hidden lg:inline-flex" />
-                  <div>
-                    <p className="font-display text-base font-semibold uppercase leading-tight tracking-wide sm:text-xl">
+            {/* Scoreboard protagonista */}
+            <div className="flex flex-col items-center pt-8 sm:pt-10">
+              <div className="flex w-full items-center justify-center gap-4 sm:gap-10 lg:gap-14">
+                <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center">
+                  <TeamCrest team={match.homeTeam} size={72} className="sm:hidden" />
+                  <TeamCrest team={match.homeTeam} size={128} className="hidden sm:inline-flex lg:hidden" />
+                  <TeamCrest team={match.homeTeam} size={144} className="hidden lg:inline-flex" />
+                  <div className="w-full">
+                    <p className="font-display truncate text-lg font-bold uppercase leading-tight tracking-wide sm:text-2xl lg:text-4xl">
                       {match.homeTeam.name}
                     </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
                       {match.homeTeam.city}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center gap-3">
-                  <div className="flex items-center gap-2.5 sm:gap-4">
-                    <span className="animate-score-pop font-display text-5xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
-                      {match.homeScore}
-                    </span>
-                    <span className="font-display text-3xl font-light text-muted-foreground sm:text-4xl">
-                      :
-                    </span>
-                    <span className="animate-score-pop font-display text-5xl font-bold leading-none tabular sm:text-7xl lg:text-8xl">
-                      {match.awayScore}
-                    </span>
-                  </div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-3 py-1 text-sm font-semibold text-live">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-3 py-1 text-sm font-semibold text-live">
-                      <span
-                        className="size-1.5 animate-live-pulse rounded-full bg-live"
-                        aria-hidden="true"
-                      />
-                      {match.homeTeam.city}
-                    </span>
-
-                  </div>
-
+                <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+                  <span className="animate-score-pop font-display text-6xl font-bold leading-none tabular sm:text-8xl lg:text-9xl">
+                    {played ? match.homeScore : "–"}
+                  </span>
+                  <span className="font-display text-3xl font-light text-muted-foreground sm:text-5xl" aria-hidden="true">
+                    –
+                  </span>
+                  <span className="animate-score-pop font-display text-6xl font-bold leading-none tabular sm:text-8xl lg:text-9xl">
+                    {played ? match.awayScore : "–"}
+                  </span>
                 </div>
 
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamCrest team={match.awayTeam} size={64} className="sm:hidden" />
-                  <TeamCrest team={match.awayTeam} size={112} className="hidden sm:inline-flex lg:hidden" />
-                  <TeamCrest team={match.awayTeam} size={128} className="hidden lg:inline-flex" />
-                  <div>
-                    <p className="font-display text-base font-semibold uppercase leading-tight tracking-wide sm:text-xl">
+                <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center">
+                  <TeamCrest team={match.awayTeam} size={72} className="sm:hidden" />
+                  <TeamCrest team={match.awayTeam} size={128} className="hidden sm:inline-flex lg:hidden" />
+                  <TeamCrest team={match.awayTeam} size={144} className="hidden lg:inline-flex" />
+                  <div className="w-full">
+                    <p className="font-display truncate text-lg font-bold uppercase leading-tight tracking-wide sm:text-2xl lg:text-4xl">
                       {match.awayTeam.name}
                     </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
                       {match.awayTeam.city}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid gap-px border-t border-border bg-border sm:grid-cols-2">
-                <div className="bg-card p-6">
-                  <h3 className="mb-4 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Línea de tiempo
-                  </h3>
-                  <EventsTimeline />
-                </div>
-                <div className="bg-card p-6">
-                  <h3 className="mb-4 font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Estadísticas
-                  </h3>
-                  {isStatsLoading ? (
-                    <div className="flex flex-col gap-4">
-                      {Array.from({ length: 3 }).map((_, index) => (
-                        <div key={index} className="flex flex-col gap-1.5">
-                          <div className="flex items-center justify-between">
-                            <span className="h-3 w-6 animate-pulse rounded bg-muted" />
-                            <span className="h-3 w-16 animate-pulse rounded bg-muted" />
-                            <span className="h-3 w-6 animate-pulse rounded bg-muted" />
-                          </div>
-
-                          <div className="h-1 animate-pulse rounded-full bg-muted" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : isStatsError ? (
-                    <p className="text-xs text-muted-foreground">
-                      No se pudieron cargar las estadísticas.
-                    </p>
-                  ) : stats ? (
-                    <div className="flex flex-col gap-4">
-                      <StatSplit
-                        label="Posesión"
-                        stats={[stats.home.possession, stats.away.possession]}
-                        homeColor={match.homeTeam.color}
-                        awayColor={match.awayTeam.color}
-                        index={0}
-                      />
-
-                      <StatSplit
-                        label="Remates"
-                        stats={[stats.home.shots, stats.away.shots]}
-                        homeColor={match.homeTeam.color}
-                        awayColor={match.awayTeam.color}
-                        index={1}
-                      />
-
-                      <StatSplit
-                        label="Al arco"
-                        stats={[stats.home.shotsOnTarget, stats.away.shotsOnTarget]}
-                        homeColor={match.homeTeam.color}
-                        awayColor={match.awayTeam.color}
-                        index={2}
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      No hay estadísticas disponibles.
-                    </p>
-                  )}
-                </div>
+              {/* Info básica */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <CalendarDays className="size-3.5 shrink-0 text-gold" aria-hidden="true" />
+                  {new Date(match.date).toLocaleDateString("es-AR")}
+                </span>
+                <span className="size-1 rounded-full bg-border" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="size-3.5 shrink-0 text-gold" aria-hidden="true" />
+                  {match.time} hs
+                </span>
+                <span className="size-1 rounded-full bg-border" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="size-3.5 shrink-0 text-gold" aria-hidden="true" />
+                  {match.homeTeam.city}
+                </span>
               </div>
+            </div>
+
+            {/* Estadísticas secundarias */}
+            {showStats && (
+              <div className="border-t border-white/10 pt-6 lg:mx-auto lg:max-w-2xl lg:pt-7">
+                <h3 className="sr-only">Estadísticas del partido</h3>
+                {isStatsLoading ? (
+                  <div className="flex flex-col gap-4">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="flex flex-col gap-1.5 pt-4 first:pt-0">
+                        <div className="flex items-center justify-between">
+                          <span className="h-3 w-6 animate-pulse rounded bg-white/15" />
+                          <span className="h-3 w-16 animate-pulse rounded bg-white/15" />
+                          <span className="h-3 w-6 animate-pulse rounded bg-white/15" />
+                        </div>
+                        <div className="h-1 animate-pulse rounded-full bg-white/15" />
+                      </div>
+                    ))}
+                  </div>
+                ) : isStatsError ? (
+                  <p className="text-xs text-muted-foreground">
+                    No se pudieron cargar las estadísticas.
+                  </p>
+                ) : stats ? (
+                  <div className="flex flex-col divide-y divide-white/10">
+                    <StatSplit
+                      label="Posesión"
+                      stats={[stats.home.possession, stats.away.possession]}
+                      homeColor={match.homeTeam.color}
+                      awayColor={match.awayTeam.color}
+                      index={0}
+                    />
+                    <StatSplit
+                      label="Remates"
+                      stats={[stats.home.shots, stats.away.shots]}
+                      homeColor={match.homeTeam.color}
+                      awayColor={match.awayTeam.color}
+                      index={1}
+                    />
+                    <StatSplit
+                      label="Al arco"
+                      stats={[stats.home.shotsOnTarget, stats.away.shotsOnTarget]}
+                      homeColor={match.homeTeam.color}
+                      awayColor={match.awayTeam.color}
+                      index={2}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    No hay estadísticas disponibles.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="mt-8 flex justify-center border-t border-white/10 pt-6 sm:mt-9">
+              <Link
+                href={`/matches/${match._id}`}
+                className="group inline-flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-gold transition-colors hover:text-foreground"
+              >
+                Ver cobertura completa
+                <ArrowRight
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </Link>
             </div>
           </div>
         </motion.div>
