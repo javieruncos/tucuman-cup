@@ -371,7 +371,8 @@ export default function FixturesPage() {
         <PageHero
           eyebrow="Calendario"
           title="Fixture y Resultados"
-          description="Todos los partidos de la Tucumán Cup — en vivo ahora, los próximos y el historial completo de resultados de la temporada."
+          description="Todos los partidos de la Tucumán Cup, los próximos y el historial completo de resultados de la temporada."
+          image="/images/resultados.jfif"
         />
         <Container className="py-10">
           {isLoading ? (

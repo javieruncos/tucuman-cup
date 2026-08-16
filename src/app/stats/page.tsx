@@ -22,6 +22,7 @@ export default function StatsPage() {
           eyebrow="Números"
           title="Centro de estadísticas"
           description="La radiografía estadística de la Tucumán Cup — goleadores, creadores y los clubes que iluminan el marcador."
+          image="/images/estadisticas.jfif"
         />
         <Container className="py-10">
           <StatsSummaryCards />

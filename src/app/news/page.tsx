@@ -72,8 +72,9 @@ export default function NewsPage() {
       <main className="flex-1">
         <PageHero
           eyebrow="Editorial"
-          title="Noticias"
+          title="Noticias Destacadas"
           description="Toda la actualidad de la Tucumán Cup — resultados, entrevistas, mercado de pases y las historias detrás del torneo."
+          image="/images/noticias.jfif"
         />
         <Container className="py-10">
           {isLoading ? (

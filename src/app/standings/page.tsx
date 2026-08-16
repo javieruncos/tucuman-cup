@@ -19,6 +19,7 @@ export default function StandingsPage() {
           eyebrow="La tabla"
           title="La clasificación"
           description="La clasificación actual de la Tucumán Cup. Los cuatro primeros avanzan a semifinales; los dos últimos juegan los play-offs de descenso."
+          image="/images/fixture.jfif"
         />
         <Container className="py-10">
           <StatsSummaryCards />

@@ -7,8 +7,6 @@ import {
   useAnimationFrame,
   useReducedMotion,
 } from "framer-motion";
-import { Radio } from "lucide-react";
-
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
 import { useMatches } from "@/hooks/useMatches";
@@ -90,12 +88,6 @@ export function TickerBar() {
       aria-label="Resultados recientes"
     >
       <Container clean className="flex max-w-7xl items-stretch px-4 sm:px-6 lg:px-8">
-        <div className="z-10 flex shrink-0 items-center gap-2 border-r border-border/60 bg-surface-1/60 pr-4">
-          <Radio className="size-3.5 text-gold" aria-hidden="true" />
-          <span className="font-display text-xs font-semibold uppercase tracking-wide text-foreground">
-            Resultados
-          </span>
-        </div>
         <div
           className="relative flex-1 overflow-hidden"
           style={{

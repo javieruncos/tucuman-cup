@@ -41,7 +41,7 @@ export function UpcomingMatches() {
           }
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {upcomingMatches.slice(0, 4).map((match) => (
+          {upcomingMatches.slice(0, 6).map((match) => (
             <MatchCard key={match._id} match={match} href={`/matches/${match._id}`} />
           ))}
         </div>

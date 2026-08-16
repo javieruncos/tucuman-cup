@@ -15,7 +15,7 @@ export default function Home() {
       <PortalNavbar />
       <main className="flex-1">
         <PageHero
-          image="/images/stadium-hero.jpg"
+          image="/images/futbolTribuna.jfif"
           eyebrow="Tucumán Cup · Temporada 2026"
           title={
             <>
