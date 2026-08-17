@@ -77,6 +77,7 @@ export type NewsItem = {
   author?: string;
   readTime?: string;
   team?: Team;
+  image?: string;
 };
 
 export const portalTeams: Team[] = [
@@ -251,6 +252,7 @@ export const news: NewsItem[] = [
     author: "Camila Reyes",
     readTime: "4 min",
     team: portalTeams[0],
+    image: "/images/stadium-hero.jpg",
   },
   {
     id: "n2",
@@ -261,6 +263,7 @@ export const news: NewsItem[] = [
     author: "Martín Ferreyra",
     readTime: "3 min",
     team: portalTeams[5],
+    image: "/images/fixtures-hero.jpg",
   },
   {
     id: "n3",
@@ -271,6 +274,7 @@ export const news: NewsItem[] = [
     author: "Lucía Domínguez",
     readTime: "5 min",
     team: portalTeams[2],
+    image: "/images/futbol.noche.jpg",
   },
   {
     id: "n4",
@@ -280,6 +284,7 @@ export const news: NewsItem[] = [
     date: "Hace 5 h",
     author: "Martín Ferreyra",
     readTime: "6 min",
+    image: "/images/news-hero.jpg",
   },
   {
     id: "n5",
@@ -290,6 +295,7 @@ export const news: NewsItem[] = [
     author: "Camila Reyes",
     readTime: "7 min",
     team: portalTeams[0],
+    image: "/images/stadium-hero.jpg",
   },
   {
     id: "n6",
@@ -300,6 +306,7 @@ export const news: NewsItem[] = [
     author: "Lucía Domínguez",
     readTime: "5 min",
     team: portalTeams[0],
+    image: "/images/teams-hero.jpg",
   },
   {
     id: "n7",
@@ -310,6 +317,7 @@ export const news: NewsItem[] = [
     author: "Camila Reyes",
     readTime: "4 min",
     team: portalTeams[0],
+    image: "/images/statistics-hero.jpg",
   },
   {
     id: "n8",
@@ -320,6 +328,7 @@ export const news: NewsItem[] = [
     author: "Martín Ferreyra",
     readTime: "3 min",
     team: portalTeams[5],
+    image: "/images/fixtures-hero.jpg",
   },
   {
     id: "n9",
@@ -330,6 +339,7 @@ export const news: NewsItem[] = [
     author: "Lucía Domínguez",
     readTime: "5 min",
     team: portalTeams[5],
+    image: "/images/stadium-hero.jpg",
   },
 ];
 

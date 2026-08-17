@@ -30,61 +30,100 @@ function formatNewsDate(value: string): string {
   return date.toLocaleDateString("es-AR");
 }
 
+function NewsMeta({ article }: { article: NewsResponseType | NewsItem }) {
+  return (
+    <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
+      {article.author && (
+        <span className="font-medium text-foreground">{article.author}</span>
+      )}
+      {article.author && <span>·</span>}
+      <span>{formatNewsDate(article.date)}</span>
+      {article.readTime && (
+        <span className="inline-flex items-center gap-1">
+          <Clock className="size-3" aria-hidden="true" /> {article.readTime}
+        </span>
+      )}
+    </div>
+  );
+}
+
+const NEWS_FALLBACK_IMAGE = "/images/news-hero.jpg";
+
 export function NewsCard({
   article,
   variant = "default",
   href = "#noticias",
+  index,
+  className,
 }: {
   article: NewsResponseType | NewsItem;
-  variant?: "default" | "feature" | "compact";
+  variant?: "default" | "feature" | "compact" | "row";
   href?: string;
+  index?: number;
+  className?: string;
 }) {
   const team = article.team ?? null;
 
   if (variant === "feature") {
+    const image = article.image ?? NEWS_FALLBACK_IMAGE;
     return (
       <a
         href={href}
-        className="group relative flex min-h-[380px] flex-col justify-end overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8"
+        className={cn(
+          "group relative block min-h-[420px] overflow-hidden rounded-xl sm:min-h-[480px] lg:min-h-0 lg:h-full",
+          className
+        )}
       >
         <div
-          className="absolute inset-0 opacity-70 transition-transform duration-500 group-hover:scale-105"
-          style={{
-            background: team
-              ? `radial-gradient(120% 90% at 20% 0%, ${team.color}44, transparent 60%), linear-gradient(to top, var(--card), transparent)`
-              : "linear-gradient(to top, var(--card), transparent)",
-          }}
+          role="img"
+          aria-label={article.title}
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+          style={{ backgroundImage: `url(${image})` }}
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/15"
           aria-hidden="true"
         />
-        {team && (
-          <div className="absolute right-6 top-6 opacity-30 blur-[1px] transition-opacity group-hover:opacity-50">
-            <TeamCrest team={team} size={140} />
-          </div>
-        )}
-        <div className="relative">
+        <div className="relative flex h-full min-h-[420px] flex-col justify-end p-6 sm:min-h-[480px] sm:p-8 lg:min-h-0">
           <div className="mb-3 flex items-center gap-2">
             <span className="font-display rounded bg-gold px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
               {article.category}
             </span>
           </div>
-          <h3 className="font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-balance sm:text-3xl">
+          <h3 className="font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-balance sm:text-3xl lg:text-4xl">
             {article.title}
           </h3>
           <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
             {article.excerpt}
           </p>
-          <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-            {article.author && (
-              <span className="font-medium text-foreground">{article.author}</span>
-            )}
-            {article.author && <span>·</span>}
-            <span>{formatNewsDate(article.date)}</span>
-            {article.readTime && (
-              <span className="inline-flex items-center gap-1">
-                <Clock className="size-3" aria-hidden="true" /> {article.readTime}
-              </span>
-            )}
+          <NewsMeta article={article} />
+        </div>
+      </a>
+    );
+  }
+
+  if (variant === "row") {
+    return (
+      <a
+        href={href}
+        className="group flex items-center gap-4 py-5 sm:gap-5"
+      >
+        {typeof index === "number" && (
+          <span className="tabular font-display w-7 shrink-0 text-sm font-bold text-muted-foreground/70">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        )}
+        {team && <TeamCrest team={team} size={40} />}
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-2 text-[11px] uppercase tracking-wide">
+            <span className="font-semibold text-gold">{article.category}</span>
+            <span className="text-muted-foreground">
+              · {formatNewsDate(article.date)}
+            </span>
           </div>
+          <h3 className="font-medium leading-snug text-balance transition-colors group-hover:text-gold">
+            {article.title}
+          </h3>
         </div>
       </a>
     );
@@ -103,17 +142,31 @@ export function NewsCard({
           "relative grid h-24 shrink-0 place-items-center overflow-hidden rounded-md sm:h-20 sm:w-28",
           variant === "compact" ? "w-24" : "w-full"
         )}
-        style={{
-          background: team
-            ? `linear-gradient(135deg, ${team.color}55, var(--elevated))`
-            : "var(--elevated)",
-        }}
       >
-        {team ? (
-          <TeamCrest team={team} size={44} />
+        {article.image ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            role="img"
+            aria-label={article.title}
+            style={{ backgroundImage: `url(${article.image})` }}
+          />
         ) : (
-          <span className="font-display text-gold">TC</span>
+          <div
+            className="absolute inset-0"
+            style={{
+              background: team
+                ? `linear-gradient(135deg, ${team.color}55, var(--elevated))`
+                : "var(--elevated)",
+            }}
+            aria-hidden="true"
+          />
         )}
+        {!article.image &&
+          (team ? (
+            <TeamCrest team={team} size={44} />
+          ) : (
+            <span className="font-display text-gold">TC</span>
+          ))}
       </div>
       <div className="min-w-0">
         <div className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-wide">

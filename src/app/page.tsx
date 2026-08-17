@@ -26,8 +26,8 @@ export default function Home() {
         />
         <TickerBar />
         <MatchCenter />
-        <UpcomingMatches />
         <NewsFeed />
+        <UpcomingMatches />
         <StatsSection />
         <TeamsSection />
         <SponsorsSection />

@@ -23,6 +23,7 @@ export const createNews = async (data: {
   author?: string;
   readTime?: string;
   team?: string | null;
+  image?: string;
 
 }) => {
   const news = await News.create(data);
