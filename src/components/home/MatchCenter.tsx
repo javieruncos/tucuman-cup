@@ -203,7 +203,7 @@ export function MatchCenter() {
           <div className="relative px-5 py-5 sm:px-8 sm:py-6 lg:px-10 lg:py-6">
             <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr]">
               {/* Columna editorial */}
-              <div className="order-1 flex flex-col justify-center lg:col-start-1 lg:row-start-1 lg:pr-9">
+              <div className="order-1 flex flex-col justify-center text-center lg:col-start-1 lg:row-start-1 lg:pr-9 lg:text-left">
                 <p className="font-display text-xs font-semibold uppercase tracking-widest text-gold">
                   Tucumán Cup · 2026
                 </p>
@@ -222,24 +222,10 @@ export function MatchCenter() {
                   <Score match={match} />
                   <TeamStack team={match.awayTeam} />
                 </div>
-
-                {/* CTA */}
-                <div className="mt-5 flex justify-center">
-                  <Link
-                    href={`/matches/${match._id}`}
-                    className="group inline-flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-gold transition-colors hover:text-foreground"
-                  >
-                    Ver cobertura completa
-                    <ArrowRight
-                      className="size-4 transition-transform group-hover:translate-x-0.5"
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </div>
               </div>
 
               {/* Meta */}
-              <div className="order-3 mt-4 flex flex-col justify-center lg:col-start-1 lg:row-span-1 lg:row-start-2 lg:mt-0 lg:pr-9">
+              <div className="order-3 mt-4 flex flex-col justify-center text-center lg:col-start-1 lg:row-span-1 lg:row-start-2 lg:mt-0 lg:pr-9 lg:text-left">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {formatMatchDate(match.date)} ·{" "}
                   <span className="text-gold">{match.time} HS</span>
@@ -248,11 +234,25 @@ export function MatchCenter() {
                   {match.homeTeam.city.toUpperCase()}
                 </p>
               </div>
+
+              {/* CTA */}
+              <div className="order-4 mt-5 flex justify-center lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:pl-9 lg:self-end">
+                <Link
+                  href={`/matches/${match._id}`}
+                  className="group inline-flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-gold transition-colors hover:text-foreground"
+                >
+                  Ver cobertura completa
+                  <ArrowRight
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
             </div>
 
             {/* Estadísticas */}
             {showStats && (
-              <div className="mt-4 border-t border-border/40 pt-4 sm:mt-5 sm:pt-5">
+              <div className="mt-4 border-t border-border/40 pt-4 text-center sm:mt-5 sm:pt-5 sm:text-left">
                 <h3 className="sr-only">Estadísticas del partido</h3>
                 {isStatsLoading ? (
                   <div className="grid gap-5 sm:grid-cols-3 sm:gap-8 lg:gap-10">
