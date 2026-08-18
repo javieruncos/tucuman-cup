@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,22 +10,45 @@ import { useStandings } from "@/hooks/useStandings";
 import { cn } from "@/lib/utils";
 import type { MatchResponseType } from "@/types/matches";
 
-const formDot: Record<"W" | "D" | "L", string> = {
-  W: "bg-success",
-  D: "bg-foreground/30",
-  L: "bg-destructive",
+const formTile: Record<"W" | "D" | "L", string> = {
+  W: "bg-success text-success-foreground",
+  D: "bg-muted text-muted-foreground",
+  L: "bg-destructive/80 text-white",
 };
 
 function FormTiles({ form }: { form?: Array<"W" | "D" | "L"> }) {
   if (!form || form.length === 0) return null;
+
+  const label = form
+    .map((result) =>
+      result === "W" ? "victoria" : result === "D" ? "empate" : "derrota"
+    )
+    .join(", ");
+
   return (
-    <div className="flex items-center justify-center gap-1.5">
+    <div
+      className="flex items-center justify-center gap-1"
+      role="img"
+      aria-label={`Racha: ${label}`}
+    >
       {form.map((result, index) => (
         <span
           key={index}
-          title={result === "W" ? "Victoria" : result === "D" ? "Empate" : "Derrota"}
-          className={cn("size-2.5 rounded-full", formDot[result])}
-        />
+          aria-hidden="true"
+          title={
+            result === "W"
+              ? "Victoria"
+              : result === "D"
+                ? "Empate"
+                : "Derrota"
+          }
+          className={cn(
+            "grid size-5 place-items-center rounded text-[10px] font-bold",
+            formTile[result]
+          )}
+        >
+          {result}
+        </span>
       ))}
     </div>
   );
@@ -62,22 +86,37 @@ function computeTeamForm(
 
 function StandingsTableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex flex-col">
+    <div className="border-b border-border/40">
+      <div className="flex items-center gap-4 border-b border-border/40 px-4 py-3 sm:px-6">
+        <Skeleton className="h-3 w-6" />
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="ml-auto h-3 w-6" />
+        <Skeleton className="h-3 w-8" />
+        <Skeleton className="h-4 w-6" />
+      </div>
+      <div className="divide-y divide-border/40">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 border-b border-border/60 px-4 py-2.5 last:border-0"
+            className="flex items-center gap-4 px-4 py-3.5 sm:px-6"
           >
-            <Skeleton className="h-4 w-7" />
+            <Skeleton className="h-4 w-6" />
             <Skeleton className="size-6 rounded-full" />
             <Skeleton className="h-4 flex-1" />
+            <Skeleton className="h-4 w-6" />
             <Skeleton className="h-4 w-8" />
-            <Skeleton className="h-4 w-14" />
             <Skeleton className="h-5 w-7" />
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function StandingsMessage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="border-b border-border/40 py-14 text-center">
+      {children}
     </div>
   );
 }
@@ -107,158 +146,193 @@ export function StandingsWidget() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-border bg-card px-6 py-14 text-center">
-        <p className="text-sm text-muted-foreground">No se pudo cargar la tabla.</p>
+      <StandingsMessage>
+        <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
+          No se pudo cargar la tabla
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Revisá la conexión e intentá de nuevo.
+        </p>
         <Button
           variant="outline"
           size="sm"
-          className="mt-4"
+          className="mt-5"
           onClick={() => refetch()}
         >
           Reintentar
         </Button>
-      </div>
+      </StandingsMessage>
     );
   }
 
   if (standings.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-card px-6 py-14 text-center">
-        <p className="text-sm text-muted-foreground">
-          No hay posiciones disponibles.
+      <StandingsMessage>
+        <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
+          La tabla se arma con los primeros resultados
         </p>
-      </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Cuando los equipos disputen sus primeros partidos, la clasificación
+          aparecerá acá.
+        </p>
+      </StandingsMessage>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="overflow-x-auto overscroll-x-contain">
-        <table className="w-full min-w-[720px] border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="px-4 py-3 text-left font-medium">#</th>
-              <th className="px-2 py-3 text-left font-medium">Club</th>
-              <th className="px-3 py-3 text-center font-medium text-foreground">
-                PJ
-              </th>
-              <th className="px-3 py-3 text-center font-medium">PG</th>
-              <th className="px-3 py-3 text-center font-medium">PE</th>
-              <th className="px-3 py-3 text-center font-medium">PP</th>
-              <th className="px-3 py-3 text-center font-medium">GF</th>
-              <th className="px-3 py-3 text-center font-medium">GC</th>
-              <th className="px-3 py-3 text-center font-medium">DG</th>
-              <th className="px-4 py-3 text-center font-medium text-foreground">
-                Pts
-              </th>
-              <th className="px-3 py-3 text-center font-medium">Racha</th>
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((row) => {
-              const qualifies = row.position <= 4;
-              const relegates = row.position >= standings.length - 1;
-              const isLeader = row.position === 1;
+    <div>
+      <table className="w-full table-fixed border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-border/40 text-xs uppercase tracking-widest text-muted-foreground">
+            <th scope="col" className="w-10 py-3 pl-4 pr-1 text-left font-medium sm:pl-6">
+              #
+            </th>
+            <th scope="col" className="px-2 py-3 text-left font-medium sm:px-3">
+              Club
+            </th>
+            <th scope="col" className="w-10 px-2 py-3 text-center font-medium text-foreground">
+              PJ
+            </th>
+            <th scope="col" className="hidden w-10 px-2 py-3 text-center font-medium lg:table-cell">
+              PG
+            </th>
+            <th scope="col" className="hidden w-10 px-2 py-3 text-center font-medium lg:table-cell">
+              PE
+            </th>
+            <th scope="col" className="hidden w-10 px-2 py-3 text-center font-medium lg:table-cell">
+              PP
+            </th>
+            <th scope="col" className="hidden w-10 px-2 py-3 text-center font-medium lg:table-cell">
+              GF
+            </th>
+            <th scope="col" className="hidden w-10 px-2 py-3 text-center font-medium lg:table-cell">
+              GC
+            </th>
+            <th scope="col" className="w-12 px-2 py-3 text-center font-medium">
+              DG
+            </th>
+            <th scope="col" className="w-14 px-2 py-3 pr-4 text-center font-medium text-foreground sm:px-3 sm:pr-3">
+              PTS
+            </th>
+            <th scope="col" className="hidden w-40 px-2 py-3 text-center font-medium sm:table-cell">
+              Racha
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {standings.map((row) => {
+            const qualifies = row.position <= 4;
+            const relegates = row.position >= standings.length - 1;
+            const isLeader = row.position === 1;
+            const isCut = row.position === 4;
 
-              return (
-                <tr
-                  key={row._id}
-                  className={cn(
-                    "group border-b border-border/60 transition-colors last:border-0 hover:bg-elevated",
-                    isLeader && "bg-gold/[0.05]"
-                  )}
-                >
-                  <td className="relative px-4 py-2.5">
-                    <span
-                      className={cn(
-                        "absolute inset-y-0 left-0 w-0.5",
-                        qualifies
-                          ? "bg-gold"
-                          : relegates
-                            ? "bg-destructive/70"
-                            : "bg-transparent"
-                      )}
-                      aria-hidden="true"
-                    />
-                    <span
-                      className={cn(
-                        "tabular font-display font-semibold",
-                        isLeader && "text-gold"
-                      )}
-                    >
-                      {String(row.position).padStart(2, "0")}
-                    </span>
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <a
-                      href={`/teams/${row.team._id}`}
-                      className="flex items-center gap-2.5 hover:text-gold"
-                    >
-                      <TeamCrest team={row.team} size={26} />
-                      <span
-                        className={cn(
-                          "font-medium",
-                          isLeader && "font-semibold text-gold"
-                        )}
-                      >
-                        {row.team.name}
-                      </span>
-                    </a>
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center font-medium text-foreground">
-                    {row.played}
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center text-muted-foreground">
-                    {row.won}
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center text-muted-foreground">
-                    {row.drawn}
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center text-muted-foreground">
-                    {row.lost}
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center text-muted-foreground">
-                    {row.goalsFor}
-                  </td>
-                  <td className="tabular px-3 py-2.5 text-center text-muted-foreground">
-                    {row.goalsAgainst}
-                  </td>
-                  <td
+            return (
+              <tr
+                key={row._id}
+                className={cn(
+                  "group transition-colors",
+                  isLeader
+                    ? "bg-gold-muted hover:bg-gold-muted"
+                    : "hover:bg-elevated",
+                  isCut
+                    ? "border-b-2 border-foreground/20"
+                    : row.position < standings.length
+                      ? "border-b border-border/40"
+                      : "border-b-0"
+                )}
+              >
+                <td className="relative py-3 pl-4 pr-1 sm:pl-6">
+                  <span
                     className={cn(
-                      "tabular px-3 py-2.5 text-center font-medium",
-                      row.goalDifference > 0
-                        ? "text-success"
-                        : row.goalDifference < 0
-                          ? "text-destructive"
-                          : "text-muted-foreground"
+                      "absolute inset-y-0 left-0 w-0.5",
+                      qualifies
+                        ? "bg-gold"
+                        : relegates
+                          ? "bg-destructive/70"
+                          : "bg-transparent"
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={cn(
+                      "tabular font-display text-sm font-semibold",
+                      isLeader ? "text-gold" : "text-muted-foreground"
                     )}
                   >
-                    {row.goalDifference > 0 ? "+" : ""}
-                    {row.goalDifference}
-                  </td>
-                  <td className="tabular font-display px-4 py-2.5 text-center text-base font-bold text-gold">
-                    {row.points}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <FormTiles form={forms.get(row.team._id)} />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <div className="flex flex-wrap gap-4 border-t border-border px-4 py-3 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5">
+                    {String(row.position).padStart(2, "0")}
+                  </span>
+                </td>
+                <td className="px-2 py-3 sm:px-3">
+                  <Link
+                    href={`/teams/${row.team._id}`}
+                    className="flex items-center gap-2.5 rounded-sm transition-colors hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  >
+                    <TeamCrest team={row.team} size={24} />
+                    <span
+                      className={cn(
+                        "min-w-0 flex-1 truncate font-medium",
+                        isLeader && "font-semibold text-gold"
+                      )}
+                      title={row.team.name}
+                    >
+                      {row.team.name}
+                    </span>
+                  </Link>
+                </td>
+                <td className="tabular w-10 px-2 py-3 text-center font-medium text-foreground">
+                  {row.played}
+                </td>
+                <td className="tabular hidden w-10 px-2 py-3 text-center text-muted-foreground lg:table-cell">
+                  {row.won}
+                </td>
+                <td className="tabular hidden w-10 px-2 py-3 text-center text-muted-foreground lg:table-cell">
+                  {row.drawn}
+                </td>
+                <td className="tabular hidden w-10 px-2 py-3 text-center text-muted-foreground lg:table-cell">
+                  {row.lost}
+                </td>
+                <td className="tabular hidden w-10 px-2 py-3 text-center text-muted-foreground lg:table-cell">
+                  {row.goalsFor}
+                </td>
+                <td className="tabular hidden w-10 px-2 py-3 text-center text-muted-foreground lg:table-cell">
+                  {row.goalsAgainst}
+                </td>
+                <td
+                  className={cn(
+                    "tabular w-12 px-2 py-3 text-center font-medium",
+                    row.goalDifference > 0
+                      ? "text-success"
+                      : row.goalDifference < 0
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                  )}
+                >
+                  {row.goalDifference > 0 ? "+" : ""}
+                  {row.goalDifference}
+                </td>
+                <td className="tabular font-display w-14 px-2 py-3 pr-4 text-center text-base font-bold text-gold sm:px-3 sm:pr-3">
+                  {row.points}
+                </td>
+                <td className="hidden w-40 px-2 py-3 sm:table-cell">
+                  <FormTiles form={forms.get(row.team._id)} />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/40 pt-4">
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="h-2.5 w-1 rounded-full bg-gold" aria-hidden="true" />
-          Clasificación a semifinal
+          Semifinales
         </span>
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
           <span
             className="h-2.5 w-1 rounded-full bg-destructive/70"
             aria-hidden="true"
           />
-          Descenso
+          Play-offs de descenso
         </span>
       </div>
     </div>
