@@ -251,3 +251,11 @@
 .animate-rise {
   animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-live-pulse,
+  .animate-score-pop,
+  .animate-rise {
+    animation: none;
+  }
+}

@@ -41,6 +41,16 @@ const matchSchema = new Schema(
       default: 0,
       min: 0,
     },
+
+    round: {
+      type: String,
+      trim: true,
+    },
+
+    venue: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,

@@ -10,6 +10,8 @@ export type MatchType = {
   status: MatchStatus;
   homeScore: number;
   awayScore: number;
+  round?: string;
+  venue?: string;
 };
 
 export interface MatchResponseType {
@@ -21,6 +23,8 @@ export interface MatchResponseType {
   status: MatchStatus;
   homeScore: number;
   awayScore: number;
+  round?: string;
+  venue?: string;
   createdAt: string;
   updatedAt: string;
 }
