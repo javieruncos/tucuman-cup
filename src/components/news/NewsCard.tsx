@@ -1,7 +1,6 @@
 import { Clock } from "lucide-react";
 
 import { TeamCrest } from "@/components/shared/TeamCrest";
-import type { NewsItem } from "@/lib/mock/portal";
 import { cn } from "@/lib/utils";
 import type { NewsResponseType } from "@/types/news";
 
@@ -30,7 +29,7 @@ function formatNewsDate(value: string): string {
   return date.toLocaleDateString("es-AR");
 }
 
-function NewsMeta({ article }: { article: NewsResponseType | NewsItem }) {
+function NewsMeta({ article }: { article: NewsResponseType }) {
   return (
     <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
       {article.author && (
@@ -56,7 +55,7 @@ export function NewsCard({
   index,
   className,
 }: {
-  article: NewsResponseType | NewsItem;
+  article: NewsResponseType;
   variant?: "default" | "feature" | "compact" | "row";
   href?: string;
   index?: number;

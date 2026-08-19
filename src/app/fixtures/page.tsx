@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, MapPin } from "lucide-react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
+import { TournamentIdentity } from "@/components/tournament/TournamentIdentity";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
 import { Footer } from "@/components/ui/Footer";
@@ -125,36 +126,6 @@ function SubHeading({ label }: { label: string }) {
 
 function formatGoalDifference(value: number): string {
   return value > 0 ? `+${value}` : `${value}`;
-}
-
-function TournamentIdentity() {
-  const {
-    data: standings = [],
-    isLoading,
-    isFetching,
-  } = useStandings();
-  const loading = isLoading || (isFetching && standings.length === 0);
-  const clubs = !loading && standings.length > 0 ? standings.length : undefined;
-
-  return (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-      <span className="font-display text-[11px] font-semibold uppercase tracking-widest text-gold">
-        Tucumán Cup
-      </span>
-      <span className="size-1 rounded-full bg-border" aria-hidden="true" />
-      <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-        Edición 2026
-      </span>
-      {clubs !== undefined && (
-        <>
-          <span className="size-1 rounded-full bg-border" aria-hidden="true" />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-            {clubs} {clubs === 1 ? "club" : "clubes"}
-          </span>
-        </>
-      )}
-    </p>
-  );
 }
 
 function TournamentStatus({ round }: { round?: string }) {

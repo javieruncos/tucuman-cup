@@ -118,6 +118,10 @@ export function UpcomingMatches() {
     (match) => match.status === "scheduled"
   );
 
+  if (upcomingMatches.length === 0) {
+    return null;
+  }
+
   return (
     <Section id="partidos">
       <Container>

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PageHeroProps {
-  eyebrow: string;
+  eyebrow: ReactNode;
   title: ReactNode;
   description?: string;
   image?: string;
@@ -45,9 +45,9 @@ export function PageHero({
         )}
       >
         <div className={cn("max-w-[680px]", compact && "max-w-[560px]")}>
-          <p className="font-display text-xs font-semibold uppercase tracking-widest text-gold">
+          <div className="font-display text-xs font-semibold uppercase tracking-widest text-gold">
             {eyebrow}
-          </p>
+          </div>
           <h1
             className={cn(
               "font-display mt-2 font-bold uppercase leading-none tracking-wide text-balance",

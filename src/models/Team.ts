@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, model, models, Schema } from "mongoose";
+import { InferSchemaType, model, models, Schema } from "mongoose";
 
 const TeamSchema = new Schema({
     name: {

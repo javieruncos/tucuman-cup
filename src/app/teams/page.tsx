@@ -1,9 +1,7 @@
 import { Footer } from "@/components/ui/Footer";
 import { PortalNavbar } from "@/components/home/PortalNavbar";
-import { TeamCard } from "@/components/teams/TeamCard";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { portalTeams } from "@/lib/mock/portal";
 import { TeamsList } from "../../components/teams/TeamsList";
 
 export default function TeamsPage() {

@@ -9,10 +9,10 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStandings } from "@/hooks/useStandings";
-import { topScorers } from "@/lib/mock/portal";
+import { useTopScorers } from "@/hooks/useTopScorers";
 import { cn } from "@/lib/utils";
-import type { TopScorer } from "@/lib/mock/portal";
 import type { Standing } from "@/types/standings";
+import type { TopScorer } from "@/types/statistics";
 
 function BlockHeader({ children }: { children: React.ReactNode }) {
   return (
@@ -156,7 +156,7 @@ function ScorerRow({ scorer, rank }: { scorer: TopScorer; rank: number }) {
         <TeamCrest team={scorer.team} size={24} />
         <span className="min-w-0">
           <span className="font-display block truncate text-sm font-semibold uppercase tracking-wide text-foreground">
-            {scorer.name}
+            {scorer.player.name}
           </span>
           <span className="block truncate text-xs text-muted-foreground">
             {scorer.team.shortName}
@@ -171,10 +171,63 @@ function ScorerRow({ scorer, rank }: { scorer: TopScorer; rank: number }) {
 }
 
 function ScorersTeaser() {
+  const {
+    data: scorers = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useTopScorers();
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-1 flex-col divide-y divide-border/40">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="flex min-h-16 items-center gap-3 py-3.5 sm:min-h-[4.5rem] sm:py-4"
+          >
+            <Skeleton className="h-4 w-7" />
+            <Skeleton className="size-6 rounded-full" />
+            <div className="min-w-0 flex-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="mt-1.5 h-3 w-16" />
+            </div>
+            <Skeleton className="h-6 w-10" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-1 flex-col justify-center py-6">
+        <p className="text-sm text-muted-foreground">
+          No se pudo cargar la tabla de goleadores.
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-3 text-sm font-medium text-gold transition-colors hover:text-gold-muted"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
+  if (scorers.length === 0) {
+    return (
+      <p className="py-6 text-sm text-muted-foreground">
+        No hay goleadores cargados.
+      </p>
+    );
+  }
+
   return (
     <div className="flex flex-1 flex-col divide-y divide-border/40">
-      {topScorers.slice(0, 5).map((scorer, index) => (
-        <ScorerRow key={scorer.id} scorer={scorer} rank={index + 1} />
+      {scorers.slice(0, 5).map((scorer, index) => (
+        <ScorerRow key={scorer.player._id} scorer={scorer} rank={index + 1} />
       ))}
     </div>
   );

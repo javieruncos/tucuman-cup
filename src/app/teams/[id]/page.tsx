@@ -16,8 +16,24 @@ import { useMatches } from "@/hooks/useMatches";
 import { useNews } from "@/hooks/useNews";
 import { useStandings } from "@/hooks/useStandings";
 import { useTeam } from "@/hooks/useTeam";
+import { useTeamPlayers } from "@/hooks/useTeamPlayers";
 import { cn } from "@/lib/utils";
 import type { MatchResponseType } from "@/types/matches";
+import type { PlayerPosition } from "@/types/players";
+
+const POSITION_LABEL: Record<PlayerPosition, string> = {
+  GK: "Arquero",
+  DEF: "Defensor",
+  MID: "Mediocampista",
+  FWD: "Delantero",
+};
+
+const POSITION_ORDER: Record<PlayerPosition, number> = {
+  GK: 0,
+  DEF: 1,
+  MID: 2,
+  FWD: 3,
+};
 
 const formTile: Record<"W" | "D" | "L", string> = {
   W: "bg-success text-success-foreground",
@@ -71,6 +87,91 @@ function getTeamForm(
     if (scored < conceded) return "L";
     return "D";
   });
+}
+
+function SquadSection({
+  teamId,
+  teamName,
+}: {
+  teamId: string;
+  teamName: string;
+}) {
+  const {
+    data: players = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useTeamPlayers(teamId);
+
+  const sorted = [...players].sort(
+    (a, b) =>
+      POSITION_ORDER[a.position] - POSITION_ORDER[b.position] ||
+      a.number - b.number
+  );
+
+  return (
+    <section className="mt-12">
+      <SectionHeader
+        align="left"
+        eyebrow="Plantel"
+        title={`Plantel de ${teamName}`}
+      />
+      {isLoading ? (
+        <div className="divide-y divide-border/60">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-4 py-3.5">
+              <Skeleton className="h-4 w-8" />
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="ml-auto h-3 w-24" />
+            </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
+          <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
+            No se pudo cargar el plantel
+          </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="font-display mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:text-primary-300"
+          >
+            Reintentar
+          </button>
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
+          <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
+            Plantel no cargado
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Los jugadores de {teamName} aparecerán acá.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-hidden border-y border-border">
+          <div className="divide-y divide-border/60">
+            {sorted.map((player) => (
+              <div
+                key={player._id}
+                className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 py-3.5 sm:grid-cols-[3rem_1fr_auto]"
+              >
+                <span className="tabular font-display text-sm font-bold text-muted-foreground/60">
+                  {player.number}
+                </span>
+                <span className="min-w-0 truncate font-medium text-foreground">
+                  {player.name}
+                </span>
+                <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                  {POSITION_LABEL[player.position]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }
 
 export default function TeamDetailPage({
@@ -441,6 +542,8 @@ export default function TeamDetailPage({
                 </div>
               )}
             </section>
+
+            <SquadSection teamId={id} teamName={team.name} />
 
             <section className="mt-12">
               <SectionHeader

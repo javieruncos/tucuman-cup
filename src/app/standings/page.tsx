@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
+import { TournamentIdentity } from "@/components/tournament/TournamentIdentity";
 import { StandingsWidget } from "@/components/statistics/StandingsWidget";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
@@ -11,6 +12,7 @@ import { Footer } from "@/components/ui/Footer";
 import { PageHero } from "@/components/ui/PageHero";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStandings } from "@/hooks/useStandings";
+import { useTournament } from "@/hooks/useTournament";
 
 function SubHeading({ label }: { label: string }) {
   return (
@@ -20,36 +22,6 @@ function SubHeading({ label }: { label: string }) {
       </h2>
       <span className="h-px flex-1 bg-border" aria-hidden="true" />
     </div>
-  );
-}
-
-function TournamentIdentity() {
-  const {
-    data: standings = [],
-    isLoading,
-    isFetching,
-  } = useStandings();
-  const loading = isLoading || (isFetching && standings.length === 0);
-  const clubs = !loading && standings.length > 0 ? standings.length : undefined;
-
-  return (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-      <span className="font-display text-[11px] font-semibold uppercase tracking-widest text-gold">
-        Tucumán Cup
-      </span>
-      <span className="size-1 rounded-full bg-border" aria-hidden="true" />
-      <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-        Edición 2026
-      </span>
-      {clubs !== undefined && (
-        <>
-          <span className="size-1 rounded-full bg-border" aria-hidden="true" />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-            {clubs} {clubs === 1 ? "club" : "clubes"}
-          </span>
-        </>
-      )}
-    </p>
   );
 }
 
@@ -84,7 +56,7 @@ function LeaderEditorial() {
             <span className="text-gold"> · {leader.points} pts</span>
           </p>
           <p className="mt-2 max-w-[620px] text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Encabeza la clasificación y marca el ritmo de la edición 2026.
+            Encabeza la clasificación y marca el ritmo de esta temporada.
           </p>
         </>
       ) : null}
@@ -93,6 +65,16 @@ function LeaderEditorial() {
 }
 
 export default function StandingsPage() {
+  const {
+    data: tournament,
+    isLoading: tournamentLoading,
+    error: tournamentError,
+  } = useTournament();
+  const format =
+    !tournamentLoading && !tournamentError && tournament?.format
+      ? tournament.format
+      : null;
+
   return (
     <>
       <PortalNavbar />
@@ -107,23 +89,24 @@ export default function StandingsPage() {
           <TournamentIdentity />
         </PageHero>
         <Container className="py-10">
-          <section
-            aria-labelledby="como-se-juega"
-            className="border-y border-border/40 bg-surface-1"
-          >
-            <div className="px-4 py-5 sm:px-6">
-              <h2
-                id="como-se-juega"
-                className="font-display text-xs font-semibold uppercase tracking-widest text-gold"
-              >
-                Cómo se juega
-              </h2>
-              <p className="mt-2 max-w-[620px] text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Los 4 primeros avanzan a semifinales · el 5º y el 6º disputan
-                los play-offs de descenso.
-              </p>
-            </div>
-          </section>
+          {format && (
+            <section
+              aria-labelledby="como-se-juega"
+              className="border-y border-border/40 bg-surface-1"
+            >
+              <div className="px-4 py-5 sm:px-6">
+                <h2
+                  id="como-se-juega"
+                  className="font-display text-xs font-semibold uppercase tracking-widest text-gold"
+                >
+                  Cómo se juega
+                </h2>
+                <p className="mt-2 max-w-[620px] text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {format}
+                </p>
+              </div>
+            </section>
+          )}
 
           <div className="mt-10">
             <StandingsWidget />

@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import { sponsors } from "@/lib/mock/portal";
+import { sponsors } from "@/lib/mock/sponsors";
 
 export function SponsorsSection() {
   return (

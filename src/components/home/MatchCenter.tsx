@@ -9,6 +9,7 @@ import { Section } from "@/components/ui/Section";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { useMatches } from "@/hooks/useMatches";
 import { useMatchStats } from "@/hooks/useMatchStats";
+import { useTournament } from "@/hooks/useTournament";
 import type { MatchResponseType } from "@/types/matches";
 import type { Team } from "@/types/teams";
 
@@ -154,6 +155,7 @@ function StatSplit({
 
 export function MatchCenter() {
   const { data: matches, isLoading, isError } = useMatches();
+  const { data: tournament } = useTournament();
   const match =
     matches?.find((item) => item.status === "live") ??
     matches?.find((item) => item.status === "scheduled");
@@ -205,7 +207,7 @@ export function MatchCenter() {
               {/* Columna editorial */}
               <div className="order-1 flex flex-col justify-center text-center lg:col-start-1 lg:row-start-1 lg:pr-9 lg:text-left">
                 <p className="font-display text-xs font-semibold uppercase tracking-widest text-gold">
-                  Tucumán Cup · 2026
+                  {tournament ? `${tournament.name} · ${tournament.season}` : "Tucumán Cup"}
                 </p>
                 <h2 className="font-display mt-2 text-xl font-semibold uppercase leading-tight tracking-wide sm:text-2xl">
                   Partido destacado

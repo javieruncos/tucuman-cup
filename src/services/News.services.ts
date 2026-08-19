@@ -27,6 +27,5 @@ export const createNews = async (data: {
 
 }) => {
   const news = await News.create(data);
-console.log("NEWS CREADA:", news.toObject());
   return news.populate("team");
 };

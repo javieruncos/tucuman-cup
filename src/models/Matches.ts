@@ -42,6 +42,20 @@ const matchSchema = new Schema(
       min: 0,
     },
 
+    halftimeScore: {
+      type: {
+        home: {
+          type: Number,
+          default: null,
+        },
+        away: {
+          type: Number,
+          default: null,
+        },
+      },
+      default: null,
+    },
+
     round: {
       type: String,
       trim: true,

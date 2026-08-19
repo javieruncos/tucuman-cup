@@ -2,6 +2,11 @@ import type { Team } from "./teams";
 
 export type MatchStatus = "scheduled" | "live" | "finished";
 
+export type HalftimeScore = {
+  home: number | null;
+  away: number | null;
+};
+
 export type MatchType = {
   homeTeam: string;
   awayTeam: string;
@@ -10,6 +15,7 @@ export type MatchType = {
   status: MatchStatus;
   homeScore: number;
   awayScore: number;
+  halftimeScore?: HalftimeScore;
   round?: string;
   venue?: string;
 };
@@ -23,6 +29,7 @@ export interface MatchResponseType {
   status: MatchStatus;
   homeScore: number;
   awayScore: number;
+  halftimeScore?: HalftimeScore;
   round?: string;
   venue?: string;
   createdAt: string;

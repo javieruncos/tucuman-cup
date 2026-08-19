@@ -1,16 +1,16 @@
 import { Match } from "@/models/Matches";
-import { Standing, StandingType } from "@/models/Stading";
-import type { Standing as StandingResponse } from "@/types/standings";
+import { Team } from "@/models/Team";
+import type { Standing } from "@/types/standings";
 
 type FinishedMatch = {
-  homeTeam: StandingResponse["team"];
-  awayTeam: StandingResponse["team"];
+  homeTeam: Standing["team"];
+  awayTeam: Standing["team"];
   homeScore: number;
   awayScore: number;
 };
 
 type StandingAccumulator = {
-  team: StandingResponse["team"];
+  team: Standing["team"];
   played: number;
   won: number;
   drawn: number;
@@ -19,14 +19,33 @@ type StandingAccumulator = {
   goalsAgainst: number;
 };
 
-const computeStandings = async (): Promise<StandingResponse[]> => {
-  const matches = (await Match.find({ status: "finished" })
-    .populate("homeTeam")
-    .populate("awayTeam")) as unknown as FinishedMatch[];
+const emptyRow = (team: Standing["team"]): StandingAccumulator => ({
+  team,
+  played: 0,
+  won: 0,
+  drawn: 0,
+  lost: 0,
+  goalsFor: 0,
+  goalsAgainst: 0,
+});
+
+const computeStandings = async (): Promise<Standing[]> => {
+  const [teams, matches] = await Promise.all([
+    Team.find().lean(),
+    Match.find({ status: "finished" })
+      .populate("homeTeam")
+      .populate("awayTeam")
+      .lean(),
+  ]);
 
   const byTeam = new Map<string, StandingAccumulator>();
 
-  for (const match of matches) {
+  for (const team of teams) {
+    const key = String(team._id);
+    byTeam.set(key, emptyRow(team as unknown as Standing["team"]));
+  }
+
+  for (const match of matches as unknown as FinishedMatch[]) {
     const { homeTeam, awayTeam, homeScore, awayScore } = match;
 
     if (!homeTeam || !awayTeam) continue;
@@ -34,26 +53,8 @@ const computeStandings = async (): Promise<StandingResponse[]> => {
     const homeKey = homeTeam._id.toString();
     const awayKey = awayTeam._id.toString();
 
-    const home =
-      byTeam.get(homeKey) ?? {
-        team: homeTeam,
-        played: 0,
-        won: 0,
-        drawn: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-      };
-    const away =
-      byTeam.get(awayKey) ?? {
-        team: awayTeam,
-        played: 0,
-        won: 0,
-        drawn: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-      };
+    const home = byTeam.get(homeKey) ?? emptyRow(homeTeam);
+    const away = byTeam.get(awayKey) ?? emptyRow(awayTeam);
 
     home.played += 1;
     away.played += 1;
@@ -101,53 +102,11 @@ const computeStandings = async (): Promise<StandingResponse[]> => {
     .map((row, index) => ({ ...row, position: index + 1 }));
 };
 
-export const getStading = async (): Promise<StandingResponse[]> => {
+export const getStading = async (): Promise<Standing[]> => {
   try {
     return await computeStandings();
   } catch (error) {
     console.log("Error al obtener standings", error);
-    throw error;
-  }
-}
-
-
-export const createStanding = async (standing: StandingType) => {
-  try {
-    const response = await Standing.create(standing);
-    return response;
-  } catch (error) {
-    console.log("Error al crear standing", error);
-    throw error;
-  }
-}
-
-export const deleteStanding = async (id: string) => {
-  try {
-    const response = await Standing.findByIdAndDelete(id);
-    return response;
-  } catch (error) {
-    console.log("Error al eliminar standing", error);
-    throw error;
-  }
-}
-
-export const updateStanding = async (id: string, standing: StandingType) => {
-  try {
-    const response = await Standing.findByIdAndUpdate(id, standing, { new: true });
-    return response;
-  } catch (error) {
-    console.log("Error al actualizar standing", error);
-    throw error;
-  }
-}
-
-export const getStandingByTeamId = async (teamId: string) => {
-  try {
-    const standings = await computeStandings();
-
-    return standings.find((row) => row._id === teamId) ?? null;
-  } catch (error) {
-    console.error("Error al obtener standing del equipo:", error);
     throw error;
   }
 };
