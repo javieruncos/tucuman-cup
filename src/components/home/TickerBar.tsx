@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import {
   motion,
   useMotionValue,
@@ -16,38 +17,49 @@ function TickerItem({ match }: { match: MatchResponseType }) {
   return (
     <li
       aria-label={`${match.homeTeam.name} ${match.homeScore} a ${match.awayScore} ${match.awayTeam.name}`}
-      className="flex shrink-0 items-center gap-4 border-l border-border/40 px-7 sm:gap-5 sm:px-9"
+      className="flex shrink-0 items-center border-l border-border/40"
     >
-      <span className="-ml-px hidden h-[68px] w-px bg-border/40 sm:block" aria-hidden="true" />
-      <TeamCrest team={match.homeTeam} size={72} />
-      <span
-        className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
-        style={{ color: match.homeTeam.color }}
+      <Link
+        href={`/matches/${match._id}`}
+        className="flex shrink-0 items-center gap-4 px-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:gap-5 sm:px-9"
       >
-        {match.homeTeam.shortName}
-      </span>
-      <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
-        {match.homeScore}
-      </span>
-      <span className="font-display text-2xl font-light text-muted-foreground" aria-hidden="true">
-        –
-      </span>
-      <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
-        {match.awayScore}
-      </span>
-      <span
-        className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
-        style={{ color: match.awayTeam.color }}
-      >
-        {match.awayTeam.shortName}
-      </span>
-      <TeamCrest team={match.awayTeam} size={72} />
-      <span className="ml-2 whitespace-nowrap text-base text-muted-foreground">
-        {new Date(match.date).toLocaleDateString("es-AR", {
-          day: "numeric",
-          month: "short",
-        })}
-      </span>
+        <span
+          className="-ml-px hidden h-[68px] w-px bg-border/40 sm:block"
+          aria-hidden="true"
+        />
+        <TeamCrest team={match.homeTeam} size={72} />
+        <span
+          className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
+          style={{ color: match.homeTeam.color }}
+        >
+          {match.homeTeam.shortName}
+        </span>
+        <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
+          {match.homeScore}
+        </span>
+        <span
+          className="font-display text-2xl font-light text-muted-foreground"
+          aria-hidden="true"
+        >
+          –
+        </span>
+        <span className="font-display text-4xl font-bold tabular-nums leading-none text-foreground">
+          {match.awayScore}
+        </span>
+        <span
+          className="max-w-[11ch] truncate text-2xl font-medium text-foreground"
+          style={{ color: match.awayTeam.color }}
+        >
+          {match.awayTeam.shortName}
+        </span>
+        <TeamCrest team={match.awayTeam} size={72} />
+        <span className="ml-2 whitespace-nowrap text-base text-muted-foreground">
+          {new Date(match.date).toLocaleDateString("es-AR", {
+            day: "numeric",
+            month: "short",
+          })}
+        </span>
+      </Link>
     </li>
   );
 }

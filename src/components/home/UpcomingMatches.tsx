@@ -8,30 +8,9 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useMatches } from "@/hooks/useMatches";
+import { formatMatchDay } from "@/lib/matchDate";
 import type { MatchResponseType } from "@/types/matches";
 import type { Team } from "@/types/teams";
-
-function formatMatchDay(value: string): { weekday: string; dayMonth: string } {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return { weekday: "", dayMonth: value };
-  }
-
-  const weekday = new Intl.DateTimeFormat("es-AR", { weekday: "short" })
-    .format(date)
-    .replace(/\./g, "")
-    .toUpperCase();
-
-  const dayMonth = new Intl.DateTimeFormat("es-AR", {
-    day: "numeric",
-    month: "short",
-  })
-    .format(date)
-    .replace(/\./g, "")
-    .toUpperCase();
-
-  return { weekday, dayMonth };
-}
 
 function TeamSide({ team }: { team: Team }) {
   return (
@@ -46,7 +25,7 @@ function TeamSide({ team }: { team: Team }) {
         size={80}
         className="hidden sm:inline-flex transition-transform duration-300 group-hover:scale-[1.03]"
       />
-      <p className="font-display line-clamp-2 text-sm font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-base">
+      <p className="font-display line-clamp-2 min-h-[2.25rem] text-sm font-semibold uppercase leading-tight tracking-wide text-foreground sm:min-h-[2.5rem] sm:text-base">
         {team.name}
       </p>
     </div>
@@ -140,7 +119,7 @@ export function UpcomingMatches() {
           }
         />
         <div className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {upcomingMatches.slice(0, 6).map((match) => (
+          {upcomingMatches.slice(0, 3).map((match) => (
             <EditorialMatchCard key={match._id} match={match} />
           ))}
         </div>

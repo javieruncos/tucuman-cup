@@ -24,7 +24,7 @@ export function TeamCard({
       <div className="relative mb-auto flex flex-col items-center gap-3 lg:flex-row">
         <TeamCrest team={team} size={52} />
         <div className="min-w-0 text-center lg:text-left">
-          <p className="font-display truncate text-lg font-semibold uppercase leading-tight tracking-wide">
+          <p className="font-display line-clamp-2 min-h-[2.8125rem] text-lg font-semibold uppercase leading-tight tracking-wide">
             {team.name}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -35,7 +35,7 @@ export function TeamCard({
       <div className="relative mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-center">
         <div>
           <p className="tabular font-display text-xl font-bold">
-            {standing?.points ?? 0}
+            {standing?.points ?? "—"}
           </p>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
             Pts
@@ -43,7 +43,7 @@ export function TeamCard({
         </div>
         <div>
           <p className="tabular font-display text-xl font-bold">
-            {standing?.won ?? 0}
+            {standing?.won ?? "—"}
           </p>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
             Ganados
@@ -51,10 +51,10 @@ export function TeamCard({
         </div>
         <div>
           <p className="tabular font-display text-xl font-bold text-gold">
-            {standing?.goalsFor ?? 0}
+            {standing?.goalsFor ?? "—"}
           </p>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            Goles
+            GF
           </p>
         </div>
       </div>

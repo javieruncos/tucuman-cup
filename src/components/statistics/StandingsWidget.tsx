@@ -2,87 +2,14 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { FormTiles } from "@/components/shared/FormTiles";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMatches } from "@/hooks/useMatches";
 import { useStandings } from "@/hooks/useStandings";
+import { getTeamForm } from "@/lib/teamForm";
 import { cn } from "@/lib/utils";
-import type { MatchResponseType } from "@/types/matches";
-
-const formTile: Record<"W" | "D" | "L", string> = {
-  W: "bg-success text-success-foreground",
-  D: "bg-muted text-muted-foreground",
-  L: "bg-destructive/80 text-white",
-};
-
-function FormTiles({ form }: { form?: Array<"W" | "D" | "L"> }) {
-  if (!form || form.length === 0) return null;
-
-  const label = form
-    .map((result) =>
-      result === "W" ? "victoria" : result === "D" ? "empate" : "derrota"
-    )
-    .join(", ");
-
-  return (
-    <div
-      className="flex items-center justify-center gap-1"
-      role="img"
-      aria-label={`Racha: ${label}`}
-    >
-      {form.map((result, index) => (
-        <span
-          key={index}
-          aria-hidden="true"
-          title={
-            result === "W"
-              ? "Victoria"
-              : result === "D"
-                ? "Empate"
-                : "Derrota"
-          }
-          className={cn(
-            "grid size-5 place-items-center rounded text-[10px] font-bold",
-            formTile[result]
-          )}
-        >
-          {result}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function computeTeamForm(
-  matches: MatchResponseType[],
-  teamId: string
-): Array<"W" | "D" | "L"> {
-  return matches
-    .filter((match) => match.status === "finished")
-    .map((match) => {
-      const isHome = match.homeTeam?._id === teamId;
-      const isAway = match.awayTeam?._id === teamId;
-      if (!isHome && !isAway) return null;
-      const scored = isHome ? match.homeScore : match.awayScore;
-      const conceded = isHome ? match.awayScore : match.homeScore;
-      return {
-        date: match.date,
-        result:
-          scored > conceded
-            ? ("W" as const)
-            : scored < conceded
-              ? ("L" as const)
-              : ("D" as const),
-      };
-    })
-    .filter(
-      (entry): entry is { date: string; result: "W" | "D" | "L" } => entry !== null
-    )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
-    .map((entry) => entry.result);
-}
 
 function StandingsTableSkeleton() {
   return (
@@ -137,7 +64,7 @@ export function StandingsWidget() {
   const forms = useMemo(() => {
     const map = new Map<string, Array<"W" | "D" | "L">>();
     for (const row of standings) {
-      map.set(row.team._id, computeTeamForm(matches, row.team._id));
+      map.set(row.team._id, getTeamForm(matches, row.team._id));
     }
     return map;
   }, [matches, standings]);
@@ -169,11 +96,11 @@ export function StandingsWidget() {
     return (
       <StandingsMessage>
         <p className="font-display text-lg font-semibold uppercase tracking-wide text-foreground">
-          La tabla se arma con los primeros resultados
+          La tabla todavía no tiene datos
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Cuando los equipos disputen sus primeros partidos, la clasificación
-          aparecerá acá.
+          Cuando se carguen los clubes del torneo, la clasificación aparecerá
+          acá.
         </p>
       </StandingsMessage>
     );
@@ -221,10 +148,7 @@ export function StandingsWidget() {
         </thead>
         <tbody>
           {standings.map((row) => {
-            const qualifies = row.position <= 4;
-            const relegates = row.position >= standings.length - 1;
             const isLeader = row.position === 1;
-            const isCut = row.position === 4;
 
             return (
               <tr
@@ -234,25 +158,12 @@ export function StandingsWidget() {
                   isLeader
                     ? "bg-gold-muted hover:bg-gold-muted"
                     : "hover:bg-elevated",
-                  isCut
-                    ? "border-b-2 border-foreground/20"
-                    : row.position < standings.length
-                      ? "border-b border-border/40"
-                      : "border-b-0"
+                  row.position < standings.length
+                    ? "border-b border-border/40"
+                    : "border-b-0"
                 )}
               >
-                <td className="relative py-3 pl-4 pr-1 sm:pl-6">
-                  <span
-                    className={cn(
-                      "absolute inset-y-0 left-0 w-0.5",
-                      qualifies
-                        ? "bg-gold"
-                        : relegates
-                          ? "bg-destructive/70"
-                          : "bg-transparent"
-                    )}
-                    aria-hidden="true"
-                  />
+                <td className="py-3 pl-4 pr-1 sm:pl-6">
                   <span
                     className={cn(
                       "tabular font-display text-sm font-semibold",
@@ -321,20 +232,6 @@ export function StandingsWidget() {
           })}
         </tbody>
       </table>
-
-      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border/40 pt-4">
-        <span className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="h-2.5 w-1 rounded-full bg-gold" aria-hidden="true" />
-          Semifinales
-        </span>
-        <span className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span
-            className="h-2.5 w-1 rounded-full bg-destructive/70"
-            aria-hidden="true"
-          />
-          Play-offs de descenso
-        </span>
-      </div>
     </div>
   );
 }

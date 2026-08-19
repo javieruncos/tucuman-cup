@@ -3,16 +3,12 @@
 import type { ReactNode } from "react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
-import { MatchCard } from "@/components/matches/MatchCard";
-import { ResultsWidget } from "@/components/matches/ResultsWidget";
 import { NewsCard } from "@/components/news/NewsCard";
-import { TopScorersWidget } from "@/components/statistics/TopScorersWidget";
 import { Container } from "@/components/ui/Container";
 import { Footer } from "@/components/ui/Footer";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Tabs } from "@/components/ui/tabs";
-import { useMatches } from "@/hooks/useMatches";
 import { useNews } from "@/hooks/useNews";
 import type { NewsResponseType } from "@/types/news";
 
@@ -57,9 +53,6 @@ function NewsMessage({ children }: { children: ReactNode }) {
 export default function NewsPage() {
   const { data: news = [], isLoading, isError } = useNews();
   const featured = news[0];
-  const trending = news.slice(1, 5);
-  const { data: matches = [], isLoading: isLoadingMatches, error } = useMatches();
-  const upcoming = matches.filter((match) => match.status === "scheduled");
 
   const categories = [
     "Todos",
@@ -72,8 +65,8 @@ export default function NewsPage() {
       <main className="flex-1">
         <PageHero
           eyebrow="Editorial"
-          title="Noticias Destacadas"
-          description="Toda la actualidad de la Tucumán Cup — resultados, entrevistas, mercado de pases y las historias detrás del torneo."
+          title="Noticias"
+          description="Toda la actualidad de la Tucumán Cup: las historias de los equipos, los jugadores y la competición."
           image="/images/noticias.jfif"
         />
         <Container className="py-10">
@@ -132,53 +125,8 @@ export default function NewsPage() {
                   ]}
                 />
               </section>
-
-              <section className="mt-12">
-                <SectionHeader
-                  eyebrow="Trending"
-                  title="Destacadas"
-                  align="left"
-                />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {trending.map((a) => (
-                    <NewsCard
-                      key={a._id}
-                      article={a}
-                      variant="compact"
-                      href={`/news/${a._id}`}
-                    />
-                  ))}
-                </div>
-              </section>
             </>
           )}
-
-          <section className="mt-12">
-            <SectionHeader
-              eyebrow="Panorama"
-              title="Resultados, goleadores y agenda"
-              align="left"
-            />
-            <div className="grid gap-8 lg:grid-cols-3">
-              <ResultsWidget />
-              <TopScorersWidget />
-              <div className="flex flex-col gap-4">
-                {isLoadingMatches ? (
-                  <div>Cargando agenda...</div>
-                ) : error ? (
-                  <div>No se pudo cargar la agenda</div>
-                ) : (
-                  upcoming.map((match) => (
-                    <MatchCard
-                      key={match._id}
-                      match={match}
-                      href={`/matches/${match._id}`}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-          </section>
         </Container>
       </main>
       <Footer />

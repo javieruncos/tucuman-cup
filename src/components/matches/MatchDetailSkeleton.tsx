@@ -7,8 +7,12 @@ export function MatchDetailSkeleton() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border bg-card/40">
         <Container className="relative py-10 sm:py-14">
-          {/* Back link */}
-          <Skeleton className="mb-8 h-5 w-40" />
+          {/* Breadcrumb */}
+          <div className="mb-8 flex items-center gap-3">
+            <Skeleton className="h-3.5 w-14" />
+            <Skeleton className="h-3.5 w-3" />
+            <Skeleton className="h-3.5 w-20" />
+          </div>
 
           {/* Date · time · status */}
           <div className="flex flex-col items-center gap-3">
@@ -33,13 +37,25 @@ export function MatchDetailSkeleton() {
         </Container>
       </section>
 
-      {/* Match information */}
+      {/* Compact editorial meta */}
       <Container className="py-10">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} className="h-3 w-16" />
+          ))}
+        </div>
+      </Container>
+
+      {/* Timeline */}
+      <Container className="pb-10 pt-0">
+        <Skeleton className="mb-4 h-3 w-32" />
+        <div className="divide-y divide-border/30">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="bg-card p-5">
-              <Skeleton className="h-3 w-20" />
-              <Skeleton className="mt-3 h-6 w-28" />
+            <div key={index} className="flex items-center gap-3 py-3.5">
+              <Skeleton className="h-3.5 w-9" />
+              <Skeleton className="size-7 rounded-full" />
+              <Skeleton className="h-4 w-44" />
+              <Skeleton className="ml-auto size-5 rounded-full" />
             </div>
           ))}
         </div>

@@ -2,92 +2,21 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
-import { TournamentIdentity } from "@/components/tournament/TournamentIdentity";
+import { MatchCard } from "@/components/matches/MatchCard";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Container } from "@/components/ui/Container";
 import { Footer } from "@/components/ui/Footer";
 import { PageHero } from "@/components/ui/PageHero";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs } from "@/components/ui/tabs";
 import { useMatches } from "@/hooks/useMatches";
 import { useStandings } from "@/hooks/useStandings";
+import { useTournament } from "@/hooks/useTournament";
 import { cn } from "@/lib/utils";
 import type { MatchResponseType } from "@/types/matches";
-
-type MatchDay = {
-  key: string;
-  label: string;
-  matches: MatchResponseType[];
-};
-
-const WEEKDAY_SHORT = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
-const MONTH_SHORT = [
-  "ENE",
-  "FEB",
-  "MAR",
-  "ABR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AGO",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DIC",
-];
-
-function formatDayLabel(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-
-  return `${WEEKDAY_SHORT[date.getDay()]} ${String(date.getDate()).padStart(
-    2,
-    "0"
-  )} ${MONTH_SHORT[date.getMonth()]}`;
-}
-
-function dayKey(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function groupByDay(
-  list: MatchResponseType[],
-  direction: "asc" | "desc"
-): MatchDay[] {
-  const byDay = new Map<string, MatchResponseType[]>();
-
-  for (const match of list) {
-    const key = dayKey(match.date);
-    const bucket = byDay.get(key) ?? [];
-    bucket.push(match);
-    byDay.set(key, bucket);
-  }
-
-  const groups = Array.from(byDay.entries()).map(([key, bucket]) => ({
-    key,
-    label: formatDayLabel(bucket[0].date),
-    matches: bucket.sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    ),
-  }));
-
-  groups.sort((a, b) =>
-    direction === "asc"
-      ? a.key.localeCompare(b.key)
-      : b.key.localeCompare(a.key)
-  );
-
-  return groups;
-}
 
 function FixturesMessage({
   children,
@@ -99,17 +28,21 @@ function FixturesMessage({
   return (
     <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
       <p className="text-sm text-muted-foreground">{children}</p>
-      {onRetry && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="font-display mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Reintentar
-          <ArrowRight className="size-3.5" aria-hidden="true" />
-        </button>
-      )}
+      {onRetry && <RetryButton onClick={onRetry} />}
     </div>
+  );
+}
+
+function RetryButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="font-display mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      Reintentar
+      <ArrowRight className="size-3.5" aria-hidden="true" />
+    </button>
   );
 }
 
@@ -124,239 +57,72 @@ function SubHeading({ label }: { label: string }) {
   );
 }
 
-function formatGoalDifference(value: number): string {
-  return value > 0 ? `+${value}` : `${value}`;
-}
-
-function TournamentStatus({ round }: { round?: string }) {
-  const {
-    data: standings = [],
-    isLoading,
-    isFetching,
-    error,
-  } = useStandings();
-  const loading = isLoading || (isFetching && standings.length === 0);
-
-  const matchesPlayed =
-    standings.length > 0
-      ? Math.round(standings.reduce((sum, row) => sum + row.played, 0) / 2)
-      : null;
-  const leader = standings.find((row) => row.position === 1);
-
-  if (!round && matchesPlayed === null && !leader) {
-    return null;
-  }
-
+function MatchCount({
+  count,
+  singular,
+  plural,
+}: {
+  count: number;
+  singular: string;
+  plural: string;
+}) {
   return (
-    <section
-      aria-labelledby="tournament-status"
-      className="border-y border-border/40 bg-surface-1"
-    >
-      <div className="px-4 py-5 sm:px-6">
-        <p
-          id="tournament-status"
-          className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground"
-        >
-          Estado del torneo
-        </p>
-
-        <div className="mt-3 flex flex-wrap items-baseline gap-x-10 gap-y-3">
-          {round && (
-            <div>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                Jornada actual
-              </p>
-              <p className="font-display mt-0.5 text-2xl font-bold uppercase tracking-wide text-gold sm:text-3xl">
-                {round}
-              </p>
-            </div>
-          )}
-
-          {loading ? (
-            <div>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                Partidos disputados
-              </p>
-              <Skeleton className="mt-2 h-8 w-24" />
-            </div>
-          ) : matchesPlayed !== null ? (
-            <div>
-              <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                Partidos disputados
-              </p>
-              <p className="tabular font-display mt-0.5 text-xl font-bold text-gold sm:text-2xl">
-                {matchesPlayed}
-              </p>
-            </div>
-          ) : null}
-        </div>
-
-        {!loading && leader && !error && (
-          <p className="mt-3 text-xs font-medium text-muted-foreground sm:text-sm">
-            <span className="font-display font-semibold uppercase tracking-wide text-foreground">
-              {leader.team.name}
-            </span>{" "}
-            lidera con{" "}
-            <span className="tabular-nums text-gold">{leader.points} pts</span>
-          </p>
-        )}
-      </div>
-    </section>
+    <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+      {count} {count === 1 ? singular : plural}
+    </span>
   );
 }
 
-function TournamentStatusSkeleton() {
+function MatchCardGrid({
+  matches,
+  variant,
+}: {
+  matches: MatchResponseType[];
+  variant: "upcoming" | "result" | "live";
+}) {
   return (
-    <div className="border-y border-border/40 bg-surface-1 px-4 py-5 sm:px-6">
-      <Skeleton className="h-3 w-28" />
-      <div className="mt-3 flex flex-wrap items-baseline gap-x-10 gap-y-3">
-        <div>
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="mt-2 h-8 w-20" />
-        </div>
-        <div>
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="mt-2 h-7 w-20" />
-        </div>
-      </div>
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {matches.map((match) => (
+        <MatchCard
+          key={match._id}
+          match={match}
+          variant={variant}
+          href={`/matches/${match._id}`}
+        />
+      ))}
     </div>
   );
 }
 
-function MatchRow({ match }: { match: MatchResponseType }) {
-  const { homeTeam, awayTeam, time, status, homeScore, awayScore, venue } =
-    match;
-
-  const isLive = status === "live";
-  const isFinished = status === "finished";
-
+function MatchCardGridSkeleton({ count = 3 }: { count?: number }) {
   return (
-    <li>
-      <Link
-        href={`/matches/${match._id}`}
-        className="group flex flex-col transition-colors hover:bg-surface-1/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-      >
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-4 sm:gap-4 sm:px-6">
-          <div className="flex min-w-0 items-center justify-end gap-2.5 text-right">
-            <span className="font-display min-w-0 truncate text-sm font-semibold uppercase tracking-wide text-foreground sm:text-base">
-              {homeTeam.name}
-            </span>
-            <TeamCrest team={homeTeam} size={36} />
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: count }).map((_, index) => (
+        <div
+          key={index}
+          className="rounded-xl border border-border/50 bg-card p-6"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-6 w-20 rounded-full" />
           </div>
-
-          <div className="flex w-[76px] shrink-0 flex-col items-center sm:w-[84px]">
-            {isFinished ? (
-              <span className="font-display text-xl font-bold tabular-nums text-gold sm:text-2xl">
-                {homeScore}–{awayScore}
-              </span>
-            ) : isLive ? (
-              <span className="font-display text-xl font-bold tabular-nums text-live sm:text-2xl">
-                {homeScore}–{awayScore}
-              </span>
-            ) : (
-              <span className="font-display text-xl font-bold tabular-nums text-foreground sm:text-2xl">
-                {time}
-              </span>
-            )}
-            <span className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]">
-              {isLive ? (
-                <>
-                  <span
-                    className="animate-live-pulse size-1.5 rounded-full bg-live"
-                    aria-hidden="true"
-                  />
-                  <span className="text-live">En vivo</span>
-                </>
-              ) : isFinished ? (
-                <span className="text-muted-foreground">Finalizado</span>
-              ) : (
-                <span className="text-gold">Próximo</span>
-              )}
-            </span>
+          <div className="mt-6 flex items-center justify-center gap-6">
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="size-14 rounded-full" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <Skeleton className="h-3 w-8" />
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="size-14 rounded-full" />
+              <Skeleton className="h-3 w-20" />
+            </div>
           </div>
-
-          <div className="flex min-w-0 items-center gap-2.5">
-            <TeamCrest team={awayTeam} size={36} />
-            <span className="font-display min-w-0 truncate text-sm font-semibold uppercase tracking-wide text-foreground sm:text-base">
-              {awayTeam.name}
-            </span>
+          <Skeleton className="mx-auto mt-6 h-4 w-16" />
+          <div className="mt-5 flex items-center justify-between border-t border-border/30 pt-4">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-16" />
           </div>
         </div>
-
-        {venue && (
-          <p className="flex items-center justify-center gap-1.5 px-4 pb-3 text-[11px] font-medium tracking-wide text-muted-foreground sm:px-6">
-            <MapPin className="size-3 shrink-0" aria-hidden="true" />
-            <span className="min-w-0 truncate">{venue}</span>
-          </p>
-        )}
-      </Link>
-    </li>
-  );
-}
-
-function DaySection({ day }: { day: MatchDay }) {
-  // El round se muestra en la banda solo si todos los partidos del día
-  // comparten una misma jornada. Si un día tiene varios rounds (o documentos
-  // sin round), se cae al label de día para no mostrar una fecha incorrecta.
-  const rounds = Array.from(
-    new Set(
-      day.matches
-        .map((match) => match.round)
-        .filter((round): round is string => Boolean(round?.trim()))
-    )
-  );
-  const round = rounds.length === 1 ? rounds[0] : undefined;
-
-  return (
-    <section aria-labelledby={`day-${day.key}`}>
-      <div className="flex items-baseline justify-between gap-4 bg-surface-1 px-4 py-3 sm:px-6">
-        <h3
-          id={`day-${day.key}`}
-          className="font-display text-base font-bold uppercase tracking-wide text-gold sm:text-lg"
-        >
-          {round ? (
-            <>
-              <span>{round}</span>
-              <span className="mx-2 text-[11px] font-medium text-muted-foreground/60">
-                ·
-              </span>
-              {day.label}
-            </>
-          ) : (
-            day.label
-          )}
-        </h3>
-        <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-          {day.matches.length}{" "}
-          {day.matches.length === 1 ? "partido" : "partidos"}
-        </span>
-      </div>
-      <ul className="divide-y divide-border">
-        {day.matches.map((match) => (
-          <MatchRow key={match._id} match={match} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function DayGroups({
-  groups,
-  empty = "No hay partidos aquí.",
-}: {
-  groups: MatchDay[];
-  empty?: string;
-}) {
-  const matches = groups.flatMap((group) => group.matches);
-
-  if (matches.length === 0) {
-    return <FixturesMessage>{empty}</FixturesMessage>;
-  }
-
-  return (
-    <div className="flex flex-col gap-8">
-      {groups.map((day) => (
-        <DaySection key={day.key} day={day} />
       ))}
     </div>
   );
@@ -392,14 +158,7 @@ function StandingsMini() {
             <p className="text-sm text-muted-foreground">
               No se pudo cargar la tabla.
             </p>
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="font-display mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Reintentar
-              <ArrowRight className="size-3.5" aria-hidden="true" />
-            </button>
+            <RetryButton onClick={() => refetch()} />
           </div>
         ) : standings.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-muted-foreground">
@@ -424,7 +183,7 @@ function StandingsMini() {
                   >
                     <span
                       className={cn(
-                        "font-mono w-6 tabular-nums text-xs font-medium",
+                        "font-display w-6 tabular text-sm font-semibold",
                         isLeader ? "text-gold" : "text-muted-foreground"
                       )}
                     >
@@ -439,11 +198,21 @@ function StandingsMini() {
                     >
                       {row.team.name}
                     </span>
-                    <span className="tabular-nums text-xs text-muted-foreground">
+                    <span className="tabular w-8 text-xs font-medium text-muted-foreground">
                       {row.played}
                     </span>
-                    <span className="tabular-nums text-xs text-muted-foreground">
-                      {formatGoalDifference(row.goalDifference)}
+                    <span
+                      className={cn(
+                        "tabular w-8 text-xs font-medium",
+                        row.goalDifference > 0
+                          ? "text-success"
+                          : row.goalDifference < 0
+                            ? "text-destructive"
+                            : "text-muted-foreground"
+                      )}
+                    >
+                      {row.goalDifference > 0 ? "+" : ""}
+                      {row.goalDifference}
                     </span>
                     <span className="tabular font-display w-7 text-right font-bold text-gold">
                       {row.points}
@@ -466,39 +235,6 @@ function StandingsMini() {
         )}
       </div>
     </section>
-  );
-}
-
-function AgendaSkeleton() {
-  return (
-    <div className="flex flex-col gap-8">
-      {Array.from({ length: 2 }).map((_, index) => (
-        <div key={index}>
-          <div className="flex items-center justify-between gap-4 bg-surface-1 px-4 py-3 sm:px-6">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-          <div className="divide-y divide-border">
-            {Array.from({ length: index === 0 ? 3 : 2 }).map((_, rowIndex) => (
-              <div
-                key={rowIndex}
-                className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-4 sm:px-6"
-              >
-                <div className="flex items-center justify-end gap-2.5">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="size-9 rounded-full" />
-                </div>
-                <Skeleton className="h-7 w-12" />
-                <div className="flex items-center gap-2.5">
-                  <Skeleton className="size-9 rounded-full" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -528,32 +264,21 @@ export default function FixturesPage() {
     error,
     refetch,
   } = useMatches();
+  const { data: tournament } = useTournament();
 
-  const live = matches.filter((match) => match.status === "live");
+  const byDateAsc = (a: MatchResponseType, b: MatchResponseType) =>
+    new Date(a.date).getTime() - new Date(b.date).getTime();
+  const byDateDesc = (a: MatchResponseType, b: MatchResponseType) =>
+    new Date(b.date).getTime() - new Date(a.date).getTime();
+
+  const live = matches.filter((match) => match.status === "live").sort(byDateAsc);
   const upcoming = matches
     .filter((match) => match.status === "scheduled")
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const finished = matches.filter((match) => match.status === "finished");
-
-  const liveGroups = groupByDay(live, "asc");
-  const upcomingGroups = groupByDay(upcoming, "asc");
-  const resultsGroups = groupByDay(finished, "desc");
-
-  // Jornada actual: un único round compartido por los partidos en juego o
-  // próximos. Si hay rounds mixtos o no hay partidos activos, no se muestra
-  // (mismo criterio seguro que la banda de día).
-  const activeRounds = Array.from(
-    new Set(
-      matches
-        .filter(
-          (match) =>
-            match.status === "live" || match.status === "scheduled"
-        )
-        .map((match) => match.round)
-        .filter((round): round is string => Boolean(round?.trim()))
-    )
-  );
-  const currentRound = activeRounds.length === 1 ? activeRounds[0] : undefined;
+    .sort(byDateAsc);
+  const results = matches
+    .filter((match) => match.status === "finished")
+    .sort(byDateDesc)
+    .slice(0, 12);
 
   return (
     <>
@@ -563,121 +288,108 @@ export default function FixturesPage() {
           compact
           eyebrow="Calendario"
           title="Fixture y Resultados"
-          description="Todos los partidos de la Tucumán Cup, los próximos y el historial completo de resultados de la temporada."
+          description="Los próximos partidos y los resultados de la Tucumán Cup, jornada por jornada."
           image="/images/resultados.jfif"
-        >
-          <TournamentIdentity />
-        </PageHero>
+        />
         <Container className="py-10">
-          {isLoading ? (
-            <TournamentStatusSkeleton />
-          ) : error ? null : (
-            <TournamentStatus round={currentRound} />
+          {tournament && (
+            <p className="mb-10 max-w-[620px] text-sm leading-relaxed text-muted-foreground sm:text-base">
+              <span className="font-display font-semibold uppercase tracking-wide text-foreground">
+                {tournament.name} {tournament.season}
+              </span>
+              {tournament.format && <> · {tournament.format}</>}
+            </p>
           )}
 
-          <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-10">
-            {isLoading ? (
-              <AgendaSkeleton />
-            ) : error ? (
-              <FixturesMessage onRetry={() => refetch()}>
-                No se pudieron cargar los partidos.
-              </FixturesMessage>
-            ) : (
-              <Tabs
-                variant="editorial"
-                tabs={[
-                  {
-                    id: "all",
-                    label: (
-                      <>
-                        Todos
-                        <span className="hidden sm:inline"> ({matches.length})</span>
-                      </>
-                    ),
-                    content: (
-                      <>
-                        {liveGroups.length > 0 && (
-                          <div className="mb-8">
-                            <SubHeading label="En juego" />
-                            <DayGroups groups={liveGroups} />
-                          </div>
-                        )}
-                        {upcomingGroups.length > 0 && (
-                          <div className="mb-8">
-                            <SubHeading label="Próximos partidos" />
-                            <DayGroups
-                              groups={upcomingGroups}
-                              empty="No hay partidos próximos."
-                            />
-                          </div>
-                        )}
-                        {resultsGroups.length > 0 && (
-                          <>
-                            <SubHeading label="Resultados" />
-                            <DayGroups
-                              groups={resultsGroups}
-                              empty="No hay resultados todavía."
-                            />
-                          </>
-                        )}
-                        {liveGroups.length === 0 &&
-                          upcomingGroups.length === 0 &&
-                          resultsGroups.length === 0 && (
-                            <FixturesMessage>
-                              No hay partidos cargados todavía.
-                            </FixturesMessage>
-                          )}
-                      </>
-                    ),
-                  },
-                  {
-                    id: "live",
-                    label: (
-                      <>
-                        En vivo
-                        <span className="hidden sm:inline"> ({live.length})</span>
-                      </>
-                    ),
-                    content: (
-                      <DayGroups
-                        groups={liveGroups}
-                        empty="No hay partidos en vivo."
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-10">
+            <div className="min-w-0">
+              {isLoading ? (
+                <>
+                  <SectionHeader
+                    eyebrow="Agenda"
+                    title="Próximos partidos"
+                    align="left"
+                  />
+                  <MatchCardGridSkeleton />
+                  <section className="mt-12">
+                    <SectionHeader
+                      eyebrow="Resultados"
+                      title="Últimos resultados"
+                      align="left"
+                    />
+                    <MatchCardGridSkeleton />
+                  </section>
+                </>
+              ) : error ? (
+                <FixturesMessage onRetry={() => refetch()}>
+                  No se pudieron cargar los partidos.
+                </FixturesMessage>
+              ) : (
+                <>
+                  {live.length > 0 && (
+                    <section>
+                      <SectionHeader
+                        eyebrow="En directo"
+                        title="En vivo"
+                        align="left"
+                        action={
+                          <MatchCount
+                            count={live.length}
+                            singular="partido en vivo"
+                            plural="partidos en vivo"
+                          />
+                        }
                       />
-                    ),
-                  },
-                  {
-                    id: "upcoming",
-                    label: (
-                      <>
-                        Próximos
-                        <span className="hidden sm:inline"> ({upcoming.length})</span>
-                      </>
-                    ),
-                    content: (
-                      <DayGroups
-                        groups={upcomingGroups}
-                        empty="No hay partidos próximos."
-                      />
-                    ),
-                  },
-                  {
-                    id: "results",
-                    label: (
-                      <>
-                        Resultados
-                        <span className="hidden sm:inline"> ({finished.length})</span>
-                      </>
-                    ),
-                    content: (
-                      <DayGroups
-                        groups={resultsGroups}
-                        empty="No hay resultados todavía."
-                      />
-                    ),
-                  },
-                ]}
-              />
-            )}
+                      <MatchCardGrid variant="live" matches={live} />
+                    </section>
+                  )}
+
+                  <section className={cn(live.length > 0 && "mt-12")}>
+                    <SectionHeader
+                      eyebrow="Agenda"
+                      title="Próximos partidos"
+                      align="left"
+                      action={
+                        <MatchCount
+                          count={upcoming.length}
+                          singular="partido"
+                          plural="partidos"
+                        />
+                      }
+                    />
+                    {upcoming.length === 0 ? (
+                      <FixturesMessage>
+                        No hay próximos partidos programados.
+                      </FixturesMessage>
+                    ) : (
+                      <MatchCardGrid variant="upcoming" matches={upcoming} />
+                    )}
+                  </section>
+
+                  <section className="mt-12">
+                    <SectionHeader
+                      eyebrow="Resultados"
+                      title="Últimos resultados"
+                      align="left"
+                      action={
+                        <MatchCount
+                          count={results.length}
+                          singular="resultado"
+                          plural="resultados"
+                        />
+                      }
+                    />
+                    {results.length === 0 ? (
+                      <FixturesMessage>
+                        Todavía no hay resultados registrados.
+                      </FixturesMessage>
+                    ) : (
+                      <MatchCardGrid variant="result" matches={results} />
+                    )}
+                  </section>
+                </>
+              )}
+            </div>
 
             <aside className="mt-10 lg:sticky lg:top-24 lg:mt-0">
               <StandingsMini />

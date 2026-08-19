@@ -1,14 +1,16 @@
 "use client";
 import Link from "next/link";
-import { use } from "react";
+import { use, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Trophy } from "lucide-react";
 
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { MatchCard } from "@/components/matches/MatchCard";
 import { NewsCard } from "@/components/news/NewsCard";
+import { FormTiles } from "@/components/shared/FormTiles";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { TeamDetailSkeleton } from "@/components/teams/TeamDetailSkeleton";
 import { Container } from "@/components/ui/Container";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Footer } from "@/components/ui/Footer";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +19,8 @@ import { useNews } from "@/hooks/useNews";
 import { useStandings } from "@/hooks/useStandings";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamPlayers } from "@/hooks/useTeamPlayers";
+import { getTeamForm } from "@/lib/teamForm";
 import { cn } from "@/lib/utils";
-import type { MatchResponseType } from "@/types/matches";
 import type { PlayerPosition } from "@/types/players";
 
 const POSITION_LABEL: Record<PlayerPosition, string> = {
@@ -35,58 +37,111 @@ const POSITION_ORDER: Record<PlayerPosition, number> = {
   FWD: 3,
 };
 
-const formTile: Record<"W" | "D" | "L", string> = {
-  W: "bg-success text-success-foreground",
-  D: "bg-muted text-muted-foreground",
-  L: "bg-destructive/80 text-white",
-};
-
-function FormTiles({ form }: { form?: Array<"W" | "D" | "L"> }) {
-  if (!form || form.length === 0) return null;
+function SectionError({
+  title,
+  message,
+  onRetry,
+}: {
+  title?: string;
+  message?: string;
+  onRetry: () => void;
+}) {
   return (
-    <div className="flex gap-1">
-      {form.map((result, index) => (
-        <span
+    <div className="rounded-xl border border-dashed border-border bg-card/40 px-6 py-12 text-center">
+      {title && (
+        <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
+          {title}
+        </p>
+      )}
+      {message && (
+        <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-4"
+        onClick={onRetry}
+      >
+        Reintentar
+      </Button>
+    </div>
+  );
+}
+
+function EmptyBox({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
+      <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+function SectionActionLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
+    >
+      {children}
+      <ArrowRight className="size-3.5" aria-hidden="true" />
+    </Link>
+  );
+}
+
+function MatchCardsSkeleton({ count }: { count: number }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {Array.from({ length: count }).map((_, index) => (
+        <div
           key={index}
-          title={
-            result === "W" ? "Victoria" : result === "D" ? "Empate" : "Derrota"
-          }
-          className={cn(
-            "grid size-5 place-items-center rounded text-[10px] font-bold",
-            formTile[result]
-          )}
+          className="rounded-xl border border-border bg-card p-5"
         >
-          {result}
-        </span>
+          <Skeleton className="h-3 w-20" />
+          <div className="mt-6 flex items-center justify-between">
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="size-12 rounded-full" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+            <Skeleton className="h-7 w-10" />
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="size-12 rounded-full" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
+        </div>
       ))}
     </div>
   );
 }
 
-function getTeamForm(
-  matches: MatchResponseType[],
-  teamId: string
-): Array<"W" | "D" | "L"> {
-  const finished = matches.filter(
-    (m) =>
-      m.status === "finished" &&
-      (m.homeTeam._id === teamId || m.awayTeam._id === teamId)
+function StandingBandSkeleton() {
+  return (
+    <div className="mt-4 border-y border-border">
+      <div className="grid grid-cols-2 divide-x divide-y divide-border/40 sm:grid-cols-5 sm:divide-y-0">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div key={index} className="px-4 py-5 sm:px-6 sm:py-7">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="mt-2 h-8 w-14" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
-
-  const last = finished
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
-    .reverse();
-
-  return last.map((m) => {
-    const isHome = m.homeTeam._id === teamId;
-    const scored = isHome ? m.homeScore : m.awayScore;
-    const conceded = isHome ? m.awayScore : m.homeScore;
-
-    if (scored > conceded) return "W";
-    if (scored < conceded) return "L";
-    return "D";
-  });
 }
 
 function SquadSection({
@@ -127,27 +182,15 @@ function SquadSection({
           ))}
         </div>
       ) : isError ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
-          <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-            No se pudo cargar el plantel
-          </p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="font-display mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold transition-colors hover:text-primary-300"
-          >
-            Reintentar
-          </button>
-        </div>
+        <SectionError
+          title="No se pudo cargar el plantel"
+          onRetry={() => refetch()}
+        />
       ) : sorted.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
-          <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-            Plantel no cargado
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Los jugadores de {teamName} aparecerán acá.
-          </p>
-        </div>
+        <EmptyBox
+          title="Plantel no cargado"
+          description={`Los jugadores de ${teamName} aparecerán acá.`}
+        />
       ) : (
         <div className="overflow-hidden border-y border-border">
           <div className="divide-y divide-border/60">
@@ -186,11 +229,13 @@ export default function TeamDetailPage({
     data: matches = [],
     isLoading: matchesLoading,
     error: matchesError,
+    refetch: matchesRefetch,
   } = useMatches();
   const {
     data: news = [],
     isLoading: newsLoading,
     isError: newsIsError,
+    refetch: newsRefetch,
   } = useNews();
 
   const standing = standings.find((row) => row.team._id === id);
@@ -200,9 +245,11 @@ export default function TeamDetailPage({
     )
     : [];
   const form = getTeamForm(matches, id);
+  const bandLoading = standingsLoading || matchesLoading;
 
+  const live = teamMatchesList.filter((m) => m.status === "live");
   const upcoming = teamMatchesList
-    .filter((m) => m.status !== "finished")
+    .filter((m) => m.status === "scheduled")
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 4);
 
@@ -236,7 +283,7 @@ export default function TeamDetailPage({
             </p>
             <Link
               href="/teams"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-opacity hover:opacity-90"
+              className={cn(buttonVariants({ variant: "secondary" }), "mt-8")}
             >
               <ArrowLeft className="size-4" aria-hidden="true" />
               Volver a equipos
@@ -268,10 +315,10 @@ export default function TeamDetailPage({
               <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
                 <TeamCrest team={team} size={88} />
                 <div className="min-w-0">
-                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
+                  <p className="font-display text-xs font-semibold uppercase tracking-widest text-primary">
                     {team.city}
                   </p>
-                  <h1 className="font-display mt-2 text-4xl font-bold uppercase tracking-tight text-foreground md:text-6xl">
+                  <h1 className="font-display mt-2 break-words text-4xl font-bold uppercase tracking-tight text-foreground md:text-6xl">
                     {team.name}
                   </h1>
                   <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -279,12 +326,6 @@ export default function TeamDetailPage({
                       <Trophy className="size-4 text-primary" aria-hidden="true" />
                       Est. {team.founded} · {team.city}
                     </span>
-                    {standing && (
-                      <span className="font-semibold text-foreground">
-                        #{standing.position} en la tabla
-                      </span>
-                    )}
-                    {form.length > 0 && <FormTiles form={form} />}
                   </div>
                 </div>
               </div>
@@ -292,130 +333,105 @@ export default function TeamDetailPage({
           </section>
 
           <Container className="py-10">
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-4">
-              <div className="bg-card p-5">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Fundación
-                </p>
-                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                  {team.founded}
-                </p>
+            <section aria-labelledby="team-situation">
+              <div className="flex items-center gap-3">
+                <h2
+                  id="team-situation"
+                  className="font-display text-sm font-semibold uppercase tracking-widest text-muted-foreground"
+                >
+                  Situación en el torneo
+                </h2>
+                <span className="h-px flex-1 bg-border" aria-hidden="true" />
               </div>
-              <div className="bg-card p-5">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Ciudad
-                </p>
-                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                  {team.city}
-                </p>
-              </div>
-              <div className="bg-card p-5">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Posición
-                </p>
-                <p className="font-display mt-2 text-lg font-semibold uppercase text-foreground">
-                  {standing ? `#${standing.position}` : "—"}
-                </p>
-              </div>
-              <div className="bg-card p-5">
-                <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                  Últimos resultados
-                </p>
-                <div className="mt-3">
-                  {form.length > 0 ? (
-                    <FormTiles form={form} />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      Sin resultados
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
 
-            <section className="mt-12">
-              <SectionHeader align="left" eyebrow="Números" title="Estadísticas" />
-              {standingsLoading ? (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  {Array.from({ length: 8 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-border bg-card p-5"
-                    >
-                      <Skeleton className="mx-auto h-3 w-16" />
-                      <Skeleton className="mx-auto mt-3 h-9 w-12" />
-                    </div>
-                  ))}
-                </div>
+              {bandLoading ? (
+                <StandingBandSkeleton />
               ) : (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      Puntos
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.points ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      PJ
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.played ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      PG
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.won ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      PP
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.lost ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      PE
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.drawn ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      GF
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.goalsFor ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      GC
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.goalsAgainst ?? 0}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-gold/40 bg-card p-5 text-center">
-                    <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                      DIF
-                    </p>
-                    <p className="font-display mt-2 text-3xl font-bold tabular-nums text-gold">
-                      {standing?.goalDifference ?? 0}
-                    </p>
+                <div className="mt-4 border-y border-border">
+                  <div className="grid grid-cols-2 sm:grid-cols-5">
+                    <div className="px-4 py-5 sm:px-6 sm:py-7">
+                      <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Posición
+                      </p>
+                      <p className="font-display tabular mt-1.5 text-3xl font-bold text-gold sm:text-4xl">
+                        {standing ? `#${standing.position}` : "—"}
+                      </p>
+                    </div>
+                    <div className="border-l border-border/40 px-4 py-5 sm:px-6 sm:py-7">
+                      <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Puntos
+                      </p>
+                      <p className="font-display tabular mt-1.5 text-3xl font-bold text-gold sm:text-4xl">
+                        {standing ? standing.points : "—"}
+                      </p>
+                    </div>
+                    <div className="border-t border-border/40 px-4 py-5 sm:border-l sm:border-t-0 sm:border-border/40 sm:px-6 sm:py-7">
+                      <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        PJ
+                      </p>
+                      <p className="font-display tabular mt-1.5 text-3xl font-bold text-foreground sm:text-4xl">
+                        {standing ? standing.played : "—"}
+                      </p>
+                    </div>
+                    <div className="border-l border-t border-border/40 px-4 py-5 sm:border-t-0 sm:px-6 sm:py-7">
+                      <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        DIF
+                      </p>
+                      <p
+                        className={cn(
+                          "font-display tabular mt-1.5 text-3xl font-bold sm:text-4xl",
+                          standing
+                            ? standing.goalDifference > 0
+                              ? "text-success"
+                              : standing.goalDifference < 0
+                                ? "text-destructive"
+                                : "text-muted-foreground"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {standing
+                          ? `${standing.goalDifference > 0 ? "+" : ""}${standing.goalDifference}`
+                          : "—"}
+                      </p>
+                    </div>
+                    <div className="col-span-2 border-t border-border/40 px-4 py-5 sm:col-span-1 sm:border-l sm:border-t-0 sm:border-border/40 sm:px-6 sm:py-7">
+                      <p className="font-display text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Forma
+                      </p>
+                      {form.length > 0 ? (
+                        <div className="flex min-h-[2.25rem] items-center">
+                          <FormTiles form={form} align="left" />
+                        </div>
+                      ) : (
+                        <p className="font-display tabular mt-1.5 text-3xl font-bold text-foreground/60 sm:text-4xl">
+                          —
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
             </section>
+
+            {live.length > 0 && (
+              <section className="mt-12">
+                <SectionHeader
+                  align="left"
+                  eyebrow="En directo"
+                  title="En vivo"
+                />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {live.map((match) => (
+                    <MatchCard
+                      key={match._id}
+                      match={match}
+                      variant="live"
+                      href={`/matches/${match._id}`}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
 
             <section className="mt-12">
               <SectionHeader
@@ -423,50 +439,21 @@ export default function TeamDetailPage({
                 eyebrow="Calendario"
                 title="Próximos partidos"
                 action={
-                  <Link
-                    href="/fixtures"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
-                  >
-                    Ver fixture
-                    <ArrowRight className="size-3.5" aria-hidden="true" />
-                  </Link>
+                  <SectionActionLink href="/fixtures">Ver fixture</SectionActionLink>
                 }
               />
               {matchesLoading ? (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {Array.from({ length: 2 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-border bg-card p-5"
-                    >
-                      <Skeleton className="h-3 w-20" />
-                      <div className="mt-6 flex items-center justify-between">
-                        <div className="flex flex-col items-center gap-2">
-                          <Skeleton className="size-12 rounded-full" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                        <Skeleton className="h-7 w-10" />
-                        <div className="flex flex-col items-center gap-2">
-                          <Skeleton className="size-12 rounded-full" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <MatchCardsSkeleton count={2} />
               ) : matchesError ? (
-                <p className="text-sm text-muted-foreground">
-                  No se pudieron cargar los próximos partidos.
-                </p>
+                <SectionError
+                  message="No se pudieron cargar los próximos partidos."
+                  onRetry={() => matchesRefetch()}
+                />
               ) : upcoming.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
-                  <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sin partidos próximos
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Vuelve más cerca de la fecha.
-                  </p>
-                </div>
+                <EmptyBox
+                  title="Sin partidos próximos"
+                  description="Vuelve más cerca de la fecha."
+                />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {upcoming.map((match) => (
@@ -486,50 +473,21 @@ export default function TeamDetailPage({
                 eyebrow="Historial"
                 title="Resultados recientes"
                 action={
-                  <Link
-                    href="/fixtures"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
-                  >
-                    Ver resultados
-                    <ArrowRight className="size-3.5" aria-hidden="true" />
-                  </Link>
+                  <SectionActionLink href="/fixtures">Ver resultados</SectionActionLink>
                 }
               />
               {matchesLoading ? (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl border border-border bg-card p-5"
-                    >
-                      <Skeleton className="h-3 w-20" />
-                      <div className="mt-6 flex items-center justify-between">
-                        <div className="flex flex-col items-center gap-2">
-                          <Skeleton className="size-12 rounded-full" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                        <Skeleton className="h-7 w-10" />
-                        <div className="flex flex-col items-center gap-2">
-                          <Skeleton className="size-12 rounded-full" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <MatchCardsSkeleton count={3} />
               ) : matchesError ? (
-                <p className="text-sm text-muted-foreground">
-                  No se pudieron cargar los resultados.
-                </p>
+                <SectionError
+                  message="No se pudieron cargar los resultados."
+                  onRetry={() => matchesRefetch()}
+                />
               ) : recent.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
-                  <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sin resultados aún
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    El historial se completará con los próximos partidos.
-                  </p>
-                </div>
+                <EmptyBox
+                  title="Sin resultados aún"
+                  description="El historial se completará con los próximos partidos."
+                />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {recent.map((match) => (
@@ -551,13 +509,7 @@ export default function TeamDetailPage({
                 eyebrow="Cobertura"
                 title={`Noticias de ${team.name}`}
                 action={
-                  <Link
-                    href="/news"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary-300"
-                  >
-                    Ver todas
-                    <ArrowRight className="size-3.5" aria-hidden="true" />
-                  </Link>
+                  <SectionActionLink href="/news">Ver todas</SectionActionLink>
                 }
               />
               {newsLoading ? (
@@ -577,18 +529,15 @@ export default function TeamDetailPage({
                   ))}
                 </div>
               ) : newsIsError ? (
-                <p className="text-sm text-muted-foreground">
-                  No se pudieron cargar las noticias.
-                </p>
+                <SectionError
+                  message="No se pudieron cargar las noticias."
+                  onRetry={() => newsRefetch()}
+                />
               ) : teamNews.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border bg-card/40 py-16 text-center">
-                  <p className="font-display text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-                    Sin noticias de {team.name}
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Las novedades del equipo aparecerán acá.
-                  </p>
-                </div>
+                <EmptyBox
+                  title={`Sin noticias de ${team.name}`}
+                  description="Las novedades del equipo aparecerán acá."
+                />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {teamNews.map((article) => (
