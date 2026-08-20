@@ -3,11 +3,12 @@ import { PageHero } from "@/components/ui/PageHero";
 import { PortalNavbar } from "@/components/home/PortalNavbar";
 import { TickerBar } from "@/components/home/TickerBar";
 import { MatchCenter } from "@/components/home/MatchCenter";
-import { UpcomingMatches } from "@/components/home/UpcomingMatches";
+import { MatchesByCategory } from "@/components/home/MatchesByCategory";
 import { NewsFeed } from "@/components/news/NewsFeed";
 import { StatsSection } from "@/components/home/StatsSection";
 import { TeamsSection } from "@/components/home/TeamsSection";
 import { SponsorsSection } from "@/components/sponsors/SponsorsSection";
+import { WomenFootballNews } from "@/components/home/WomenFootballNews";
 
 export default function Home() {
   return (
@@ -26,9 +27,10 @@ export default function Home() {
         />
         <TickerBar />
         <MatchCenter />
-        <UpcomingMatches />
-        <StatsSection />
+        <MatchesByCategory />
         <NewsFeed />
+        <StatsSection />
+        <WomenFootballNews />
         <TeamsSection />
         <SponsorsSection />
       </main>

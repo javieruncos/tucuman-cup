@@ -11,8 +11,8 @@
   --foreground: #f7f8f8;
 
   --surface-1: #111214;
-  --surface-2: #18191c;
-  --surface-3: #202226;
+  --surface-2: var(--card);
+  --surface-3: var(--elevated);
 
   --primary: #f5c542;
   --primary-300: #fde68a;
@@ -46,6 +46,7 @@
   --destructive: #ef4444;
 
   --border: rgba(255, 255, 255, 0.09);
+  --card-border: rgba(255, 255, 255, 0.12);
   --input: rgba(255, 255, 255, 0.12);
   --ring: rgba(245, 197, 66, 0.55);
 
@@ -66,8 +67,8 @@
   --foreground: #f7f8f8;
 
   --surface-1: #111214;
-  --surface-2: #18191c;
-  --surface-3: #202226;
+  --surface-2: var(--card);
+  --surface-3: var(--elevated);
 
   --primary: #f5c542;
   --primary-300: #fde68a;
@@ -100,6 +101,7 @@
   --destructive: #ef4444;
 
   --border: rgba(255, 255, 255, 0.09);
+  --card-border: rgba(255, 255, 255, 0.12);
   --input: rgba(255, 255, 255, 0.12);
   --ring: rgba(245, 197, 66, 0.55);
 
@@ -152,6 +154,7 @@
   --color-destructive: var(--destructive);
 
   --color-border: var(--border);
+  --color-card-border: var(--card-border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 

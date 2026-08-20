@@ -2,11 +2,13 @@ import { connectDB } from "@/lib/mongodb"
 import { getStading } from "@/services/Stading.services";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
+export const GET = async (request: Request) => {
     try {
        await connectDB()
        
-       const standings = await getStading();
+       const category = new URL(request.url).searchParams.get("category") ?? undefined;
+
+       const standings = await getStading(category);
 
        return NextResponse.json({sucess:true,data:standings},{status:200})
        

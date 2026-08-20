@@ -14,7 +14,7 @@ export function TeamCard({
   return (
     <Link
       href={`/teams/${team._id}`}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-colors hover:border-gold/40"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-card-border bg-card p-5 transition-colors hover:border-gold/40"
     >
       <div
         className="pointer-events-none absolute -right-6 -top-6 size-28 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40"

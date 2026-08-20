@@ -56,7 +56,7 @@ export function NewsCard({
   className,
 }: {
   article: NewsResponseType;
-  variant?: "default" | "feature" | "compact" | "row";
+  variant?: "default" | "feature" | "compact" | "row" | "cover";
   href?: string;
   index?: number;
   className?: string;
@@ -128,11 +128,69 @@ export function NewsCard({
     );
   }
 
+  if (variant === "cover") {
+    const team = article.team ?? null;
+    return (
+      <a
+        href={href}
+        className={cn(
+          "group flex h-full flex-col overflow-hidden rounded-xl border border-card-border bg-card transition-colors hover:border-gold/40 hover:bg-elevated",
+          className
+        )}
+      >
+        <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
+          {article.image ? (
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+              role="img"
+              aria-label={article.title}
+              style={{ backgroundImage: `url(${article.image})` }}
+            />
+          ) : team ? (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(135deg, ${team.color}55, var(--elevated))`,
+              }}
+              aria-hidden="true"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+              role="img"
+              aria-label={article.title}
+              style={{ backgroundImage: `url(${NEWS_FALLBACK_IMAGE})` }}
+            />
+          )}
+          {!article.image && team && (
+            <div className="absolute inset-0 grid place-items-center">
+              <TeamCrest team={team} size={64} />
+            </div>
+          )}
+          <span className="font-display absolute left-4 top-4 rounded bg-gold px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
+            {article.category}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
+          <h3 className="font-display text-lg font-semibold uppercase leading-tight tracking-wide text-balance transition-colors group-hover:text-gold sm:text-xl">
+            {article.title}
+          </h3>
+          <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {article.excerpt}
+          </p>
+          <div className="mt-auto pt-4">
+            <NewsMeta article={article} />
+          </div>
+        </div>
+      </a>
+    );
+  }
+
   return (
     <a
       href={href}
       className={cn(
-        "group flex gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:border-gold/40 hover:bg-elevated",
+        "group flex gap-4 rounded-xl border border-card-border bg-card p-4 transition-colors hover:border-gold/40 hover:bg-elevated",
         variant === "compact" ? "items-center" : "flex-col sm:flex-row"
       )}
     >

@@ -8,7 +8,7 @@ import { TeamCard } from "./TeamCard"
 
 function TeamCardSkeleton() {
     return (
-        <div className="relative flex flex-col overflow-hidden rounded-xl border border-border bg-card p-5">
+        <div className="relative flex flex-col overflow-hidden rounded-xl border border-card-border bg-card p-5">
             <div className="relative mb-auto flex flex-col items-center gap-3 lg:flex-row">
                 <Skeleton className="size-[52px] shrink-0 rounded-full" />
                 <div className="min-w-0 flex-1 text-center lg:text-left">
@@ -89,7 +89,7 @@ export const TeamsList = () => {
 
     return (
         <>
-            {teams.map((team) => {
+            {teams.slice(0,8).map((team) => {
                 const standing = standings?.find(
                     (row) => row.team._id === team._id
                 )

@@ -219,7 +219,7 @@ function MatchDuel({ match }: { match: MatchResponseType }) {
     <li>
       <Link
         href={`/matches/${match._id}`}
-        className="group block px-1 py-4 transition-colors hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:py-5"
+        className="group block px-1 py-4 transition-colors bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:py-5"
       >
         <p className="flex items-center gap-x-2 text-xs text-muted-foreground sm:hidden">
           <span className="tabular font-semibold text-foreground">

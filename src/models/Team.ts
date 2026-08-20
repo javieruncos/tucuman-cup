@@ -20,6 +20,10 @@ const TeamSchema = new Schema({
     founded: {
         type: Number,
         required: true,
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
     }
 
 }, { timestamps: true });

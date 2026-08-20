@@ -13,7 +13,7 @@ import { useNews } from "@/hooks/useNews";
 function NewsFeedSkeleton() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-10">
-      <div className="flex min-h-[420px] flex-col justify-end rounded-xl border border-border bg-card p-6 sm:min-h-[480px] sm:p-8">
+      <div className="flex min-h-[420px] flex-col justify-end rounded-xl border border-card-border bg-card p-6 sm:min-h-[480px] sm:p-8">
         <div className="space-y-3">
           <span className="h-4 w-16 animate-pulse rounded bg-muted" />
           <div className="h-7 w-3/4 animate-pulse rounded bg-muted" />
