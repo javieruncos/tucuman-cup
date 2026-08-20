@@ -38,6 +38,7 @@ export async function POST(request: Request) {
       author: body.author,
       readTime: body.readTime,
       team: body.team ?? null,
+      image: body.image,
       content: body.content,
     });
 

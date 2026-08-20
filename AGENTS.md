@@ -1,124 +1,530 @@
-# AGENTS.md
+# Tucumán Cup — Filosofía y Reglas de Desarrollo Frontend
 
-# Tucumán Cup - Reglas de Desarrollo Frontend
+## Identidad del producto
 
-## Objetivo del Proyecto
+Tucumán Cup es un **portal deportivo oficial de fútbol**.
 
-Este proyecto actualmente está enfocado únicamente en el desarrollo del frontend.
+NO es:
 
-El objetivo es construir una interfaz profesional para la gestión de torneos de fútbol utilizando datos simulados (mock data).
+* SaaS
+* dashboard
+* panel administrativo
+* aplicación empresarial
+* CRM
+* sistema de gestión
+* web app genérica
 
-La implementación del backend será desarrollada manualmente posteriormente.
+La experiencia visual debe acercarse más a:
 
----
+* sitio oficial de una competición
+* portal de una federación
+* medio deportivo oficial
+* cobertura editorial de un torneo
 
-# Responsabilidades del Agente
+y alejarse de:
 
-El agente debe encargarse únicamente de:
+* dashboard SaaS
+* aplicación CRUD
+* panel administrativo
+* template genérico de Tailwind
+* colección de cards estadísticas
 
-* Crear interfaces de usuario.
-* Construir componentes React reutilizables.
-* Crear layouts.
-* Implementar diseño responsive.
-* Crear animaciones e interacciones visuales.
-* Construir formularios visuales.
-* Crear tablas, cards y elementos UI.
-* Crear estados visuales:
+Una interfaz pública nunca debe sentirse como el panel interno de administración de un torneo.
 
-  * Loading.
-  * Empty states.
-  * Error states.
-  * Success states.
-* Crear datos estáticos para representar información.
+Si una decisión visual puede resolverse de dos maneras:
 
----
+* A) como portal deportivo
+* B) como aplicación SaaS
 
-# Restricciones Importantes
-
-El agente NO debe crear:
-
-* APIs.
-* Route Handlers.
-* Backend.
-* Conexión con bases de datos.
-* Modelos Mongoose.
-* Schemas de base de datos.
-* Autenticación.
-* JWT.
-* Cookies de sesión.
-* Middleware de autorización.
-* Server Actions.
-* Lógica de negocio.
-* Integraciones externas.
+siempre elegir A.
 
 ---
 
-# Uso de Datos
+## Principio fundamental
 
-Toda la información debe ser simulada.
+**El contenido debe determinar la composición.**
 
-Los datos deben vivir en:
-
-```
-src/lib/mock/
-```
-
-Ejemplo:
+La dirección de diseño debe seguir esta jerarquía:
 
 ```
-src/lib/mock/
-
-├── tournaments.ts
-├── teams.ts
-├── players.ts
-├── matches.ts
-└── statistics.ts
+CONTENIDO
+   ↓
+JERARQUÍA
+   ↓
+COMPOSICIÓN
+   ↓
+COMPONENTES
 ```
 
-Ejemplo permitido:
+Nunca:
 
-```ts
-export const tournaments = [
-  {
-    id: "1",
-    name: "Tucumán Cup 2026",
-    category: "Senior",
-    teams: 24,
-    status: "Activo"
-  }
-]
+```
+COMPONENTES
+   ↓
+CARDS
+   ↓
+GRID
+   ↓
+CONTENIDO
 ```
 
-No crear:
+No crear una card simplemente porque existe un dato.
 
-```ts
-fetch("/api/tournaments")
-```
+No convertir cada estadística en una tarjeta.
+
+No utilizar grids de cards como solución predeterminada para organizar información.
+
+Antes de crear una card preguntarse:
+
+> ¿Este contenido realmente necesita estar encerrado dentro de una superficie independiente?
+
+Si la respuesta es no, utilizar:
+
+* tipografía
+* divisores
+* líneas
+* bandas
+* fondos
+* columnas
+* espacios negativos
+* jerarquía visual
+* composición editorial
 
 ---
 
-# Stack Obligatorio
+## Referencias visuales
 
-El desarrollo debe utilizar:
+La dirección visual debe estudiar los principios de composición de:
 
-* Next.js 16.
-* React 19.
-* TypeScript.
-* Tailwind CSS 4.
-* shadcn/ui.
-* Framer Motion.
+* FIFA
+* UEFA
+* CONMEBOL
+* AFA
+* Premier League
+* LaLiga
+* sitios oficiales de clubes profesionales
+* medios deportivos profesionales
+* Sofascore
+
+NO copiar diseños.
+
+Utilizar estas referencias únicamente para comprender:
+
+* jerarquía
+* tipografía
+* fotografía
+* ritmo
+* composición
+* uso del espacio
+* tratamiento de resultados
+* tratamiento de noticias
+* tratamiento de competición
+
+La referencia principal debe ser siempre un portal deportivo profesional, no una aplicación SaaS.
 
 ---
 
-# Arquitectura del Frontend
+## Lenguaje visual
 
-Seguir la estructura definida en:
+La interfaz debe transmitir:
+
+**competición + fútbol + prestigio + evento deportivo + actualidad**
+
+La estética debe sentirse como la identidad digital de un torneo real.
+
+Priorizar:
+
+* fotografía deportiva de alta calidad
+* imágenes de estadios
+* escudos grandes
+* titulares fuertes
+* tipografía deportiva
+* números grandes únicamente cuando tengan protagonismo real
+* composiciones asimétricas
+* bloques horizontales
+* líneas divisorias
+* bandas de contenido
+* fondos fotográficos
+* overlays
+* contraste
+* espacios negativos controlados
+
+La interfaz NO debe parecer generada automáticamente a partir de componentes.
+
+---
+
+## Señales de diseño tipo dashboard
+
+Evitar como estructura predominante:
+
+* KPI cards consecutivas
+* grids repetitivos
+* grids de 3x3 cards
+* múltiples paneles idénticos
+* cada dato encerrado en una caja
+* exceso de bordes
+* exceso de `rounded-xl` / `rounded-2xl`
+* exceso de badges
+* badges dentro de badges
+* sombras exageradas
+* widgets visualmente idénticos
+* botones para acciones triviales
+* sidebar como estructura principal
+* apariencia administrativa
+* composición completamente simétrica
+* superficies idénticas para todas las secciones
+* estadísticas presentadas como dashboard
+* animaciones que no aporten información
+
+Regla:
+
+> Si una sección podría existir sin modificaciones dentro de un dashboard administrativo, reconsiderar su composición.
+
+---
+
+## Tipografía
+
+La tipografía debe tener presencia editorial y ser uno de los principales elementos de identidad.
+
+Utilizar las fuentes existentes del proyecto.
+
+**Display** para:
+
+* titulares
+* nombres de equipos
+* resultados
+* grandes números deportivos
+* títulos de sección importantes
+
+**Body** para:
+
+* descripciones
+* información secundaria
+* metadatos
+
+Utilizar:
+
+* uppercase cuando tenga sentido
+* tracking editorial
+* `tabular-nums` para estadísticas
+* tamaños importantes para titulares
+
+Evitar:
+
+* que toda la interfaz parezca una aplicación
+* textos importantes excesivamente pequeños
+* abusar de `text-[10px]` / `text-[11px]`
+* usar tipografía pequeña para información que debería tener protagonismo
+
+---
+
+## Fotografía
+
+La fotografía es parte fundamental de la identidad del portal.
+
+Cuando exista una imagen apropiada, priorizar fotografías deportivas de alta calidad.
+
+Para Hero:
+
+* mínimo recomendado 1920×1080
+* composición cinematográfica
+* estadio, jugadores, público, luces, competición
+* colores vivos
+* alto contraste
+* recorte `cover`
+* posicionamiento `center` cuando corresponda
+
+Una fotografía debe integrarse con:
 
 ```
-docs/15-folder-structure.md
+FOTOGRAFÍA
+   +
+OVERLAY
+   +
+TIPOGRAFÍA
+   +
+CONTENIDO
 ```
 
-Reglas:
+Nunca colocar texto directamente sobre una fotografía si no existe contraste suficiente.
+
+Utilizar overlays/degradados para garantizar legibilidad.
+
+NO colocar una fotografía detrás de cada card.
+
+La fotografía debe reservarse principalmente para:
+
+* Hero
+* noticia protagonista
+* partido protagonista
+* campañas
+* momentos importantes del torneo
+
+---
+
+## Composición editorial
+
+Las páginas deben utilizar diferentes tipos de composición según su contenido.
+
+### Noticias
+
+Lead principal + noticias secundarias.
+
+No:
+
+`Card Card Card`
+
+### Partidos
+
+Match Center o agenda editorial.
+
+No:
+
+`Card Card Card Card`
+
+### Clasificación
+
+Tabla protagonista o resumen competitivo.
+
+No:
+
+`StatsCard StatsCard StatsCard`
+
+### Equipos
+
+Banda horizontal de escudos y nombres.
+
+No necesariamente cards individuales.
+
+### Estadísticas
+
+Rankings, tablas o composiciones de datos.
+
+No convertir cada número en una card.
+
+### Sponsors
+
+Banda institucional.
+
+No utilizar automáticamente:
+
+```
+SectionHeader
+   ↓
+Card
+   ↓
+Grid
+```
+
+Cada sección debe tener una composición apropiada para su contenido.
+
+---
+
+## Jerarquía
+
+Toda página debe definir claramente:
+
+1. **Protagonista** — un contenido que domine visualmente la página.
+2. **Secundario** — información que complementa al protagonista.
+3. **Terciario** — información de apoyo.
+
+No todos los elementos deben tener el mismo peso visual.
+
+El protagonista debe dominar mediante una combinación de:
+
+* tamaño
+* tipografía
+* fotografía
+* posición
+* contraste
+* espacio
+
+---
+
+## Espacio negativo
+
+El espacio vacío debe utilizarse intencionalmente.
+
+No llenar espacio vacío simplemente agregando contenido.
+
+NO agregar:
+
+* cards
+* estadísticas
+* botones
+* widgets
+* textos
+
+solo para aumentar la densidad visual.
+
+Una página limpia y bien jerarquizada es preferible a una página saturada.
+
+---
+
+## Superficies
+
+Las superficies (cards, bordes, sombras) deben ser excepcionales.
+
+Prioridad visual:
+
+```
+DIVISOR / BANDA / FONDO / TIPOGRAFÍA
+              >
+          SUPERFICIE
+```
+
+No utilizar una sombra o un borde para separar cada sección.
+
+Evitar sombras gigantes.
+
+Evitar efectos como:
+
+```
+shadow-[0_80px_160px...]
+```
+
+La profundidad debe lograrse principalmente mediante:
+
+* contraste
+* fotografía
+* overlay
+* tipografía
+* separación
+* fondos
+* divisores
+
+---
+
+## Cards
+
+Las cards son una herramienta, no el lenguaje visual principal.
+
+Utilizarlas solamente cuando el contenido realmente necesite una superficie independiente y cuando:
+
+* separan claramente una unidad de contenido
+* mejoran la lectura
+* representan una entidad independiente
+* aportan jerarquía
+
+Preferir cuando corresponda:
+
+* bloques abiertos
+* divisores
+* bandas
+* filas editoriales
+* composiciones asimétricas
+* columnas
+* fotografía
+* tipografía
+* espacios negativos
+
+Evitar Card + Card + Card como estructura automática de una sección.
+
+NO crear componentes duplicados solamente para cambiar estilos:
+
+`HomeCard`
+`PremiumCard`
+`FeaturedCard2`
+`NewsCard2`
+`MatchCard2`
+`StatsCard2`
+
+Antes de crear una card nueva, revisar si puede resolverse con un componente existente o mediante composición editorial.
+
+---
+
+## Datos
+
+Nunca inventar información deportiva para llenar una composición.
+
+Antes de diseñar una sección:
+
+1. verificar si existe el dato
+2. verificar si existe un hook
+3. verificar si existe un componente reutilizable
+4. determinar si puede derivarse correctamente
+
+No inventar:
+
+* KPIs
+* estadísticas
+* rankings
+* jugadores
+* resultados
+* números decorativos
+
+Los datos deben tener significado deportivo real.
+
+Cuando existan datos reales disponibles (hooks, API del proyecto), utilizarlos.
+
+---
+
+## Responsive editorial
+
+No limitar el responsive a "apilar cards".
+
+En mobile debe conservarse:
+
+* jerarquía
+* protagonista
+* fotografía
+* tipografía
+* ritmo
+* contraste
+
+El diseño debe sentirse intencional en:
+
+* desktop
+* tablet
+* mobile
+
+---
+
+## QA visual
+
+Antes de considerar terminada una página, responder obligatoriamente:
+
+1. ¿Parece un portal deportivo?
+2. ¿Parece el sitio oficial de una competición?
+3. ¿Existe un protagonista visual?
+4. ¿La tipografía tiene presencia?
+5. ¿La fotografía tiene presencia cuando corresponde?
+6. ¿Hay demasiadas cards?
+7. ¿Hay demasiados bordes?
+8. ¿Hay demasiados badges?
+9. ¿Hay demasiadas superficies?
+10. ¿Parece una dashboard?
+11. ¿Cada sección tiene una composición adecuada a su contenido?
+12. ¿Existe suficiente espacio negativo?
+13. ¿La información importante se identifica inmediatamente?
+14. ¿La composición mantiene su jerarquía en mobile?
+
+Si la respuesta a "¿parece una dashboard?" es sí, **la página NO está terminada**.
+
+---
+
+## Regla de oro
+
+> Tucumán Cup debe sentirse como el sitio oficial de una competición de fútbol, no como una aplicación que administra una competición de fútbol.
+
+> Fotografía y tipografía tienen prioridad sobre cards, bordes y superficies.
+
+> Si una composición funciona mejor como dashboard que como portal deportivo, debe replantearse.
+
+---
+
+## Reglas de desarrollo frontend
+
+### Stack obligatorio
+
+* Next.js 16
+* React 19
+* TypeScript
+* Tailwind CSS 4
+* shadcn/ui
+* Framer Motion
+
+### Arquitectura
 
 * Components → solamente interfaz.
 * Hooks → lógica reutilizable de React.
@@ -126,253 +532,65 @@ Reglas:
 * Mock → datos simulados.
 * Types → tipos TypeScript.
 
----
+Sin backend: no crear APIs, Route Handlers, modelos Mongoose, schemas de base de datos, autenticación, JWT, cookies de sesión, middleware de autorización, Server Actions ni lógica de negocio.
 
-# Componentes
-
-Antes de crear un componente nuevo:
-
-1. Revisar si ya existe.
-2. Reutilizar componentes existentes.
-3. Mantener componentes pequeños.
-
-Ejemplo correcto:
-
-```
-components/
-
-├── ui/
-│   ├── Button.tsx
-│   ├── Card.tsx
-│   └── Table.tsx
-│
-├── teams/
-│   └── TeamCard.tsx
-```
-
-Evitar:
-
-```
-DashboardTeamButton.tsx
-AnotherCard.tsx
-CustomButton2.tsx
-```
-
----
-
-# Componentes Server y Client
+### Server y Client Components
 
 Usar Server Components por defecto.
 
 Crear Client Components solamente cuando sea necesario:
 
-* useState.
-* useEffect.
-* Eventos del usuario.
-* Formularios interactivos.
-* Animaciones que requieran cliente.
+* useState
+* useEffect
+* Eventos del usuario
+* Formularios interactivos
+* Animaciones que requieran cliente
+
+### Datos
+
+Toda la información debe ser simulada cuando corresponda.
+
+Los datos deben vivir en `src/lib/mock/`.
+
+Cuando existan datos reales disponibles, priorizar su uso.
+
+### Reutilización y calidad
+
+* Un componente = una responsabilidad.
+* No duplicar lógica.
+* No duplicar estilos.
+* Preferir composición sobre herencia.
+* Priorizar reutilización.
+* Tipado estricto.
+
+Antes de crear un componente nuevo:
+
+1. buscar componentes existentes
+2. determinar si pueden reutilizarse
+3. determinar si pueden adaptarse
+4. evitar duplicaciones
+
+### Estados
+
+Los componentes deben contemplar los estados necesarios:
+
+* Loading
+* Empty
+* Error
+* Success
 
 ---
 
-# Diseño Visual
+## Documentos antiguos
 
-Seguir obligatoriamente:
+Los documentos de `docs/` (por ejemplo `docs/02-brand-identity.md`, `docs/03-design-system.md`, `docs/06-components.md`, `docs/07-design-tokens.md`, `docs/08-dashboard.md`, `docs/09-pages.md`) pueden contener reglas de una etapa anterior del proyecto.
 
-```
-docs/02-design-system.md
-docs/07-design-tokens.md
-```
+Ante una contradicción entre `AGENTS.md` y cualquier documento de `docs/`, **estas reglas de dirección visual tienen prioridad**.
 
-La interfaz debe transmitir:
-
-* Fútbol profesional.
-* Competición.
-* Modernidad.
-* Tecnología.
-* Estilo SaaS premium.
-
-Características visuales:
-
-* Tema oscuro.
-* Tonos negros.
-* Acentos dorados/amarillos.
-* Diseño limpio.
-* Espaciado consistente.
-* Animaciones suaves.
-
-Evitar:
-
-* Colores aleatorios.
-* Diseños genéricos.
-* Componentes sin coherencia visual.
+Los documentos antiguos se revisarán en una etapa posterior y separada. No resolver las contradicciones ahora.
 
 ---
 
-# Desarrollo de Pantallas
+La prioridad es:
 
-Implementar únicamente la parte visual.
-
-Orden recomendado:
-
-## 1. Landing Page
-
-Debe incluir:
-
-* Hero principal.
-* Información del torneo.
-* Características.
-* Estadísticas.
-* Call to action.
-
----
-
-## 2. Autenticación Visual
-
-Crear:
-
-* Login.
-* Registro.
-* Recuperación de contraseña visual.
-
-Sin implementar autenticación real.
-
----
-
-## 3. Dashboard
-
-Crear:
-
-* Sidebar.
-* Navbar.
-* Cards estadísticas.
-* Próximos partidos.
-* Tabla de posiciones.
-* Actividad reciente.
-
-Usar datos mock.
-
----
-
-## 4. Torneos
-
-Crear:
-
-* Lista de torneos.
-* Cards.
-* Detalle del torneo.
-* Tabs.
-* Formularios visuales.
-
----
-
-## 5. Equipos
-
-Crear:
-
-* Lista de equipos.
-* Perfil del equipo.
-* Jugadores.
-* Estadísticas visuales.
-
----
-
-## 6. Jugadores
-
-Crear:
-
-* Cards.
-* Perfil.
-* Estadísticas.
-* Filtros visuales.
-
----
-
-## 7. Partidos
-
-Crear:
-
-* Fixture.
-* Resultado.
-* Eventos.
-* Vista del partido.
-
----
-
-## 8. Estadísticas
-
-Crear:
-
-* Tablas.
-* Rankings.
-* Gráficos visuales.
-
----
-
-# Formularios
-
-Los formularios deben ser únicamente visuales.
-
-Permitido:
-
-* Inputs.
-* Selects.
-* Botones.
-* Mensajes de validación simulados.
-
-No permitido:
-
-* Enviar información a APIs.
-* Guardar datos.
-* Conectar con backend.
-
----
-
-# Calidad del Código
-
-Siempre:
-
-* Usar TypeScript.
-* Crear componentes reutilizables.
-* Usar nombres descriptivos.
-* Evitar código duplicado.
-* Mantener archivos organizados.
-* Respetar la documentación del proyecto.
-
----
-
-# Antes de Crear Código
-
-El agente debe:
-
-1. Leer la documentación dentro de `/docs`.
-2. Respetar la arquitectura definida.
-3. Crear solamente lo solicitado.
-4. No agregar funcionalidades fuera del alcance.
-
----
-
-# Regla Principal
-
-Tucumán Cup debe construirse como un frontend profesional listo para producción.
-
-El backend será desarrollado manualmente posteriormente.
-
-El objetivo es aprender y controlar la arquitectura completa del sistema.
-
-# Filosofía de Diseño
-
-Cada pantalla debe sentirse como un producto listo para producción.
-
-No crear interfaces genéricas.
-
-Antes de implementar una pantalla, pensar:
-
-- ¿Genera impacto visual?
-- ¿Se siente profesional?
-- ¿Tiene una buena jerarquía visual?
-- ¿Es coherente con el resto del sistema?
-- ¿Podría formar parte de una plataforma utilizada por miles de usuarios?
-
-Si la respuesta es no, mejorar el diseño antes de continuar.
-
-La prioridad es la calidad del diseño sobre la velocidad de implementación.
+**identidad deportiva > composición > jerarquía > componentes > velocidad de implementación.**

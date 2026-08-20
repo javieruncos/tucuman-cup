@@ -7,11 +7,20 @@ import { Trophy, Mail, Lock, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/landing/Logo";
 import { TeamCrest } from "@/components/shared/TeamCrest";
 import { Button } from "@/components/ui/button";
-import { portalTeams, tournamentInfo } from "@/lib/mock/portal";
+import { useMatches } from "@/hooks/useMatches";
+import { useTeams } from "@/hooks/useTeams";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "register">("login");
+  const { data: teams = [] } = useTeams();
+  const { data: matches = [] } = useMatches();
+
+  const finished = matches.filter((match) => match.status === "finished");
+  const goals = finished.reduce(
+    (sum, match) => sum + match.homeScore + match.awayScore,
+    0
+  );
 
   return (
     <main className="flex min-h-screen flex-col overflow-hidden bg-background lg:flex-row">
@@ -48,14 +57,14 @@ export default function LoginPage() {
             historia de la Tucumán Cup.
           </p>
           <div className="hidden items-center gap-3 lg:flex">
-            {portalTeams.map((team) => (
-              <TeamCrest key={team.id} team={team} size={40} />
+            {teams.slice(0, 6).map((team) => (
+              <TeamCrest key={team._id} team={team} size={40} />
             ))}
           </div>
           <div className="hidden gap-8 border-t border-border/60 pt-6 text-xs uppercase tracking-widest text-muted-foreground lg:flex">
-            <span>{tournamentInfo.teamsCount} clubes</span>
-            <span>{tournamentInfo.matchesPlayed} partidos</span>
-            <span>{tournamentInfo.goalsScored} goles</span>
+            <span>{teams.length} clubes</span>
+            <span>{finished.length} partidos</span>
+            <span>{goals} goles</span>
           </div>
         </div>
       </aside>

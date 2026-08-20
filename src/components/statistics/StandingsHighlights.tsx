@@ -13,9 +13,11 @@ function HighlightCardSkeleton() {
 }
 
 export function StandingsHighlights() {
-  const { data: standings, isLoading, error } = useStandings();
+  const { data: standings = [], isLoading, isFetching, error } = useStandings();
 
-  if (isLoading) {
+  const loading = isLoading || (isFetching && standings.length === 0);
+
+  if (loading) {
     return (
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         <HighlightCardSkeleton />
@@ -30,7 +32,7 @@ export function StandingsHighlights() {
   }
 
   const leader = standings[0];
-  const topScorerTeam = standings.reduce((a, b) =>
+  const topAttack = standings.reduce((a, b) =>
     a.goalsFor > b.goalsFor ? a : b
   );
   const bestDefense = standings.reduce((a, b) =>
@@ -39,8 +41,12 @@ export function StandingsHighlights() {
 
   const highlights: Array<[string, string, string]> = [
     ["Líder", leader.team.name, `${leader.points} pts`],
-    ["Más goles", topScorerTeam.team.name, `${topScorerTeam.goalsFor} anotados`],
-    ["Mejor defensa", bestDefense.team.name, `${bestDefense.goalsAgainst} recibidos`],
+    ["Mejor ataque", topAttack.team.name, `${topAttack.goalsFor} anotados`],
+    [
+      "Mejor defensa",
+      bestDefense.team.name,
+      `${bestDefense.goalsAgainst} recibidos`,
+    ],
   ];
 
   return (

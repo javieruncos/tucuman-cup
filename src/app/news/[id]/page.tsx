@@ -59,12 +59,8 @@ export default function NewsDetailPage({
   } = useNews();
 
   const related = allNews.filter((a) => a._id !== id).slice(0, 3);
- 
+
   const paragraphs = article?.content?.split(/\n\s*\n/).filter(Boolean) ?? [];
-if (article) {
-  console.log("ARTICLE RECIBIDO:", article);
-  console.log("CONTENT:", article.content);
-  console.log("PARAGRAPHS:", paragraphs);}
 
 
   return (

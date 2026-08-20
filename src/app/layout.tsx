@@ -15,9 +15,9 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: "Tucumán Cup — Gestión profesional de torneos de fútbol",
+  title: "Tucumán Cup — El torneo de fútbol de la provincia",
   description:
-    "Plataforma moderna para organizar torneos de fútbol amateur: fixture automático, equipos, estadísticas y resultados en un solo lugar.",
+    "Fixture, resultados, clasificación y cobertura editorial de la Tucumán Cup: la competición de fútbol de todos los clubes de la provincia.",
 };
 
 export const viewport: Viewport = {

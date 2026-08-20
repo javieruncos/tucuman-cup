@@ -1,6 +1,5 @@
 import { ArrowRight } from "lucide-react";
 
-import { TeamCard } from "@/components/teams/TeamCard";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -11,7 +10,7 @@ export function TeamsSection() {
     <Section id="equipos">
       <Container>
         <SectionHeader
-          eyebrow="Tournament"
+          eyebrow="Participantes"
           title="Equipos participantes"
           align="left"
           action={
