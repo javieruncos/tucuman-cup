@@ -1,9 +1,10 @@
 import { Standing } from "@/types/standings"
 
 
-export const fetchStandings = async ():Promise<Standing[]> =>{
+export const fetchStandings = async (category?: string): Promise<Standing[]> => {
     try {
-        const response = await fetch(`/api/standings`) 
+        const query = category ? `?category=${encodeURIComponent(category)}` : "";
+        const response = await fetch(`/api/standings${query}`)
 
         const data = await response.json()
         

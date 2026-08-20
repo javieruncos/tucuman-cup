@@ -2,10 +2,10 @@ import { fetchStandings } from "@/lib/api/standings"
 import { useQuery } from "@tanstack/react-query"
 
 
-export const useStandings = () => {
+export const useStandings = (category?: string) => {
     return useQuery({
-        queryKey: ["standings"],
-        queryFn: fetchStandings,
+        queryKey: ["standings", category ?? "all"],
+        queryFn: () => fetchStandings(category),
         initialData: [],
     })
 }

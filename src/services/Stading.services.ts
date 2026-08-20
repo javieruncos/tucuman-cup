@@ -1,5 +1,8 @@
 import { Match } from "@/models/Matches";
 import { Team } from "@/models/Team";
+import type { CategoryFilter } from "@/lib/categories";
+import { buildCategoryFilter } from "@/lib/categories";
+import { getCategoryId } from "@/services/Categories.services";
 import type { Standing } from "@/types/standings";
 
 type FinishedMatch = {
@@ -29,10 +32,12 @@ const emptyRow = (team: Standing["team"]): StandingAccumulator => ({
   goalsAgainst: 0,
 });
 
-const computeStandings = async (): Promise<Standing[]> => {
+const computeStandings = async (
+  filter: CategoryFilter | object = {}
+): Promise<Standing[]> => {
   const [teams, matches] = await Promise.all([
-    Team.find().lean(),
-    Match.find({ status: "finished" })
+    Team.find({ ...filter }).lean(),
+    Match.find({ status: "finished", ...filter })
       .populate("homeTeam")
       .populate("awayTeam")
       .lean(),
@@ -102,9 +107,16 @@ const computeStandings = async (): Promise<Standing[]> => {
     .map((row, index) => ({ ...row, position: index + 1 }));
 };
 
-export const getStading = async (): Promise<Standing[]> => {
+export const getStading = async (slug?: string): Promise<Standing[]> => {
   try {
-    return await computeStandings();
+    if (!slug) {
+      return await computeStandings();
+    }
+
+    const categoryId = await getCategoryId(slug);
+    if (!categoryId) return [];
+
+    return await computeStandings(buildCategoryFilter(categoryId, slug));
   } catch (error) {
     console.log("Error al obtener standings", error);
     throw error;

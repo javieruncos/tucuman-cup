@@ -65,6 +65,11 @@ const matchSchema = new Schema(
       type: String,
       trim: true,
     },
+
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
   },
   {
     timestamps: true,

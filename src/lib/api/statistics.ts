@@ -1,8 +1,9 @@
 import type { TopScorer } from "@/types/statistics";
 
-export const fetchTopScorers = async (): Promise<TopScorer[]> => {
+export const fetchTopScorers = async (category?: string): Promise<TopScorer[]> => {
   try {
-    const response = await fetch(`/api/statistics/top-scorers`);
+    const query = category ? `?category=${encodeURIComponent(category)}` : "";
+    const response = await fetch(`/api/statistics/top-scorers${query}`);
 
     const data = await response.json();
 

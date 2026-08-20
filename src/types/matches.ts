@@ -18,6 +18,7 @@ export type MatchType = {
   halftimeScore?: HalftimeScore;
   round?: string;
   venue?: string;
+  category?: string;
 };
 
 export interface MatchResponseType {
@@ -32,6 +33,7 @@ export interface MatchResponseType {
   halftimeScore?: HalftimeScore;
   round?: string;
   venue?: string;
+  category?: string;
   createdAt: string;
   updatedAt: string;
 }

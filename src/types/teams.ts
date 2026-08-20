@@ -5,6 +5,7 @@ export type Team = {
   city: string;
   color: string;
   founded: number;
+  category?: string;
   createdAt: string;
   updatedAt: string;
 };
