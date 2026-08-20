@@ -41,7 +41,7 @@ export function NewsDetailSkeleton() {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="flex h-32 gap-4 rounded-lg border border-border bg-card p-4"
+              className="flex h-32 gap-4 rounded-xl border border-card-border bg-card p-4"
             >
               <div className="h-20 w-24 shrink-0 animate-pulse rounded-md bg-muted" />
               <div className="min-w-0 flex-1 space-y-2 py-1">

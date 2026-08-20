@@ -61,6 +61,7 @@ export default function NewsDetailPage({
   const related = allNews.filter((a) => a._id !== id).slice(0, 3);
 
   const paragraphs = article?.content?.split(/\n\s*\n/).filter(Boolean) ?? [];
+  const image = article?.image ?? "/images/news-hero.jpg";
 
 
   return (
@@ -154,23 +155,34 @@ export default function NewsDetailPage({
 
           {/* Article body */}
           <Container className="py-10 sm:py-12">
-            <div className="max-w-3xl">
-              <p className="border-l-2 border-gold pl-4 font-display text-lg font-medium uppercase leading-relaxed tracking-wide text-foreground sm:text-xl">
-                {article.excerpt}
-              </p>
+            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-12">
+              <div className="max-w-3xl">
+                <p className="border-l-2 border-gold pl-4 font-display text-lg font-medium uppercase leading-relaxed tracking-wide text-foreground sm:text-xl">
+                  {article.excerpt}
+                </p>
 
-              {paragraphs.length > 0 && (
-                <div className="mt-8 space-y-6">
-                  {paragraphs.map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="text-base leading-relaxed text-muted-foreground sm:text-lg"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              )}
+                {paragraphs.length > 0 && (
+                  <div className="mt-8 space-y-6">
+                    {paragraphs.map((paragraph, index) => (
+                      <p
+                        key={index}
+                        className="text-base leading-relaxed text-muted-foreground sm:text-lg"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border/50 bg-card lg:aspect-auto lg:h-full lg:min-h-[24rem]">
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  role="img"
+                  aria-label={article.title}
+                  style={{ backgroundImage: `url(${image})` }}
+                />
+              </div>
             </div>
           </Container>
 

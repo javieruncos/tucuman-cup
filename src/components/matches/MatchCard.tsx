@@ -61,7 +61,7 @@ function UpcomingCard({ match, href }: { match: MatchResponseType; href: string 
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col gap-5 rounded-xl border border-border/50 bg-card p-6 transition-colors duration-300 hover:border-gold/40 hover:bg-elevated sm:p-7"
+      className="group flex h-full flex-col gap-5 rounded-xl border border-card-border bg-card p-6 transition-colors duration-300 hover:border-gold/40 hover:bg-elevated sm:p-7"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -178,7 +178,7 @@ function ResultCard({
         "group flex h-full flex-col rounded-xl border p-5 transition-colors duration-300 sm:p-6",
         live
           ? "border-live/40 bg-live/5 hover:border-live/60 hover:bg-live/10"
-          : "border-border/50 bg-card hover:border-gold/40 hover:bg-elevated"
+          : "border-card-border bg-card hover:border-gold/40 hover:bg-elevated"
       )}
     >
       <div className="flex items-center justify-between gap-3">
@@ -261,7 +261,7 @@ export function MatchCard({
     <Link
       href={href}
       className={cn(
-        "group block rounded-lg border border-border bg-card p-4 transition-colors hover:border-gold/40 hover:bg-elevated",
+        "group block rounded-xl border border-card-border bg-card p-4 transition-colors hover:border-gold/40 hover:bg-elevated",
         className
       )}
     >
