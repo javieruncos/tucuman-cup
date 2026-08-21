@@ -9,3 +9,21 @@ export type Team = {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface CreateTeamInput {
+  name: string;
+  shortName: string;
+  city: string;
+  color: string;
+  founded: number;
+  category: string;
+}
+
+export interface UpdateTeamInput {
+  name?: string;
+  shortName?: string;
+  city?: string;
+  color?: string;
+  founded?: number;
+  category?: string;
+}

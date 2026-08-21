@@ -24,7 +24,12 @@ const TeamSchema = new Schema({
     category: {
         type: Schema.Types.ObjectId,
         ref: "Category",
-    }
+        required: true,
+    },
+    active: {
+        type: Boolean,
+        default: true,
+    },
 
 }, { timestamps: true });
 
