@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { getMatchById, updateMatch, deleteMatch } from "@/services/Matches.services";
+import { getPlayerById, updatePlayer, deletePlayer } from "@/services/Players.services";
 
 export const GET = async (request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -14,24 +14,24 @@ export const GET = async (request: Request,
         // Validar ID de MongoDB inválido → 400
         if (!id.match(/^[0-9a-fA-F]{24}$/)) {
             return NextResponse.json(
-                { success: false, error: "ID de partido inválido" },
+                { success: false, error: "ID de jugador inválido" },
                 { status: 400 }
             );
         }
 
-        const result = await getMatchById(id);
+        const result = await getPlayerById(id);
 
-        if (!result) {
+        if (!result.success) {
             return NextResponse.json(
-                { success: false, error: "Partido no encontrado" },
+                { success: false, error: result.error },
                 { status: 404 }
             );
         }
 
-        return NextResponse.json({ success: true, data: result }, { status: 200 });
+        return NextResponse.json({ success: true, data: result.data }, { status: 200 });
 
     } catch (error) {
-        console.error("Error al obtener partido:", error);
+        console.error("Error al obtener jugador:", error);
         return NextResponse.json(
             { success: false, error: "Error interno del servidor" },
             { status: 500 }
@@ -39,7 +39,7 @@ export const GET = async (request: Request,
     }
 };
 
-// PATCH /api/matches/[id]
+// PATCH /api/players/[id]
 export const PATCH = async (request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) => {
@@ -51,60 +51,47 @@ export const PATCH = async (request: Request,
         // Validar ID de MongoDB inválido → 400
         if (!id.match(/^[0-9a-fA-F]{24}$/)) {
             return NextResponse.json(
-                { success: false, error: "ID de partido inválido" },
+                { success: false, error: "ID de jugador inválido" },
                 { status: 400 }
             );
         }
 
         const body = await request.json();
 
-        // Solo permitir actualizar: category, date, time, status, homeScore, awayScore, halftimeScore, round, venue
+        // Solo permitir actualizar: name, number, position, photo (NO team)
         // Construir objeto de actualización con los campos válidos del body
-        const updateData: {
-            category?: string;
-            date?: string;
-            time?: string;
-            status?: "scheduled" | "live" | "finished";
-            homeScore?: number;
-            awayScore?: number;
-            halftimeScore?: { home: number | null; away: number | null };
-            round?: string;
-            venue?: string;
+        const data: {
+            name?: string;
+            number?: number;
+            position?: "GK" | "DEF" | "MID" | "FWD";
+            photo?: string;
         } = {};
 
-        if ("category" in body) updateData.category = body.category;
-        if ("date" in body) updateData.date = body.date;
-        if ("time" in body) updateData.time = body.time;
-        if ("status" in body) {
-            const validStatus: "scheduled" | "live" | "finished" = body.status;
-            updateData.status = validStatus;
-        }
-        if ("homeScore" in body) updateData.homeScore = body.homeScore;
-        if ("awayScore" in body) updateData.awayScore = body.awayScore;
-        if ("halftimeScore" in body) updateData.halftimeScore = body.halftimeScore;
-        if ("round" in body) updateData.round = body.round;
-        if ("venue" in body) updateData.venue = body.venue;
+        if ("name" in body) data.name = body.name;
+        if ("number" in body) data.number = body.number;
+        if ("position" in body) data.position = body.position;
+        if ("photo" in body) data.photo = body.photo;
 
-        if (Object.keys(updateData).length === 0) {
+        if (Object.keys(data).length === 0) {
             return NextResponse.json(
                 { success: false, error: "No hay campos para actualizar" },
                 { status: 400 }
             );
         }
 
-        const result = await updateMatch(id, updateData);
+        const result = await updatePlayer(id, data);
 
         if (!result.success) {
             const errorMessage = result.error || "";
             const status = errorMessage.includes("no encontrado") ? 404 :
-                           errorMessage.includes("Ya existe") ? 409 : 400;
+                           errorMessage.includes("número") ? 409 : 400;
             return NextResponse.json({ success: false, error: result.error }, { status });
         }
 
         return NextResponse.json({ success: true, data: result.data }, { status: 200 });
 
     } catch (error) {
-        console.error("Error al actualizar partido:", error);
+        console.error("Error al actualizar jugador:", error);
         return NextResponse.json(
             { success: false, error: "Error interno del servidor" },
             { status: 500 }
@@ -112,7 +99,7 @@ export const PATCH = async (request: Request,
     }
 };
 
-// DELETE /api/matches/[id]
+// DELETE /api/players/[id]
 export const DELETE = async (request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) => {
@@ -124,16 +111,16 @@ export const DELETE = async (request: Request,
         // Validar ID de MongoDB inválido → 400
         if (!id.match(/^[0-9a-fA-F]{24}$/)) {
             return NextResponse.json(
-                { success: false, error: "ID de partido inválido" },
+                { success: false, error: "ID de jugador inválido" },
                 { status: 400 }
             );
         }
 
-        const result = await deleteMatch(id);
+        const result = await deletePlayer(id);
 
         if (!result.success) {
-            if (result.code === "MATCH_HAS_DEPENDENCIES") {
-                // Partido con MatchStats/MatchEvents → 409
+            if (result.code === "PLAYER_HAS_EVENTS") {
+                // Player con eventos asociados → 409
                 return NextResponse.json({ success: false, error: result.error }, { status: 409 });
             }
             const errorMessage = result.error || "";
@@ -147,7 +134,7 @@ export const DELETE = async (request: Request,
         return NextResponse.json({ success: true, data: {} }, { status: 200 });
 
     } catch (error) {
-        console.error("Error al eliminar partido:", error);
+        console.error("Error al eliminar jugador:", error);
         return NextResponse.json(
             { success: false, error: "Error interno del servidor" },
             { status: 500 }
