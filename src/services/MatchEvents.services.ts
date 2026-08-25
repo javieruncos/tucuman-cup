@@ -25,7 +25,24 @@ export const getEventsByMatch = async (matchId: string) => {
   }
 };
 
-export const createMatchEvent = async (event: MatchEventInput) => {
+export const getMatchEventById = async (eventId: string) => {
+  try {
+    const event = await MatchEvent.findById(eventId)
+      .populate("player")
+      .populate("additionalPlayer")
+      .populate("team")
+      .populate("match");
+    if (!event) {
+      return { success: false, error: "Evento no encontrado" };
+    }
+    return { success: true, data: event };
+  } catch (error) {
+    console.error("Error al obtener evento", error);
+    throw error;
+  }
+};
+
+export const createMatchEvent = async (event: { match: string; team: string; player: string; type: string; minute: number; additionalPlayer?: string | null }) => {
   try {
     const response = await MatchEvent.create(event);
     return response.populate(["player", "additionalPlayer", "team"]);
@@ -35,60 +52,44 @@ export const createMatchEvent = async (event: MatchEventInput) => {
   }
 };
 
-const countGoals = (events: TopScorerEvent[]): TopScorer[] => {
-  const byPlayer = new Map<string, TopScorer>();
-
-  for (const event of events) {
-    const player = event.player as unknown as TopScorer["player"] | null;
-    const team = event.team as unknown as TopScorer["team"] | null;
-
-    if (!player || !team) continue;
-
-    const key = String(player._id);
-    const current = byPlayer.get(key);
-
-    if (current) {
-      current.goals += 1;
-    } else {
-      byPlayer.set(key, { player, team, goals: 1 });
+export const updateMatchEvent = async (eventId: string, data: { type?: string; minute?: number }) => {
+  try {
+    const existingEvent = await MatchEvent.findById(eventId);
+    if (!existingEvent) {
+      return { success: false, error: "Evento no encontrado" };
     }
-  }
 
-  return [...byPlayer.values()].sort(
-    (a, b) =>
-      b.goals - a.goals || a.player.name.localeCompare(b.player.name, "es")
-  );
+    // SOLO permitir modificar type y minute
+    if (data.type && !["goal", "yellow_card", "red_card", "substitution"].includes(data.type)) {
+      return { success: false, error: "Tipo de evento inválido" };
+    }
+
+    const response = await MatchEvent.findOneAndUpdate(
+      { _id: eventId },
+      data,
+      { new: true, runValidators: true }
+    );
+
+    return { success: true, data: response };
+  } catch (error) {
+    console.error("Error al actualizar evento", error);
+    return { success: false, error: "Error interno" };
+  }
 };
 
-export const getTopScorers = async (slug?: string): Promise<TopScorer[]> => {
+export const deleteMatchEvent = async (eventId: string) => {
   try {
-    if (!slug) {
-      const events = await MatchEvent.find({ type: "goal" })
-        .populate("player")
-        .populate("team");
-
-      return countGoals(events as unknown as TopScorerEvent[]);
+    const existingEvent = await MatchEvent.findById(eventId);
+    if (!existingEvent) {
+      return { success: false, error: "Evento no encontrado" };
     }
 
-    const categoryId = await getCategoryId(slug);
-    if (!categoryId) return [];
+    // NO hacer cascade delete, NO bloquear por dependencias
+    await MatchEvent.findByIdAndDelete(eventId);
 
-    const matches = await Match.find(
-      buildCategoryFilter(categoryId, slug),
-      "_id"
-    ).lean();
-    const matchIds = matches.map((match) => match._id);
-
-    const events = await MatchEvent.find({
-      type: "goal",
-      match: { $in: matchIds },
-    })
-      .populate("player")
-      .populate("team");
-
-    return countGoals(events as unknown as TopScorerEvent[]);
+    return { success: true, data: {} };
   } catch (error) {
-    console.error("Error al obtener goleadores", error);
-    throw error;
+    console.error("Error al eliminar evento", error);
+    return { success: false, error: "Error interno" };
   }
 };
