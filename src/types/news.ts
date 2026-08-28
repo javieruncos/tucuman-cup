@@ -14,3 +14,27 @@ export type NewsResponseType = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateNewsInput = {
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  date: string;
+  author?: string;
+  readTime?: string;
+  image?: string;
+  team?: string | null;
+};
+
+export type UpdateNewsInput = {
+  title?: string;
+  excerpt?: string;
+  content?: string;
+  category?: string;
+  date?: string;
+  author?: string;
+  readTime?: string;
+  image?: string;
+  team?: string | null;
+};

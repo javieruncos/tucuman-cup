@@ -23,6 +23,14 @@ export const POST = async (request: Request) => {
   try {
     await connectDB();
     const category = await request.json();
+
+    if (!category.name || !category.slug) {
+      return NextResponse.json(
+        { success: false, error: "Nombre y slug son requeridos" },
+        { status: 400 }
+      );
+    }
+
     const response = await createCategory(category);
     return NextResponse.json(
       { success: true, data: response },
@@ -30,6 +38,16 @@ export const POST = async (request: Request) => {
     );
   } catch (error) {
     console.error("Error creating category:", error);
+
+    if (error instanceof Error) {
+      if (error.message.includes("E11000") || error.message.includes("duplicate key")) {
+        return NextResponse.json(
+          { success: false, error: "Ya existe una categoría con ese nombre o slug" },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { success: false, error: "Error creating category" },
       { status: 500 }
