@@ -6,6 +6,7 @@ export type Team = {
   color: string;
   founded: number;
   category?: string;
+  active?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -17,6 +18,7 @@ export interface CreateTeamInput {
   color: string;
   founded: number;
   category: string;
+  active?: boolean;
 }
 
 export interface UpdateTeamInput {
@@ -26,4 +28,5 @@ export interface UpdateTeamInput {
   color?: string;
   founded?: number;
   category?: string;
+  active?: boolean;
 }

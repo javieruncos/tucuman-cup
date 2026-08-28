@@ -5,6 +5,7 @@ import { Category } from "@/models/Category";
 import { Player } from "@/models/Player";
 import { Match } from "@/models/Matches";
 import { News } from "@/models/News";
+import { MatchEvent } from "@/models/MatchEvent";
 import type { UpdateTeamInput } from "@/types/teams";
 import { getCategoryId } from "./Categories.services";
 
@@ -105,10 +106,11 @@ export const deleteTeam = async (id: string) => {
         }
 
         // Verificar dependencias antes de eliminar
-        const [playersCount, matchesCount, newsCount] = await Promise.all([
+        const [playersCount, matchesCount, newsCount, eventsCount] = await Promise.all([
             Player.countDocuments({ team: id }),
             Match.countDocuments({ $or: [{ homeTeam: id }, { awayTeam: id }] }),
-            News.countDocuments({ team: id })
+            News.countDocuments({ team: id }),
+            MatchEvent.countDocuments({ team: id })
         ]);
 
         if (playersCount > 0) {
@@ -132,6 +134,14 @@ export const deleteTeam = async (id: string) => {
                 success: false,
                 error: `No se puede eliminar el equipo. Tiene ${newsCount}(s) noticia(s) asociada(s).`,
                 code: "TEAM_HAS_NEWS"
+            };
+        }
+
+        if (eventsCount > 0) {
+            return {
+                success: false,
+                error: `No se puede eliminar el equipo. Tiene ${eventsCount}(s) evento(s) asociado(s).`,
+                code: "TEAM_HAS_EVENTS"
             };
         }
 

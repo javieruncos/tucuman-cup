@@ -1,12 +1,15 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchTeams, createTeam, updateTeam, deleteTeam } from "@/lib/api/teams";
+import { fetchTeams, fetchTeamsByCategory, createTeam, updateTeam, deleteTeam } from "@/lib/api/teams";
 
-export const useTeams = () => {
+export const useTeams = (categorySlug?: string) => {
+  const queryKey = categorySlug ? ["teams", categorySlug] : ["teams"];
+  const queryFn = categorySlug ? () => fetchTeamsByCategory(categorySlug) : fetchTeams;
+
   const { data: teams = [], isPending, isError } = useQuery({
-    queryKey: ["teams"],
-    queryFn: fetchTeams,
+    queryKey,
+    queryFn,
   });
 
   const queryClient = useQueryClient();
@@ -20,6 +23,7 @@ export const useTeams = () => {
       color: string;
       founded: number;
       category: string;
+      active?: boolean;
     }) => createTeam(team),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teams"] });
@@ -39,6 +43,7 @@ export const useTeams = () => {
         color?: string;
         founded?: number;
         category?: string;
+        active?: boolean;
       };
     }) => updateTeam(id, data),
     onSuccess: () => {
@@ -59,7 +64,7 @@ export const useTeams = () => {
     data: teams,
     isLoading: isPending,
     error: isError ? isError : null,
-    refetch: () => queryClient.refetchQueries({ queryKey: ["teams"] }),
+    refetch: () => queryClient.refetchQueries({ queryKey }),
 
     // Forma nueva (mutations)
     isCreating: createMutation.isPending,

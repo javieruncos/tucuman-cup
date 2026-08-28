@@ -18,6 +18,19 @@ export const fetchTeams = async (): Promise<Team[]> => {
 };
 
 
+export const fetchTeamsByCategory = async (slug: string): Promise<Team[]> => {
+    const response = await fetch(`/api/teams?category=${encodeURIComponent(slug)}`);
+
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Error al obtener equipos por categoría");
+    }
+
+    const data = await response.json();
+    return data.data;
+};
+
+
 export const fetchTeamId = async (id: string) => {
     const response = await fetch(`/api/teams/${id}`);
 
@@ -32,7 +45,7 @@ export const fetchTeamId = async (id: string) => {
 
 
 // CREATE
-export const createTeam = async (team: { name: string; shortName: string; city: string; color: string; founded: number; category: string }): Promise<Team> => {
+export const createTeam = async (team: { name: string; shortName: string; city: string; color: string; founded: number; category: string; active?: boolean }): Promise<Team> => {
     const response = await fetch("/api/teams", {
         method: "POST",
         headers: {
@@ -51,7 +64,7 @@ export const createTeam = async (team: { name: string; shortName: string; city: 
 };
 
 // UPDATE
-export const updateTeam = async (id: string, data: { name?: string; shortName?: string; city?: string; color?: string; founded?: number; category?: string }): Promise<Team> => {
+export const updateTeam = async (id: string, data: { name?: string; shortName?: string; city?: string; color?: string; founded?: number; category?: string; active?: boolean }): Promise<Team> => {
     const response = await fetch(`/api/teams/${id}`, {
         method: "PATCH",
         headers: {
