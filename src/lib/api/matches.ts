@@ -13,6 +13,19 @@ export const fetchMatches = async (): Promise<MatchResponseType[]> => {
 };
 
 
+export const fetchMatchesByCategory = async (slug: string): Promise<MatchResponseType[]> => {
+  const response = await fetch(`/api/matches?category=${encodeURIComponent(slug)}`);
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || "Error al obtener partidos por categoría");
+  }
+
+  const result = await response.json();
+  return result.data;
+};
+
+
 export const fetchMatchById = async (id: string): Promise<MatchResponseType> => {
   const response = await fetch(`/api/matches/${id}`);
 
@@ -46,7 +59,6 @@ export const createMatch = async (match: { homeTeam: string; awayTeam: string; d
 
 // UPDATE
 export const updateMatch = async (id: string, data: {
-  category?: string;
   date?: string;
   time?: string;
   status?: "scheduled" | "live" | "finished";

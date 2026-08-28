@@ -1,4 +1,4 @@
-import type { Tournament } from "@/types/tournament";
+import type { Tournament, CreateTournamentInput, UpdateTournamentInput } from "@/types/tournament";
 
 export const fetchTournament = async (): Promise<Tournament> => {
   const response = await fetch("/api/tournament");
@@ -12,7 +12,7 @@ export const fetchTournament = async (): Promise<Tournament> => {
 };
 
 export const createTournament = async (
-  tournament: Omit<Tournament, "_id" | "createdAt" | "updatedAt">
+  tournament: CreateTournamentInput
 ): Promise<Tournament> => {
   const response = await fetch("/api/tournament", {
     method: "POST",
@@ -28,4 +28,35 @@ export const createTournament = async (
   }
 
   return data.data;
+};
+
+export const updateTournament = async (
+  data: UpdateTournamentInput
+): Promise<Tournament> => {
+  const response = await fetch("/api/tournament", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || "Error al actualizar el torneo");
+  }
+
+  const result = await response.json();
+  return result.data;
+};
+
+export const deleteTournament = async (): Promise<void> => {
+  const response = await fetch("/api/tournament", {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || "Error al eliminar el torneo");
+  }
 };

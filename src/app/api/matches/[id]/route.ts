@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { getMatchById, updateMatch, deleteMatch } from "@/services/Matches.services";
 
+const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
 export const GET = async (request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) => {
@@ -12,7 +14,7 @@ export const GET = async (request: Request,
         const { id } = await params;
 
         // Validar ID de MongoDB inválido → 400
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        if (!isValidObjectId(id)) {
             return NextResponse.json(
                 { success: false, error: "ID de partido inválido" },
                 { status: 400 }
@@ -49,7 +51,7 @@ export const PATCH = async (request: Request,
         const { id } = await params;
 
         // Validar ID de MongoDB inválido → 400
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        if (!isValidObjectId(id)) {
             return NextResponse.json(
                 { success: false, error: "ID de partido inválido" },
                 { status: 400 }
@@ -58,10 +60,20 @@ export const PATCH = async (request: Request,
 
         const body = await request.json();
 
-        // Solo permitir actualizar: category, date, time, status, homeScore, awayScore, halftimeScore, round, venue
+        // Rechazar campos no permitidos
+        const forbiddenFields = ["homeTeam", "awayTeam", "category", "_id", "createdAt", "updatedAt"];
+        for (const field of forbiddenFields) {
+            if (field in body) {
+                return NextResponse.json(
+                    { success: false, error: `No se puede modificar ${field}` },
+                    { status: 400 }
+                );
+            }
+        }
+
+        // Solo permitir actualizar: date, time, status, homeScore, awayScore, halftimeScore, round, venue
         // Construir objeto de actualización con los campos válidos del body
         const updateData: {
-            category?: string;
             date?: string;
             time?: string;
             status?: "scheduled" | "live" | "finished";
@@ -72,15 +84,30 @@ export const PATCH = async (request: Request,
             venue?: string;
         } = {};
 
-        if ("category" in body) updateData.category = body.category;
         if ("date" in body) updateData.date = body.date;
         if ("time" in body) updateData.time = body.time;
         if ("status" in body) {
             const validStatus: "scheduled" | "live" | "finished" = body.status;
             updateData.status = validStatus;
         }
-        if ("homeScore" in body) updateData.homeScore = body.homeScore;
-        if ("awayScore" in body) updateData.awayScore = body.awayScore;
+        if ("homeScore" in body) {
+            if (body.homeScore < 0) {
+                return NextResponse.json(
+                    { success: false, error: "homeScore no puede ser negativo" },
+                    { status: 400 }
+                );
+            }
+            updateData.homeScore = body.homeScore;
+        }
+        if ("awayScore" in body) {
+            if (body.awayScore < 0) {
+                return NextResponse.json(
+                    { success: false, error: "awayScore no puede ser negativo" },
+                    { status: 400 }
+                );
+            }
+            updateData.awayScore = body.awayScore;
+        }
         if ("halftimeScore" in body) updateData.halftimeScore = body.halftimeScore;
         if ("round" in body) updateData.round = body.round;
         if ("venue" in body) updateData.venue = body.venue;
@@ -122,7 +149,7 @@ export const DELETE = async (request: Request,
         const { id } = await params;
 
         // Validar ID de MongoDB inválido → 400
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        if (!isValidObjectId(id)) {
             return NextResponse.json(
                 { success: false, error: "ID de partido inválido" },
                 { status: 400 }

@@ -55,7 +55,6 @@ export interface CreateMatchInput {
 }
 
 export interface UpdateMatchInput {
-  category?: string;
   date?: string;
   time?: string;
   status?: "scheduled" | "live" | "finished";

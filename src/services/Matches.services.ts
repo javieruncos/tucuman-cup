@@ -1,10 +1,39 @@
 import { Match } from "@/models/Matches";
 import { MatchStats } from "@/models/MatchStats";
 import { MatchEvent } from "@/models/MatchEvent";
+import { Team } from "@/models/Team";
 import type { MatchType } from "@/types/matches";
 
 export const createMatch = async (match: MatchType) => {
   try {
+    // Validar equipos diferentes
+    if (match.homeTeam === match.awayTeam) {
+      throw new Error("El equipo local y visitante deben ser diferentes");
+    }
+
+    // Validar existencia de ambos equipos
+    const [homeTeam, awayTeam] = await Promise.all([
+      Team.findById(match.homeTeam),
+      Team.findById(match.awayTeam),
+    ]);
+
+    if (!homeTeam) {
+      throw new Error("Equipo local no encontrado");
+    }
+    if (!awayTeam) {
+      throw new Error("Equipo visitante no encontrado");
+    }
+
+    // Validar category si se proporciona
+    if (match.category) {
+      if (homeTeam.category?.toString() !== match.category) {
+        throw new Error("El equipo local no pertenece a la categoría indicada");
+      }
+      if (awayTeam.category?.toString() !== match.category) {
+        throw new Error("El equipo visitante no pertenece a la categoría indicada");
+      }
+    }
+
     const existingMatch = await Match.findOne({
       homeTeam: match.homeTeam,
       awayTeam: match.awayTeam,
@@ -24,13 +53,23 @@ export const createMatch = async (match: MatchType) => {
   }
 };
 
-export const getMatches = async () => {
+export const getMatches = async (categorySlug?: string) => {
   try {
-    const response = await Match.find()
+    if (categorySlug) {
+      const { getCategoryId } = await import("./Categories.services");
+      const { buildCategoryFilter } = await import("@/lib/categories");
+      const categoryId = await getCategoryId(categorySlug);
+      if (!categoryId) return [];
+      const matches = await Match.find(buildCategoryFilter(categoryId, categorySlug))
+        .populate("homeTeam")
+        .populate("awayTeam");
+      return matches;
+    }
+    const matches = await Match.find()
       .populate("homeTeam")
       .populate("awayTeam");
 
-    return response;
+    return matches;
   } catch (error) {
     console.log("Error al obtener partidos", error);
     throw error;
@@ -51,7 +90,6 @@ export const getMatchById = async (id: string) => {
 };
 
 export const updateMatch = async (id: string, data: {
-  category?: string;
   date?: string;
   time?: string;
   status?: "scheduled" | "live" | "finished";
@@ -67,12 +105,20 @@ export const updateMatch = async (id: string, data: {
       return { success: false, error: "Partido no encontrado" };
     }
 
-    // Los campos homeTeam y awayTeam están excluidos del tipo UpdateMatchInput,
+    // Validar scores negativos
+    if (data.homeScore !== undefined && data.homeScore < 0) {
+      return { success: false, error: "homeScore no puede ser negativo" };
+    }
+    if (data.awayScore !== undefined && data.awayScore < 0) {
+      return { success: false, error: "awayScore no puede ser negativo" };
+    }
+
+    // Los campos homeTeam, awayTeam y category están excluidos del tipo UpdateMatchInput,
     // pero validamos por si alguien intenta pasar datos extra por el body
-    const forbiddenFields = ["homeTeam", "awayTeam"];
+    const forbiddenFields = ["homeTeam", "awayTeam", "category"];
     const hasForbidden = forbiddenFields.some((field) => field in data);
     if (hasForbidden) {
-      return { success: false, error: "No se puede modificar homeTeam ni awayTeam" };
+      return { success: false, error: "No se puede modificar homeTeam, awayTeam ni category" };
     }
 
     // Si cambia date, verificar duplicidad (excluyendo el propio match)

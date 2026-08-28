@@ -1,12 +1,15 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchMatches, createMatch, updateMatch, deleteMatch } from "@/lib/api/matches";
+import { fetchMatches, fetchMatchesByCategory, createMatch, updateMatch, deleteMatch } from "@/lib/api/matches";
 
-export const useMatches = () => {
+export const useMatches = (categorySlug?: string) => {
+  const queryKey = categorySlug ? ["matches", categorySlug] : ["matches"];
+  const queryFn = categorySlug ? () => fetchMatchesByCategory(categorySlug) : fetchMatches;
+
   const { data: matches = [], isPending, isError } = useQuery({
-    queryKey: ["matches"],
-    queryFn: fetchMatches,
+    queryKey,
+    queryFn,
   });
 
   const queryClient = useQueryClient();
@@ -38,7 +41,6 @@ export const useMatches = () => {
     }: {
       id: string;
       data: {
-        category?: string;
         date?: string;
         time?: string;
         status?: "scheduled" | "live" | "finished";
@@ -68,7 +70,7 @@ export const useMatches = () => {
     data: matches,
     isLoading: isPending,
     error: isError ? isError : null,
-    refetch: () => queryClient.refetchQueries({ queryKey: ["matches"] }),
+    refetch: () => queryClient.refetchQueries({ queryKey }),
 
     // Forma nueva (mutations)
     isCreating: createMutation.isPending,
