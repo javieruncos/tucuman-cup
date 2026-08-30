@@ -154,7 +154,7 @@ function StatSplit({
 }
 
 export function MatchCenter() {
-  const { data: matches, isLoading, isError } = useMatches();
+  const { data: matches, isLoading, error } = useMatches();
   const { data: tournament } = useTournament();
   const match =
     matches?.find((item) => item.status === "live") ??
@@ -169,7 +169,7 @@ export function MatchCenter() {
     return null;
   }
 
-  if (isError) {
+  if (error) {
     return null;
   }
 

@@ -37,3 +37,30 @@ export interface MatchResponseType {
   createdAt: string;
   updatedAt: string;
 }
+
+// INPUTS PARA CRUD
+
+export interface CreateMatchInput {
+  homeTeam: string;
+  awayTeam: string;
+  date: string;
+  time: string;
+  status?: "scheduled" | "live" | "finished";
+  homeScore?: number;
+  awayScore?: number;
+  halftimeScore?: { home: number | null; away: number | null };
+  round?: string;
+  venue?: string;
+  category?: string;
+}
+
+export interface UpdateMatchInput {
+  date?: string;
+  time?: string;
+  status?: "scheduled" | "live" | "finished";
+  homeScore?: number;
+  awayScore?: number;
+  halftimeScore?: { home: number | null; away: number | null };
+  round?: string;
+  venue?: string;
+}

@@ -20,3 +20,10 @@ export type PlayerInput = {
   team: string;
   photo?: string;
 };
+
+export type UpdatePlayerInput = {
+  name?: string;
+  number?: number;
+  position?: PlayerPosition;
+  photo?: string;
+};

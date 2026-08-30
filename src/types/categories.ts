@@ -5,3 +5,13 @@ export type Category = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateCategoryInput = {
+  name: string;
+  slug: string;
+};
+
+export type UpdateCategoryInput = {
+  name?: string;
+  slug?: string;
+};

@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import { createTeam, getTeams } from "@/services/Teams.services";
 import { NextResponse } from "next/server";
 
-
+const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
 export const GET = async (request: Request) => {
     const { searchParams } = new URL(request.url);
@@ -23,6 +23,15 @@ export const POST = async (request: Request) => {
         await connectDB();
         const team = await request.json();
         console.log("TEAM BODY:", team);
+
+        // Validar category si se proporciona
+        if (team.category && !isValidObjectId(team.category)) {
+            return NextResponse.json(
+                { success: false, error: "Categoría inválida" },
+                { status: 400 }
+            );
+        }
+
         const response = await createTeam(team);
         if (!response) {
             return NextResponse.json(

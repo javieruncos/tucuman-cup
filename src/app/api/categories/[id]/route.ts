@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-
 import { connectDB } from "@/lib/mongodb";
-import { getNewsById, updateNews, deleteNews } from "@/services/News.services";
+import { getCategoryById, updateCategory, deleteCategory } from "@/services/Categories.services";
 
 const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
@@ -16,38 +15,25 @@ export const GET = async (
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "ID de noticia inválido",
-        },
+        { success: false, error: "ID de categoría inválido" },
         { status: 400 }
       );
     }
 
-    const news = await getNewsById(id);
+    const category = await getCategoryById(id);
 
-    if (!news) {
+    if (!category) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Noticia no encontrada",
-        },
+        { success: false, error: "Categoría no encontrada" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: news,
-    });
+    return NextResponse.json({ success: true, data: category }, { status: 200 });
   } catch (error) {
-    console.error("Error al obtener noticia", error);
-
+    console.error("Error fetching category:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Error al obtener noticia",
-      },
+      { success: false, error: "Error interno del servidor" },
       { status: 500 }
     );
   }
@@ -64,7 +50,7 @@ export const PATCH = async (
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: "ID de noticia inválido" },
+        { success: false, error: "ID de categoría inválido" },
         { status: 400 }
       );
     }
@@ -88,44 +74,33 @@ export const PATCH = async (
       }
     }
 
-    // Validar campos obligatorios si vienen
-    if (body.title !== undefined && body.title.trim() === "") {
+    if (body.name !== undefined && body.name.trim() === "") {
       return NextResponse.json(
-        { success: false, error: "El título no puede estar vacío" },
-        { status: 400 }
-      );
-    }
-    if (body.excerpt !== undefined && body.excerpt.trim() === "") {
-      return NextResponse.json(
-        { success: false, error: "El extracto no puede estar vacío" },
-        { status: 400 }
-      );
-    }
-    if (body.content !== undefined && body.content.trim() === "") {
-      return NextResponse.json(
-        { success: false, error: "El contenido no puede estar vacío" },
-        { status: 400 }
-      );
-    }
-    if (body.category !== undefined && body.category.trim() === "") {
-      return NextResponse.json(
-        { success: false, error: "La categoría no puede estar vacía" },
+        { success: false, error: "El nombre no puede estar vacío" },
         { status: 400 }
       );
     }
 
-    const result = await updateNews(id, body);
+    if (body.slug !== undefined && body.slug.trim() === "") {
+      return NextResponse.json(
+        { success: false, error: "El slug no puede estar vacío" },
+        { status: 400 }
+      );
+    }
+
+    const result = await updateCategory(id, body);
 
     if (!result.success) {
       const errorMessage = result.error || "";
-      const status = errorMessage.includes("no encontrado") ? 404 :
-                     errorMessage.includes("Equipo no encontrado") ? 404 : 400;
+      const status = errorMessage.includes("no encontrada") ? 404 :
+                     errorMessage.includes("vacío") ? 400 :
+                     errorMessage.includes("existe") ? 409 : 400;
       return NextResponse.json({ success: false, error: result.error }, { status });
     }
 
     return NextResponse.json({ success: true, data: result.data }, { status: 200 });
   } catch (error) {
-    console.error("Error al actualizar la noticia:", error);
+    console.error("Error updating category:", error);
     return NextResponse.json(
       { success: false, error: "Error interno del servidor" },
       { status: 500 }
@@ -144,23 +119,30 @@ export const DELETE = async (
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
-        { success: false, error: "ID de noticia inválido" },
+        { success: false, error: "ID de categoría inválido" },
         { status: 400 }
       );
     }
 
-    const result = await deleteNews(id);
+    const result = await deleteCategory(id);
 
     if (!result.success) {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 404 }
-      );
+      const errorMessage = result.error || "";
+      if (result.code === "TEAM_HAS_CATEGORY") {
+        return NextResponse.json({ success: false, error: errorMessage }, { status: 409 });
+      }
+      if (result.code === "MATCH_HAS_CATEGORY") {
+        return NextResponse.json({ success: false, error: errorMessage }, { status: 409 });
+      }
+      if (errorMessage.includes("no encontrada")) {
+        return NextResponse.json({ success: false, error: errorMessage }, { status: 404 });
+      }
+      return NextResponse.json({ success: false, error: errorMessage }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, data: {} }, { status: 200 });
   } catch (error) {
-    console.error("Error al eliminar la noticia:", error);
+    console.error("Error deleting category:", error);
     return NextResponse.json(
       { success: false, error: "Error interno del servidor" },
       { status: 500 }

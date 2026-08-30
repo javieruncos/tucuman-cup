@@ -27,3 +27,8 @@ export type MatchEventInput = {
   minute: number;
   additionalPlayer?: string | null;
 };
+
+export type UpdateMatchEventInput = {
+  type?: MatchEventName;
+  minute?: number;
+};
