@@ -6,6 +6,8 @@ import { buildCategoryFilter } from "@/lib/categories";
 import { getCategoryId } from "@/services/Categories.services";
 import type { MatchEventInput } from "@/types/matchEvents";
 import type { TopScorer } from "@/types/statistics";
+import { Player } from "@/models/Player";
+import { Team } from "@/models/Team";
 
 type TopScorerEvent = {
   player: unknown;
@@ -44,6 +46,44 @@ export const getMatchEventById = async (eventId: string) => {
 
 export const createMatchEvent = async (event: { match: string; team: string; player: string; type: string; minute: number; additionalPlayer?: string | null }) => {
   try {
+    //buscamos en la DB si existe el player
+    const player = await Player.findById(event.player);
+
+    //buscamos en la DB si existe el team
+    const team = await Team.findById(event.team);
+
+    //buscamos en la DB si existe el match
+    const match = await Match.findById(event.match);
+
+    //si no existe alguno de los anteriores, devolvemos error
+    if (!player) {
+      return { success: false, error: "Jugador no encontrado" };
+    }
+
+    if (!team) {
+      return { success: false, error: "Equipo no encontrado" };
+    }
+
+    if (!match) {
+      return { success: false, error: "Partido no encontrado" };
+    }
+
+    if (player.team.toString() !== event.team) {
+      return { success: false, error: "El jugador no pertenece al equipo" };
+    }
+
+    if (event.additionalPlayer) {
+      const additionalPlayer = await Player.findById(event.additionalPlayer);
+      if (!additionalPlayer) {
+        return { success: false, error: "Jugador adicional no encontrado" };
+      }
+
+      if (additionalPlayer.team.toString() !== event.team) {
+        return { success: false, error: "El jugador adicional no pertenece al equipo" };
+      }
+    }
+
+    //creamos el evento
     const response = await MatchEvent.create(event);
     return response.populate(["player", "additionalPlayer", "team"]);
   } catch (error) {
